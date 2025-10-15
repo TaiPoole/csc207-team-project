@@ -28,5 +28,5 @@
 
 # Team Member Signatures:
 
-Lucas Helme, Tiger Zhang, Loago Zambe, Jiawei Gu, Tai Poole
+Lucas Helme, Tiger Zhang, Loago Zambe, Jiawei Gu, Tai Poole, Billy Chen
 
