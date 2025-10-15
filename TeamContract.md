@@ -38,7 +38,7 @@ This contract sets out shared expectations and commitments for how our team will
 ---
 ## Conflict resolution
 
-* Conflicts will be resolved by measure discussion between members
+* Conflicts will be resolved by measured discussion between members
 * Small (inter-member) disagreements will be brought to the larger (impartial) segment of the group for a majority vote if necessary
 * Larger disagreements require a 50%+1 vote for resolution
 * If otherwise unable to resolve the conflict, conflicts are left to duel of format decided by the challenged party
