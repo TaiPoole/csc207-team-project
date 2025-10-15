@@ -27,12 +27,6 @@ This contract sets out shared expectations and commitments for how our team will
 * Respectful and inclusive behaviour are necessary for smooth and productive communication. What are some respectful and inclusive behaviours you expect when communicating with each other during lectures, labs, or outside of class? (Examples: Actively listening to each team members ideas, giving everyone a chance to meaningfully contribute, etc.)
 
 ---
-
-### [Other Categories of norms and expectations go here]
-
-* Based on your previous teamwork experiences, what other behaviours do you agree upon as a team?
-    - some examples of possible additional team norms and expectations are included in the sample team contract in case your team needs some help getting ideas for what else you want to include.
-
 ## Team Norms
 - Be friendly, communicative, and responsible for the work you do
 ---
@@ -44,7 +38,11 @@ This contract sets out shared expectations and commitments for how our team will
 ---
 ## Conflict resolution
 
-* How will your team resolve conflicts? (Example: by listening to each other's side of the issue and attempting to reach a compromise. By consulting a TA or instructor as a team, if a resolution has not yet been reached.)
+* Conflicts will be resolved by measure discussion between members
+* Small (inter-member) disagreements will be brought to the larger (impartial) segment of the group for a majority vote if necessary
+* Larger disagreements require a 50%+1 vote for resolution
+* If otherwise unable to resolve the conflict, conflicts are left to duel of format decided by the challenged party
+
 
 ---
 
@@ -52,8 +50,6 @@ This contract sets out shared expectations and commitments for how our team will
 
 * Each member is required to satisfy their commitments to the group in a timely manner - or notify before the day of if unable to do so (preferably as early as possible).
 * Failure to communicate is considered a lack of accountability.
-
----
 
 ---
 
