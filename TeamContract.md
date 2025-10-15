@@ -61,5 +61,5 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 
 Team Member Signatures:
 
-Lucas Helme, Tiger Zhang, Loago Zambe
+Lucas Helme, Tiger Zhang, Loago Zambe, Jiawei Gu
 
