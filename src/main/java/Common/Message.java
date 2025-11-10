@@ -1,5 +1,6 @@
+package Common;
+
 import java.util.Date;
-import java.util.Optional;
 
 public class Message {
     private final User user;
