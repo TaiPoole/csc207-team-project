@@ -15,6 +15,11 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SwingUtilities.invokeLater(() -> {
 
             // Right column : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
@@ -124,7 +129,8 @@ public class GUI {
             frame.setContentPane(mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
-            frame.setSize(1200, 800);
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
     }
