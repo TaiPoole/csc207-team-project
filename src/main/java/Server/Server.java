@@ -16,4 +16,7 @@ public class Server {
         channels = new ArrayList<>();
         users = new ArrayList<>();
     }
+    public void addChanel(Channel channel){
+        client_channels.add(channel);
+    }
 }
