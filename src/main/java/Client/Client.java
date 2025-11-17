@@ -1,10 +1,13 @@
 package Client;
 
+import Common.Message;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 public class Client {
@@ -92,12 +95,17 @@ public class Client {
     }
 
     public void sendMessage(String message) throws IOException {
+        sendMessage(new Message(username, message, LocalDateTime.now()));
+    }
+
+    public void sendMessage(Message message) throws IOException {
         if (!connected || channel == null) {
             throw new IllegalStateException("Not connected to server");
         }
 
         try {
-            ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8));
+            String serialized = message.serialize();
+            ByteBuffer buffer = ByteBuffer.wrap(serialized.getBytes(StandardCharsets.UTF_8));
             channel.write(buffer);
         } catch (IOException e) {
             throw e;

@@ -1,5 +1,7 @@
 package Server;
 
+import Common.Message;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -79,10 +81,8 @@ public class Server {
 
                 if (bytesRead > 0) {
                     buffer.flip();
-                    String message = StandardCharsets.UTF_8.decode(buffer).toString();
-                    String response = "pong: " + message;
-                    sendToClient(clientChannel, response);
-
+                    Message message = new Message(StandardCharsets.UTF_8.decode(buffer).toString());
+                    sendToClient(clientChannel, message);
                 }
             }
         } catch (IOException e) {
@@ -90,11 +90,12 @@ public class Server {
         }
     }
 
-    public void sendToClient(SocketChannel clientChannel, String message) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8));
+    public void sendToClient(SocketChannel clientChannel, Message message) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(message.serialize().getBytes(StandardCharsets.UTF_8));
         clientChannel.write(buffer);
     }
 
+    // TODO: implement abstaction with Message for this function
     public void sendToAll(String message) throws IOException {
         for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
             String clientId = entry.getKey();
@@ -102,7 +103,7 @@ public class Server {
             SocketChannel channel = user.getChannel();
 
             if (channel.isOpen()) {
-                sendToClient(channel, message);
+                //sendToClient(channel, message);
             } else {
                 connectedUsers.remove(clientId);
             }

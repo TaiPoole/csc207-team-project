@@ -1,6 +1,7 @@
 package GUI;
 
 import Client.Client;
+import Common.Message;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -51,7 +52,7 @@ public class GUI {
 
     public static void main(String[] args) {
         // start client
-        Client client = new Client("test", "localhost", (System.out::println));
+        Client client = new Client("test-user", "localhost", (System.out::println));
         try {
             client.connect();
             client.sendMessage("test");
