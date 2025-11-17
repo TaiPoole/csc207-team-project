@@ -1,5 +1,8 @@
 package GUI;
 
+import Client.Client;
+import Common.Message;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -15,6 +18,17 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(String[] args) {
+        // start client
+        Client client = new Client("test-user", "localhost", (System.out::println));
+        try {
+            client.connect();
+            client.sendMessage("test");
+        } catch (
+                Exception e
+        ) {
+            System.err.println(e);
+        }
+
         //Specific thing necessary for the button styling
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
