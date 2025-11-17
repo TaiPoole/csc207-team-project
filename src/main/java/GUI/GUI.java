@@ -1,5 +1,7 @@
 package GUI;
 
+import Client.Client;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -48,6 +50,17 @@ public class GUI {
     }
 
     public static void main(String[] args) {
+        // start client
+        Client client = new Client("test", "localhost", (System.out::println));
+        try {
+            client.connect();
+            client.sendMessage("test");
+        } catch (
+                Exception e
+        ) {
+            System.err.println(e);
+        }
+
         SwingUtilities.invokeLater(() -> {
 
             // Right column : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel

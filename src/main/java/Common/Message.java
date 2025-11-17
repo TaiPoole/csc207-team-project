@@ -1,5 +1,7 @@
 package Common;
 
+import Server.User;
+
 import java.util.Date;
 
 public class Message {
