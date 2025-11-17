@@ -93,7 +93,12 @@ public class GUI {
             channelManagePanel.setPreferredSize(new Dimension(800,80));
             channelManagePanel.setLayout(new BorderLayout(5, 5));
             channelManagePanel.setBorder(BorderBox());
-            channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
+            // "+" button that opens the add-channel pop-up
+            JButton addChannelButton = new JButton("+");
+            addChannelButton.addActionListener(e -> gui_addchannel.showDialog(channelModel));
+            channelManagePanel.add(addChannelButton, BorderLayout.WEST);
+
+            //channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
             channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
             channelManagePanel.add(new JButton("Manage"), BorderLayout.EAST);
             rightBox.add(channelManagePanel);
