@@ -54,8 +54,7 @@ class Light extends Palette {
         this.panelBg = new Color(153, 153, 153);
         this.text = new Color(61, 61, 61);
         this.buttonBg = new Color(47, 47, 47);
-        this.buttonText = new Color(61, 61, 61);
-        //this.buttonText = new Color(255, 255, 255);
+        this.buttonText = new Color(255, 255, 255);
     }
 }
 
@@ -65,8 +64,7 @@ class Dark extends Palette {
         this.panelBg = new Color(47, 49, 54);
         this.text = new Color(232, 232, 232);
         this.buttonBg = new Color(19, 19, 19);
-        this.buttonText = new Color(61, 61, 61); // these are placeholders cuz the buttons are all messed up
-        //this.buttonText = new Color(255, 255, 255);
+        this.buttonText = new Color(255, 255, 255);
     }
 }
 
@@ -77,8 +75,7 @@ class Sakura extends Palette {
         this.panelBg = new Color(246, 230, 236);
         this.text = new Color(74, 58, 65);
         this.buttonBg = new Color(235, 167, 192);
-        this.buttonText = new Color(61, 61, 61);
-        //this.buttonText = new Color(255, 255, 255);
+        this.buttonText = new Color(255, 255, 255);
     }
 }
 
@@ -88,7 +85,6 @@ class Hacker extends Palette {
         this.panelBg = new Color(11, 15, 11);
         this.text = new Color(57, 255, 20);
         this.buttonBg = new Color(0, 200, 83);
-        this.buttonText = new Color(0, 0, 0);
-        //this.buttonText = new Color(255, 255, 255);
+        this.buttonText = new Color(255, 255, 255);
     }
 }

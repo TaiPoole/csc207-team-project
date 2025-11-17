@@ -29,9 +29,15 @@ public class GUI {
             System.err.println(e);
         }
 
+        //Specific thing necessary for the button styling
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SwingUtilities.invokeLater(() -> {
 
-            // Right column : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
+            // Right "half" (top-bottom) : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
             JPanel rightBox = new JPanel();
             rightBox.setLayout(new BoxLayout(rightBox, BoxLayout.Y_AXIS));
             rightBox.setPreferredSize(new Dimension(400, 800));
@@ -81,7 +87,7 @@ public class GUI {
             rightBox.add(channelManagePanel);
             rightBox.add(Box.createVerticalStrut(8));
 
-            // Left column : searchPanel, messageScroll, sendPanel
+            // Left "half" (top-bottom): searchPanel, messageScroll, sendPanel
             JPanel leftBox = new JPanel();
             leftBox.setLayout(new BoxLayout(leftBox, BoxLayout.Y_AXIS));
             leftBox.setPreferredSize(new Dimension(800, 800));
@@ -136,7 +142,8 @@ public class GUI {
             frame.setContentPane(mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
-            frame.setSize(1200, 800);
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
     }
