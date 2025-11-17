@@ -13,40 +13,7 @@ public class GUI {
         );
     }
 
-    // Color Module
-    private static void applyYukiTheme(Component c) {
-        Color mainBg = new Color(32, 34, 37);
-        Color panelBg = new Color(47, 49, 54);
-        Color text = new Color(232, 232, 232);
-        Color buttonBg = new Color(255, 255, 255); //it doesn't work, idk
-        Color buttonText = new Color(0, 0, 0);
-
-        applyColors(c, mainBg, panelBg, text, buttonBg, buttonText);
-    }
-
-    private static void applyColors(Component c, Color mainBg, Color panelBg, Color text, Color buttonBg,
-                                    Color buttonText) {
-        if (c instanceof JButton) {
-            c.setBackground(buttonBg);
-            c.setForeground(buttonText);
-        } else if (c instanceof JPanel) {
-            c.setBackground(panelBg);
-            c.setForeground(text);
-        } else if (c instanceof JScrollPane) {
-            c.setBackground(panelBg);
-            c.setForeground(text);
-            ((JScrollPane) c).getViewport().setBackground(panelBg);
-        } else {
-            c.setBackground(mainBg);
-            c.setForeground(text);
-        }
-        if (c instanceof JComponent) {
-            for (Component child : ((JComponent) c).getComponents()) {
-                applyColors(child, mainBg, panelBg, text, buttonBg, buttonText);
-            }
-        }
-    }
-
+    //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
@@ -62,7 +29,8 @@ public class GUI {
             settingsPanel.setBorder(BorderBox());
             settingsPanel.add(new JTextField("User Name"),  BorderLayout.WEST);
             settingsPanel.add(new JButton("New"),  BorderLayout.CENTER);
-            settingsPanel.add(new JButton("Theme: Dark"), BorderLayout.EAST);
+            JButton themeButton = new JButton("Dark");
+            settingsPanel.add(themeButton, BorderLayout.EAST);
             rightBox.add(settingsPanel);
             rightBox.add(Box.createVerticalStrut(8));
 
@@ -127,7 +95,7 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800,200));
             sendPanel.setBorder(BorderBox());
-            sendPanel.add(new JButton("Add File"),   BorderLayout.WEST);
+            sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
             sendPanel.add(new JTextField("Type your message here..."),    BorderLayout.CENTER);
             sendPanel.add(new JButton("Send"), BorderLayout.EAST);
             leftBox.add(sendPanel);
@@ -138,7 +106,15 @@ public class GUI {
             mainPanel.add(leftBox);
             mainPanel.add(Box.createHorizontalStrut(8));
             mainPanel.add(rightBox);
-            applyYukiTheme(mainPanel);
+
+            //Palette and theming stuff
+            Themes theme = new Themes();
+            theme.theme.applyPalette(mainPanel);
+            themeButton.addActionListener(e -> {
+                theme.cyclePalette();
+                themeButton.setText(theme.theme.getClass().getName().substring(4));
+                theme.theme.applyPalette(mainPanel);
+            });
 
             // Main Frame
             //TODO please don't let this be the final name
