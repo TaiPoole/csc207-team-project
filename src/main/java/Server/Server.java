@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private List<Common.Channel> channels; // server channels, not used for communication
+    private ArrayList<Common.Channel> channels; // server channels, not used for communication
     private final Map<String, User> connectedUsers;
 
     private final int port;
@@ -110,6 +110,7 @@ public class Server {
         }
     }
 
-
-
+    public void addChanel(Common.Channel channel){
+        channels.add(channel);
+    }
 }
