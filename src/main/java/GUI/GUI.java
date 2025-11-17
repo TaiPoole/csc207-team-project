@@ -95,9 +95,11 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800,200));
             sendPanel.setBorder(BorderBox());
+            JButton sendButton = new JButton("Send");
+            JTextField messageField = new JTextField();
             sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
-            sendPanel.add(new JTextField("Type your message here..."),    BorderLayout.CENTER);
-            sendPanel.add(new JButton("Send"), BorderLayout.EAST);
+            sendPanel.add(messageField,    BorderLayout.CENTER);
+            sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
             //Main Panel
