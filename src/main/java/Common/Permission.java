@@ -5,7 +5,6 @@ package Common;
  */
 public enum Permission {
     EDIT_PERMISSIONS,
-    READ,
     WRITE,
     JOIN
 }
