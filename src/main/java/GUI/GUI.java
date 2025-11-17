@@ -15,6 +15,7 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(String[] args) {
+        //Specific thing necessary for the button styling
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
@@ -22,7 +23,7 @@ public class GUI {
         }
         SwingUtilities.invokeLater(() -> {
 
-            // Right column : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
+            // Right "half" (top-bottom) : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
             JPanel rightBox = new JPanel();
             rightBox.setLayout(new BoxLayout(rightBox, BoxLayout.Y_AXIS));
             rightBox.setPreferredSize(new Dimension(400, 800));
@@ -72,7 +73,7 @@ public class GUI {
             rightBox.add(channelManagePanel);
             rightBox.add(Box.createVerticalStrut(8));
 
-            // Left column : searchPanel, messageScroll, sendPanel
+            // Left "half" (top-bottom): searchPanel, messageScroll, sendPanel
             JPanel leftBox = new JPanel();
             leftBox.setLayout(new BoxLayout(leftBox, BoxLayout.Y_AXIS));
             leftBox.setPreferredSize(new Dimension(800, 800));
