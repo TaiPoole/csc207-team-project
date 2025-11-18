@@ -11,7 +11,7 @@ public class SendMessageInputData {
     public SendMessageInputData(String messageContent, Attachment attachment) {
         this.messageContent = messageContent;
         //this.channelId = channelId;
-        this.attachment = null;
+        this.attachment = attachment;
     }
 
     public SendMessageInputData(String messageContent) {

@@ -1,7 +1,11 @@
 package GUI;
 
 import Client.Client;
-import Common.Message;
+import InterfaceAdaptor.SendMessage.SendMessageController;
+import InterfaceAdaptor.SendMessage.SendMessagePresenter;
+import UseCase.SendMessage.SendMessageInputBoundary;
+import UseCase.SendMessage.SendMessageInteractor;
+import UseCase.SendMessage.SendMessageOutputBoundary;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -136,6 +140,25 @@ public class GUI {
                 theme.cyclePalette();
                 themeButton.setText(theme.theme.getClass().getName().substring(4));
                 theme.theme.applyPalette(mainPanel);
+            });
+
+            // Send message listener
+            SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
+            SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
+            SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
+            String message = messageField.getText().trim();
+            sendButton.addActionListener(e -> {
+                sendMessageController.sendMessage(message);
+                messageField.setText("");
+            });
+
+            // Allow Enter key to send message
+            messageField.addActionListener(e -> {
+                String messageText = messageField.getText().trim();
+                if (!messageText.isEmpty()) {
+                    sendMessageController.sendMessage(messageText);
+                    messageField.setText("");
+                }
             });
 
             // Main Frame
