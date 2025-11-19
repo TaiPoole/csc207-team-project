@@ -128,6 +128,7 @@ public class GUI {
             mainPanel.add(rightBox);
 
             //Palette and theming stuff
+            //Update from Tiger: I added createEnvironment inside ThemeButton, which can replace everything in action listener
             Themes theme = new Themes();
             theme.theme.applyPalette(mainPanel);
             themeButton.addActionListener(e -> {
