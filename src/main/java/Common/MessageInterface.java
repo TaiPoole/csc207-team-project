@@ -2,7 +2,7 @@ package Common;
 
 import java.time.LocalDateTime;
 
-interface Message_Interface {
+interface MessageInterface {
 
     String serialize();
 

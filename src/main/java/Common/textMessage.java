@@ -2,12 +2,12 @@ package Common;
 
 import java.time.LocalDateTime;
 
-public class Text_Message implements Message_Interface{
+public class textMessage implements MessageInterface {
     private String username;
     private String content;
     private LocalDateTime timestamp;
 
-    public Text_Message(String username, String content, LocalDateTime timestamp) {
+    public textMessage(String username, String content, LocalDateTime timestamp) {
         this.username = username;
         this.content = content;
         this.timestamp = timestamp;

@@ -1,14 +1,15 @@
 package Common;
 
+import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
-public class Attachment_Message implements Message_Interface{
+public class attachmentMessage implements MessageInterface {
     private String username;
     private String content;
     private LocalDateTime timestamp;
-    private Attachment attachment;
+    private BufferedImage attachment;
 
-    public Attachment_Message(String username, String content, LocalDateTime timestamp, Attachment attachment) {
+    public attachmentMessage(String username, String content, LocalDateTime timestamp, BufferedImage attachment) {
         this.username = username;
         this.content = content;
         this.timestamp = timestamp;
@@ -16,7 +17,7 @@ public class Attachment_Message implements Message_Interface{
     }
 
     public String serialize() {
-        return this.username + "\n" + this.content + "\n" + this.timestamp;
+        return this.username + "\n" + this.content + "\n" + this.timestamp + "\n" + this.attachment;
     }
 
     public String getUsername() {
@@ -31,7 +32,7 @@ public class Attachment_Message implements Message_Interface{
         return timestamp;
     }
 
-    public Attachment getAttachment() {
+    public BufferedImage getAttachment() {
         return attachment;
     }
 
