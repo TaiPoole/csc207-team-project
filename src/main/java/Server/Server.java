@@ -110,7 +110,7 @@ public class Server {
         }
     }
 
-    public void addChanel(Common.Channel channel){
+    public void addChannel(Common.Channel channel){
         channels.add(channel);
     }
 }
