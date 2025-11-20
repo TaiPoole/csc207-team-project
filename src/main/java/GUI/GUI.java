@@ -22,7 +22,7 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(String[] args) {
-        // start client
+        // start client TODO: remove this and replace with abstraction
         Client client = new Client("test-user", "localhost", (System.out::println));
         try {
             client.connect();
@@ -40,6 +40,7 @@ public class GUI {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("The really cool messaging service");
 
             // Right "half" (top-bottom) : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
             JPanel rightBox = new JPanel();
@@ -87,7 +88,14 @@ public class GUI {
             channelManagePanel.setBorder(BorderBox());
             channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
             channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
-            channelManagePanel.add(new JButton("Manage"), BorderLayout.EAST);
+
+            JButton permsButton  = new JButton("Manage");
+            permsButton.addActionListener(e -> {
+                PermissionsDialog dialog = new PermissionsDialog(frame);
+                dialog.setVisible(true);
+            });
+            channelManagePanel.add(permsButton, BorderLayout.EAST);
+
             rightBox.add(channelManagePanel);
             rightBox.add(Box.createVerticalStrut(8));
 
@@ -134,6 +142,7 @@ public class GUI {
             mainPanel.add(rightBox);
 
             //Palette and theming stuff
+            //Update from Tiger: I added createEnvironment inside ThemeButton, which can replace everything in action listener
             Themes theme = new Themes();
             theme.theme.applyPalette(mainPanel);
             themeButton.addActionListener(e -> {
@@ -163,7 +172,6 @@ public class GUI {
 
             // Main Frame
             //TODO please don't let this be the final name
-            JFrame frame = new JFrame("The really cool messaging service");
             frame.setContentPane(mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
