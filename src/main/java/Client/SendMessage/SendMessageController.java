@@ -1,8 +1,6 @@
-package InterfaceAdaptor.SendMessage;
+package Client.SendMessage;
 
 import Common.Attachment;
-import UseCase.SendMessage.SendMessageInputBoundary;
-import UseCase.SendMessage.SendMessageInputData;
 
 public class SendMessageController {
     private final SendMessageInputBoundary sendMessageInteractor;

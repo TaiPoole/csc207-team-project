@@ -1,6 +1,5 @@
-package InterfaceAdaptor.SendMessage;
+package Client.SendMessage;
 
-import UseCase.SendMessage.SendMessageOutputBoundary;
 import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 

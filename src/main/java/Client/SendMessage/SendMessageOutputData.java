@@ -1,4 +1,4 @@
-package UseCase.SendMessage;
+package Client.SendMessage;
 
 public class SendMessageOutputData {
     private final boolean success;

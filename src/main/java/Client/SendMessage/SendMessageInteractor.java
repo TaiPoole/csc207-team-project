@@ -1,4 +1,4 @@
-package UseCase.SendMessage;
+package Client.SendMessage;
 import Client.Client;
 import Common.Message;
 

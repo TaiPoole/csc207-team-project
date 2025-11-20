@@ -1,11 +1,11 @@
 package GUI;
 
 import Client.Client;
-import InterfaceAdaptor.SendMessage.SendMessageController;
-import InterfaceAdaptor.SendMessage.SendMessagePresenter;
-import UseCase.SendMessage.SendMessageInputBoundary;
-import UseCase.SendMessage.SendMessageInteractor;
-import UseCase.SendMessage.SendMessageOutputBoundary;
+import Client.SendMessage.SendMessageController;
+import Client.SendMessage.SendMessagePresenter;
+import Client.SendMessage.SendMessageInputBoundary;
+import Client.SendMessage.SendMessageInteractor;
+import Client.SendMessage.SendMessageOutputBoundary;
 
 import javax.swing.*;
 import javax.swing.border.*;

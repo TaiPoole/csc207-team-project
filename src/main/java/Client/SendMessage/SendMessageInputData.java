@@ -1,4 +1,4 @@
-package UseCase.SendMessage;
+package Client.SendMessage;
 
 import Common.Attachment;
 
