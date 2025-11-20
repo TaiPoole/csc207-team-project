@@ -1,6 +1,11 @@
 package GUI;
 
 import Client.Client;
+import Client.SendMessage.SendMessageController;
+import Client.SendMessage.SendMessagePresenter;
+import Client.SendMessage.SendMessageInputBoundary;
+import Client.SendMessage.SendMessageInteractor;
+import Client.SendMessage.SendMessageOutputBoundary;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -122,9 +127,11 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800,200));
             sendPanel.setBorder(BorderBox());
+            JButton sendButton = new JButton("Send");
+            JTextField messageField = new JTextField();
             sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
-            sendPanel.add(new JTextField("Type your message here..."),    BorderLayout.CENTER);
-            sendPanel.add(new JButton("Send"), BorderLayout.EAST);
+            sendPanel.add(messageField,    BorderLayout.CENTER);
+            sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
             //Main Panel
@@ -142,6 +149,25 @@ public class GUI {
                 theme.cyclePalette();
                 themeButton.setText(theme.theme.getClass().getName().substring(4));
                 theme.theme.applyPalette(mainPanel);
+            });
+
+            // Send message listener
+            SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
+            SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
+            SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
+            String message = messageField.getText().trim();
+            sendButton.addActionListener(e -> {
+                sendMessageController.sendMessage(message);
+                messageField.setText("");
+            });
+
+            // Allow Enter key to send message
+            messageField.addActionListener(e -> {
+                String messageText = messageField.getText().trim();
+                if (!messageText.isEmpty()) {
+                    sendMessageController.sendMessage(messageText);
+                    messageField.setText("");
+                }
             });
 
             // Main Frame
