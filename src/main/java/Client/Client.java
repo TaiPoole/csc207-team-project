@@ -20,8 +20,6 @@ public class Client {
 
     private final Consumer<Message> messageCallback;
 
-
-
     public Client(String username, String serverAddress, Consumer<Message> callback) {
         this.username = username;
         this.serverAddress = serverAddress;
@@ -64,7 +62,7 @@ public class Client {
                     String s_message = StandardCharsets.UTF_8.decode(buffer).toString();
                     String[] parts = s_message.split("\n", 2);
 
-                    if (parts.length < 3) {
+                    if (parts.length < 2) {
                         throw new IllegalArgumentException("Invalid format");
                     }
 
@@ -79,11 +77,10 @@ public class Client {
                 break;
             }
         }
-
     }
 
     private void notifyMessage(Message message) {
-        if (messageCallback != null) {
+        if (messageCallback != null && message != null) {
             messageCallback.accept(message);
         }
     }
@@ -119,7 +116,7 @@ public class Client {
             throw new IllegalStateException("Not connected to server");
         }
 
-        String serializedMessage = message.getClass() + "\n" + message.serialize();
+        String serializedMessage = message.getClass().getName() + "\n" + message.serialize();
         ByteBuffer buffer = ByteBuffer.wrap(serializedMessage.getBytes(StandardCharsets.UTF_8));
         channel.write(buffer);
     }
@@ -127,6 +124,4 @@ public class Client {
     public String getUsername() {
         return username;
     }
-
-
 }
