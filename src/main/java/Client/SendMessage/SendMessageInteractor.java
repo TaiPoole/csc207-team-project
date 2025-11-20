@@ -1,6 +1,8 @@
 package Client.SendMessage;
 import Client.Client;
 import Common.Message;
+import Common.attachmentMessage;
+import Common.textMessage;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -26,10 +28,10 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
         try {
             Message message;
             if (input.hasAttachment()) {
-                message = new Message(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
+                message = new attachmentMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
             }
             else {
-                message = new Message(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
+                message = new textMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
             }
 
             client.sendMessage(message);

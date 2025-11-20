@@ -1,6 +1,7 @@
 package Client;
 
 import Common.Message;
+import Common.textMessage;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,15 +15,14 @@ public class Client {
     private static final int port = 8080;
     private String username;
     private SocketChannel channel;
-    private String serverAddress;
+    private final String serverAddress;
     private Boolean connected; // connected to server?
 
-    private Thread listenerThread;
-    private Consumer<String> messageCallback;
+    private final Consumer<Message> messageCallback;
 
 
 
-    public Client(String username, String serverAddress, Consumer<String> callback) {
+    public Client(String username, String serverAddress, Consumer<Message> callback) {
         this.username = username;
         this.serverAddress = serverAddress;
         this.messageCallback = callback;
@@ -37,19 +37,13 @@ public class Client {
             throw new IllegalStateException("Already connected");
         }
 
-        try {
-            channel = SocketChannel.open();
-            channel.socket().setSoTimeout(90);
-            channel.connect(new InetSocketAddress(serverAddress, port));
-            connected = true;
-            notifyMessage("Connected.");
-            listenerThread = new Thread(this::listen);
-            listenerThread.setDaemon(true); // Won't prevent JVM shutdown
-            listenerThread.start();
-        } catch (IOException e) {
-            notifyMessage("Exception: " + e.getMessage());
-            throw e;
-        }
+        channel = SocketChannel.open();
+        channel.socket().setSoTimeout(90);
+        channel.connect(new InetSocketAddress(serverAddress, port));
+        connected = true;
+        Thread listenerThread = new Thread(this::listen);
+        listenerThread.setDaemon(true); // Won't prevent JVM shutdown
+        listenerThread.start();
     }
 
     private void listen() {
@@ -62,19 +56,19 @@ public class Client {
 
                 if (bytesRead == -1) {
                     // Server closed connection
-                    notifyMessage("Server closed connection");
                     break;
                 }
 
                 if (bytesRead > 0) {
                     buffer.flip();
-                    String message = StandardCharsets.UTF_8.decode(buffer).toString();
+                    String s_message = StandardCharsets.UTF_8.decode(buffer).toString();
+                    String[] parts = s_message.split("\n", 2);
 
-                    try {
-                        notifyMessage(message);
-                    } catch (Exception e) {
-                        notifyMessage("Failed to parse message: " + e.getMessage());
+                    if (parts.length < 3) {
+                        throw new IllegalArgumentException("Invalid format");
                     }
+
+                    notifyMessage(deserializeMessage(parts[0], parts[1]));
                 }
                 Thread.sleep(10);
 
@@ -88,14 +82,36 @@ public class Client {
 
     }
 
-    private void notifyMessage(String message) {
+    private void notifyMessage(Message message) {
         if (messageCallback != null) {
             messageCallback.accept(message);
         }
     }
 
+    private Message deserializeMessage(String className, String serializedData) {
+        try {
+            // Extract simple class name if it's a fully qualified name
+            String simpleClassName = className;
+            if (className.contains(".")) {
+                simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+            }
+
+            // Handle known message types
+            switch (simpleClassName) {
+                case "textMessage":
+                    return textMessage.deserialize(serializedData);
+                default:
+                    System.err.println("Unknown message type: " + className);
+                    return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error deserializing message: " + e.getMessage());
+            return null;
+        }
+    }
+
     public void sendMessage(String message) throws IOException {
-        sendMessage(new Message(username, message, LocalDateTime.now()));
+        sendMessage(new textMessage(username, message, LocalDateTime.now()));
     }
 
     public void sendMessage(Message message) throws IOException {
@@ -103,13 +119,9 @@ public class Client {
             throw new IllegalStateException("Not connected to server");
         }
 
-        try {
-            String serialized = message.serialize();
-            ByteBuffer buffer = ByteBuffer.wrap(serialized.getBytes(StandardCharsets.UTF_8));
-            channel.write(buffer);
-        } catch (IOException e) {
-            throw e;
-        }
+        String serializedMessage = message.getClass() + "\n" + message.serialize();
+        ByteBuffer buffer = ByteBuffer.wrap(serializedMessage.getBytes(StandardCharsets.UTF_8));
+        channel.write(buffer);
     }
 
     public String getUsername() {
