@@ -1,6 +1,6 @@
-package Client.SendMessage;
+package client.sendmessage;
 
-import Common.Attachment;
+import common.Attachment;
 
 public class SendMessageInputData {
 
@@ -19,15 +19,17 @@ public class SendMessageInputData {
         this.attachment = null;
     }
 
-    public String  getMessageContent() {
+    public String getMessageContent() {
         return messageContent;
     }
+
     //public String getChannelId() {
     //      return channelId;
     //}
     public Attachment getAttachment() {
         return attachment;
     }
+
     public boolean hasAttachment() {
         return this.getAttachment() != null;
     }

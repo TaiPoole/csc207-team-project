@@ -1,6 +1,4 @@
-package Client.SendMessage;
-
-import java.time.LocalDateTime;
+package client.sendmessage;
 
 public class SendMessageOutputData {
     private final String sender;
@@ -16,9 +14,11 @@ public class SendMessageOutputData {
     public String getSender() {
         return sender;
     }
+
     public String getMessageContent() {
         return messageContent;
     }
+
     public String getTimestamp() {
         return timestamp;
     }

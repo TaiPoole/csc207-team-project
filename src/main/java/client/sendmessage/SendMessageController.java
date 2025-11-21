@@ -1,6 +1,6 @@
-package Client.SendMessage;
+package client.sendmessage;
 
-import Common.Attachment;
+import common.Attachment;
 
 public class SendMessageController {
     private final SendMessageInputBoundary sendMessageInteractor;

@@ -1,13 +1,12 @@
-package Client.SendMessage;
+package client.sendmessage;
 
-import javax.swing.DefaultListModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class SendMessagePresenter implements SendMessageOutputBoundary {
     private final DefaultListModel<String> messageModel;
 
     public SendMessagePresenter(DefaultListModel<String> messageModel) {
-            this.messageModel = messageModel;
+        this.messageModel = messageModel;
     }
 
     @Override
@@ -26,6 +25,6 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
     public void prepareFailureView(String error) {
         SwingUtilities.invokeLater(() -> {
             messageModel.addElement("ERROR: " + error);
-            });
+        });
     }
 }
