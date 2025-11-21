@@ -1,6 +1,6 @@
 package Client.SendMessage;
 
 public interface SendMessageOutputBoundary {
-    void prepareSuccessView();
+    void prepareSuccessView(SendMessageOutputData outputData);
     void prepareFailureView(String errorMessage);
 }

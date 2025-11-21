@@ -11,8 +11,15 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
     }
 
     @Override
-    public void prepareSuccessView() {
-        // Silent success
+    public void prepareSuccessView(SendMessageOutputData outputData) {
+        SwingUtilities.invokeLater(() -> {
+            String formattedMessage = String.format("[%s] %s: %s",
+                    outputData.getTimestamp(),
+                    outputData.getSender(),
+                    outputData.getMessageContent()
+            );
+            messageModel.addElement(formattedMessage);
+        });
     }
 
     @Override
