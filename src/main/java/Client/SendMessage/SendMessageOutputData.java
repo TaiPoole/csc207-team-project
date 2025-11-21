@@ -1,17 +1,25 @@
 package Client.SendMessage;
 
-public class SendMessageOutputData {
-    private final boolean success;
-    private final String statusMessage;
+import java.time.LocalDateTime;
 
-    public SendMessageOutputData(boolean success, String message) {
-        this.success = success;
-        this.statusMessage = message;
+public class SendMessageOutputData {
+    private final String sender;
+    private final String messageContent;
+    private final String timestamp;
+
+    public SendMessageOutputData(String sender, String messageContent, String timestamp) {
+        this.sender = sender;
+        this.messageContent = messageContent;
+        this.timestamp = timestamp;
     }
-    public boolean isSuccess() {
-        return success;
+
+    public String getSender() {
+        return sender;
     }
-    public String getMessage() {
-        return statusMessage;  //use this for failure message
+    public String getMessageContent() {
+        return messageContent;
+    }
+    public String getTimestamp() {
+        return timestamp;
     }
 }
