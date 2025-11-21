@@ -1,4 +1,4 @@
-package Common;
+package common;
 
 /**
  * Permissions that a user can have. Per-channel.

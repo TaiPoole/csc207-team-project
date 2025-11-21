@@ -1,9 +1,8 @@
-package GUI;
+package gui;
 
 public class AddChannelButton extends Button {
-    public AddChannelButton(){
+    public AddChannelButton() {
         super();
     }
-
 
 }

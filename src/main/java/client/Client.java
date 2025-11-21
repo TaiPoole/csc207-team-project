@@ -1,7 +1,7 @@
-package Client;
+package client;
 
-import Common.Message;
-import Common.textMessage;
+import common.Message;
+import common.TextMessage;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,9 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
-public class Client {
-    private static final int port = 8080;
-    private String username;
+/**
+ * Client that communicates with server - sends and receives Message.
+ */
+public final class Client {
+    private static final int PORT = 8080;
+    private final String username;
     private SocketChannel channel;
     private final String serverAddress;
     private Boolean connected; // connected to server?
@@ -28,7 +31,7 @@ public class Client {
     }
 
     /**
-     * Connects to serverAddress on port and returns messages to the provided callback
+     * Connects to serverAddress on port and returns messages to the provided callback.
      */
     public void connect() throws IOException {
         if (connected) {
@@ -37,7 +40,7 @@ public class Client {
 
         channel = SocketChannel.open();
         channel.socket().setSoTimeout(90);
-        channel.connect(new InetSocketAddress(serverAddress, port));
+        channel.connect(new InetSocketAddress(serverAddress, PORT));
         connected = true;
         Thread listenerThread = new Thread(this::listen);
         listenerThread.setDaemon(true); // Won't prevent JVM shutdown
@@ -96,7 +99,7 @@ public class Client {
             // Handle known message types
             switch (simpleClassName) {
                 case "textMessage":
-                    return textMessage.deserialize(serializedData);
+                    return TextMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;
@@ -108,7 +111,7 @@ public class Client {
     }
 
     public void sendMessage(String message) throws IOException {
-        sendMessage(new textMessage(username, message, LocalDateTime.now()));
+        sendMessage(new TextMessage(username, message, LocalDateTime.now()));
     }
 
     public void sendMessage(Message message) throws IOException {

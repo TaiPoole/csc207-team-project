@@ -1,12 +1,13 @@
-package Common;
+package common;
+
 import java.time.LocalDateTime;
 
-public class textMessage implements  Message {
-    private String username;
-    private String content;
-    private LocalDateTime timestamp;
+public class TextMessage implements Message {
+    private final String username;
+    private final String content;
+    private final LocalDateTime timestamp;
 
-    public textMessage(String username, String content, LocalDateTime timestamp) {
+    public TextMessage(String username, String content, LocalDateTime timestamp) {
         this.username = username;
         this.content = content;
         this.timestamp = timestamp;
@@ -23,9 +24,8 @@ public class textMessage implements  Message {
             throw new IllegalArgumentException("Invalid format");
         }
 
-        return new textMessage(parts[0], parts[2], LocalDateTime.parse(parts[1]));
+        return new TextMessage(parts[0], parts[2], LocalDateTime.parse(parts[1]));
     }
-
 
     public String serialize() {
         return this.username + "\n" + this.timestamp + "\n" + this.content;

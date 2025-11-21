@@ -1,7 +1,7 @@
-package Server;
+package server;
 
-import Common.Message;
-import Common.textMessage;
+import common.Message;
+import common.TextMessage;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,13 +16,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private ArrayList<Common.Channel> channels; // server channels, not used for communication
+    private final ArrayList<common.Channel> channels; // server channels, not used for communication
     private final Map<String, User> connectedUsers;
     private final Map<SocketChannel, User> channelToUser; // Map channel to user
 
     private final int port;
     private ServerSocketChannel serverChannel;
-    private ExecutorService clientHandlerPool;
+    private final ExecutorService clientHandlerPool;
     private Thread acceptThread;
 
 
@@ -149,7 +149,7 @@ public class Server {
             // Handle known message types
             switch (simpleClassName) {
                 case "textMessage":
-                    return textMessage.deserialize(serializedData);
+                    return TextMessage.deserialize(serializedData);
                 // Add other message types here as needed
                 default:
                     System.err.println("Unknown message type: " + className);
@@ -231,7 +231,7 @@ public class Server {
         }
     }
 
-    public void addChannel(Common.Channel channel) {
+    public void addChannel(common.Channel channel) {
         channels.add(channel);
     }
 

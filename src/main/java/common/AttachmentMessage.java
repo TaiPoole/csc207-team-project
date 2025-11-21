@@ -1,14 +1,14 @@
-package Common;
+package common;
 
 import java.time.LocalDateTime;
 
-public class attachmentMessage implements Message {
-    private String username;
-    private String content;
-    private LocalDateTime timestamp;
-    private Attachment attachment;
+public class AttachmentMessage implements Message {
+    private final String username;
+    private final String content;
+    private final LocalDateTime timestamp;
+    private final Attachment attachment;
 
-    public attachmentMessage(String username, String content, LocalDateTime timestamp, Attachment attachment) {
+    public AttachmentMessage(String username, String content, LocalDateTime timestamp, Attachment attachment) {
         this.username = username;
         this.content = content;
         this.timestamp = timestamp;
@@ -20,7 +20,7 @@ public class attachmentMessage implements Message {
     }
 
     public static Message deserialize(String message) {
-        return new attachmentMessage("test", message , LocalDateTime.now(), null);
+        return new AttachmentMessage("test", message, LocalDateTime.now(), null);
     }
 
     public String getUsername() {

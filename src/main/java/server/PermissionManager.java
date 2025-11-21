@@ -1,6 +1,6 @@
-package Server;
+package server;
 
-import Common.Permission;
+import common.Permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;

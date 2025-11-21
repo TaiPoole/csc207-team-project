@@ -1,18 +1,21 @@
-package Client.SendMessage;
-import Client.Client;
-import Common.Message;
-import java.time.format.DateTimeFormatter;
+package client.sendmessage;
+
+import client.Client;
+import common.AttachmentMessage;
+import common.Message;
+import common.TextMessage;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class SendMessageInteractor implements SendMessageInputBoundary {
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final SendMessageOutputBoundary presenter;
     private final Client client;
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    public SendMessageInteractor(SendMessageOutputBoundary presenter, Client client ) {
+    public SendMessageInteractor(SendMessageOutputBoundary presenter, Client client) {
 
         this.presenter = presenter;
         this.client = client;
@@ -28,10 +31,9 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
         try {
             Message message;
             if (input.hasAttachment()) {
-                message = new Message(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
-            }
-            else {
-                message = new Message(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
+                message = new AttachmentMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
+            } else {
+                message = new TextMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
             }
 
             client.sendMessage(message);
@@ -44,11 +46,9 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
             );
 
             presenter.prepareSuccessView(outputData);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             presenter.prepareFailureView("Failure to send message" + e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             presenter.prepareFailureView("Error" + e.getMessage());
         }
     }

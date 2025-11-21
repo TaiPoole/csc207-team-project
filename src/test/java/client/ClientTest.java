@@ -1,7 +1,7 @@
-package Client;
+package client;
 
-import Common.Message;
-import Common.textMessage;
+import common.Message;
+import common.TextMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -200,7 +200,7 @@ public class ClientTest {
         assertNotNull("Server should accept connection", serverChannel);
         serverChannel.configureBlocking(false);
 
-        textMessage message = new textMessage(TEST_USERNAME, "Test content", LocalDateTime.now());
+        TextMessage message = new TextMessage(TEST_USERNAME, "Test content", LocalDateTime.now());
         client.sendMessage(message);
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -241,7 +241,7 @@ public class ClientTest {
         assertNotNull("Server should accept connection", serverChannel);
 
         String className = "Common.textMessage";
-        textMessage testMsg = new textMessage("server", "Test message from server", LocalDateTime.now());
+        TextMessage testMsg = new TextMessage("server", "Test message from server", LocalDateTime.now());
         String serialized = testMsg.serialize();
         String fullMessage = className + "\n" + serialized;
 
@@ -252,8 +252,8 @@ public class ClientTest {
         Thread.sleep(500);
 
         boolean messageReceived = receivedMessages.stream()
-                .anyMatch(m -> m instanceof textMessage &&
-                        ((textMessage)m).getContent().contains("Test message from server"));
+                .anyMatch(m -> m instanceof TextMessage &&
+                        m.getContent().contains("Test message from server"));
         assertTrue("Client should receive message from server", messageReceived);
 
         serverChannel.close();
