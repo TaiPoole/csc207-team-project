@@ -2,12 +2,24 @@ package view;
 
 import gui.PermissionsDialog;
 import gui.Themes;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Window;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
  * The main messaging UI.
@@ -31,6 +43,9 @@ public class MainView extends JPanel {
     // Theme manager from gui package
     private final Themes themes = new Themes();
 
+    /**
+     * Constructs the main messaging UI layout.
+     */
     public MainView() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 

@@ -1,13 +1,25 @@
 package view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Popup dialog shown when the "Add File" button is clicked.
  */
 public class AddFileView extends JDialog {
 
+    /**
+     * Creates the Add File popup dialog.
+     */
     public AddFileView(Frame owner) {
         super(owner, "Add File", true);
 
