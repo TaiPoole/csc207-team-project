@@ -14,4 +14,6 @@ public interface Message {
     String getContent();
 
     LocalDateTime getTimestamp();
+
+    Attachment getAttachment();
 }

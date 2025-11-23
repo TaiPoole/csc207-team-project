@@ -1,6 +1,7 @@
 package gui;
 
 import client.Client;
+import client.receivemessage.*;
 import client.sendmessage.*;
 
 import javax.swing.*;
@@ -20,7 +21,20 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(final String[] args) {
-        Client client = new Client("test-user", "localhost", (System.out::println));
+
+        // moved messageModel initialisation to the top for the ReceiveMessage
+        DefaultListModel<String> messageModel = new DefaultListModel<>();
+
+        ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(messageModel);
+        ReceiveMessageInputBoundary receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
+
+        Client client = new Client("test-user", "localhost", (message -> {
+            if (message != null) {
+                ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
+                receiveInteractor.execute(inputData);
+            }
+        }));
+
         try {
             client.connect();
             client.sendMessage("test");
@@ -111,7 +125,7 @@ public class GUI {
             leftBox.add(Box.createVerticalStrut(8));
 
             // messageScroll // IDK how the messages would be displayed so I just make it a Scroll-like right now.
-            DefaultListModel<String> messageModel = new DefaultListModel<>();
+            // moved messageModel initialisation to the top for the ReceiveMessage
             messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
             JList<String> messageList = new JList<>(messageModel);
             JScrollPane messageScroll = new JScrollPane(messageList);
@@ -152,17 +166,17 @@ public class GUI {
             SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
             SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
             SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
-            String message = messageField.getText().trim();
             sendButton.addActionListener(e -> {
+                String message = messageField.getText().trim();
                 sendMessageController.sendMessage(message);
                 messageField.setText("");
             });
 
             // Allow Enter key to send message
             messageField.addActionListener(e -> {
-                String messageText = messageField.getText().trim();
-                if (!messageText.isEmpty()) {
-                    sendMessageController.sendMessage(messageText);
+                String message = messageField.getText().trim();
+                if (!message.isEmpty()) {
+                    sendMessageController.sendMessage(message);
                     messageField.setText("");
                 }
             });

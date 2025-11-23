@@ -43,4 +43,8 @@ public class TextMessage implements Message {
         return timestamp;
     }
 
+    public Attachment getAttachment() {
+        return null;
+    }
+
 }
