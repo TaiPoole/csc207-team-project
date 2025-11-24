@@ -110,38 +110,12 @@ public class Server {
                             System.out.println("User registered: " + username);
                         }
 
-                        if (message instanceof common.CreateChannelMessage) {
-                            common.CreateChannelMessage cmsg = (common.CreateChannelMessage) message;
+                        //Handle server-side logic based on message type
+                        switch (message.getClass().getSimpleName()) {
 
-                            String name = cmsg.getChannelName();
-
-                            synchronized (channels) {
-                                boolean exists = channels.stream()
-                                        .anyMatch(ch -> ch.getId().equals(name));
-                                if (exists) {
-                                    // Send FAILURE
-                                    sendToClient(clientChannel,
-                                            new ChannelCreationErrorMessage(
-                                                    cmsg.getUsername(),
-                                                    "Channel '" + name + "' already exists."
-                                            )
-                                    );
-                                } else {
-                                    // Create channel
-                                    common.Channel newChannel = new common.Channel(name);
-                                    addChannel(newChannel);
-
-                                    // Send SUCCESS
-                                    sendToClient(clientChannel,
-                                            new ChannelCreationSuccessMessage(
-                                                    cmsg.getUsername(),
-                                                    name
-                                            )
-                                    );
-                                }
-                            }
-
-                            continue;
+                            case "CreateChannelMessage":
+                                handleCreateChannel(clientChannel, (CreateChannelMessage) message);
+                                continue; // Do NOT broadcast system messages
                         }
 
                         // Broadcast to all other clients
@@ -201,6 +175,44 @@ public class Server {
             return null;
         }
     }
+
+    /**
+     * Handles the logic for creating a new channel on the server.
+     * Checks if the channel already exists, adds it if not, and sends
+     * the appropriate success or error response back to the client.
+     *
+     * @param clientChannel The channel of the requesting client
+     * @param message       The received CreateChannelMessage
+     */
+    private void handleCreateChannel(SocketChannel clientChannel, CreateChannelMessage message) throws IOException {
+        String name = message.getChannelName();
+
+        synchronized (channels) {
+            boolean exists = channels.stream()
+                    .anyMatch(ch -> ch.getId().equals(name));
+
+            if (exists) {
+                // Send FAILED response
+                sendToClient(clientChannel,
+                        new ChannelCreationErrorMessage(
+                                message.getUsername(),
+                                "Channel '" + name + "' already exists."
+                        ));
+            } else {
+                // Create new channel
+                common.Channel newChannel = new common.Channel(name);
+                addChannel(newChannel);
+
+                // Send SUCCESS response
+                sendToClient(clientChannel,
+                        new ChannelCreationSuccessMessage(
+                                message.getUsername(),
+                                name
+                        ));
+            }
+        }
+    }
+
 
     /**
      * Broadcast a message to all connected clients except the sender

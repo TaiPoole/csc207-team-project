@@ -3,13 +3,16 @@ package gui;
 import client.Client;
 import client.receivemessage.*;
 import client.sendmessage.*;
+import common.Message;
 import common.RandomNameGenerator;
+import common.ChannelCreationLogic;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+
 
 public class GUI {
 
@@ -45,40 +48,7 @@ public class GUI {
             if (message == null) {
                 return;
             }
-            // channel creation SUCCESS
-            if (message instanceof common.ChannelCreationSuccessMessage) {
-                common.ChannelCreationSuccessMessage success =
-                        (common.ChannelCreationSuccessMessage) message;
-
-                SwingUtilities.invokeLater(() -> {
-                    AddChannelDialog.closeIfOpen();
-
-                    JOptionPane.showMessageDialog(
-                            frame,
-                            "Channel created: " + success.getChannelName(),
-                            "Channel Created",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-
-                });
-                return;
-            }
-
-            // channel creation FAILURE
-            if (message instanceof common.ChannelCreationErrorMessage) {
-                common.ChannelCreationErrorMessage error =
-                        (common.ChannelCreationErrorMessage) message;
-
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(
-                            frame,
-                            "Failed to create channel: " + error.getContent(),
-                            "Channel Creation Failed",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                });
-                return;
-            }
+            if (ChannelCreationLogic.clientLogic(message, frame)) return;
 
             ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
             receiveInteractor.execute(inputData);
@@ -149,8 +119,7 @@ public class GUI {
             channelManagePanel.setPreferredSize(new Dimension(800, 80));
             channelManagePanel.setLayout(new BorderLayout(5, 5));
             channelManagePanel.setBorder(borderBox());
-            //don't really need this since both add channel
-            // and manage permission has channel name in the dialog
+
             //channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
 
             AddChannelButton plusButton = new AddChannelButton(frame, client);
