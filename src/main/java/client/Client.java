@@ -14,9 +14,9 @@ import java.util.function.Consumer;
 /**
  * Client that communicates with server - sends and receives Message.
  */
-public final class Client {
+public class Client {
     private static final int PORT = 8080;
-    private final String username;
+    private String username;
     private SocketChannel channel;
     private final String serverAddress;
     private Boolean connected; // connected to server?
@@ -126,5 +126,9 @@ public final class Client {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
