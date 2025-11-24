@@ -48,7 +48,7 @@ public class Client {
     }
 
     private void listen() {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
 
         while (connected && channel != null && channel.isOpen()) {
             try {

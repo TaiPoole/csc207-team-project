@@ -69,7 +69,7 @@ public class Server {
     }
 
     private void handleClient(SocketChannel clientChannel, String clientAddress) {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         User user = null;
 
         try {
@@ -85,7 +85,6 @@ public class Server {
                 if (bytesRead > 0) {
                     buffer.flip();
                     String receivedData = StandardCharsets.UTF_8.decode(buffer).toString();
-
                     String[] parts = receivedData.split("\n", 2);
 
                     if (parts.length < 2) {
