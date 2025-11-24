@@ -1,7 +1,7 @@
 package common;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Base64;
 
 public class AttachmentMessage implements Message {
     private final String username;
@@ -17,11 +17,32 @@ public class AttachmentMessage implements Message {
     }
 
     public String serialize() {
-        return this.username + "\n" + this.timestamp + "\n" + this.content + "\n" + this.attachment.getName() + "\n" + Arrays.toString(this.attachment.getAttachment());
+        String encodedBytes = Base64.getEncoder().encodeToString(this.attachment.getAttachment());
+        return this.username + "\n"
+                + this.timestamp + "\n"
+                + this.content + "\n"
+                + this.attachment.getName() + "\n"
+                + encodedBytes;
     }
 
     public static Message deserialize(String message) {
-        return new AttachmentMessage("test", message, LocalDateTime.now(), null);
+        String[] parts = message.split("\n", 5);
+
+        if (parts.length < 5) {
+            throw new IllegalArgumentException("Invalid AttachmentMessage format");
+        }
+
+        String username = parts[0];
+        LocalDateTime timestamp = LocalDateTime.parse(parts[1]);
+        String content = parts[2];
+        String fileName = parts[3];
+
+        // Decode the Base64 encoded bytes
+        byte[] fileBytes = Base64.getDecoder().decode(parts[4]);
+
+        Attachment attachment = new Attachment(fileName, fileBytes);
+
+        return new AttachmentMessage(username, content, timestamp, attachment);
     }
 
     public String getUsername() {
@@ -39,5 +60,4 @@ public class AttachmentMessage implements Message {
     public Attachment getAttachment() {
         return attachment;
     }
-
 }
