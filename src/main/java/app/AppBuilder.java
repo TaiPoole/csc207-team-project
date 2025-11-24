@@ -1,6 +1,8 @@
 
 package app;
 
+import client.Client;
+import common.RandomNameGenerator;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import view.MainView;
@@ -13,19 +15,27 @@ public class AppBuilder {
     private final JFrame frame;
     private MainView mainView;
 
+    private final Client client;
+    private final RandomNameGenerator nameGenerator;
+
     /**
      * Creates a new AppBuilder with a default application frame.
      */
     public AppBuilder() {
         this.frame = new JFrame("The really cool messaging service");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.nameGenerator = new RandomNameGenerator();
+        this.client = new Client("", "localhost", message -> {
+            System.out.println(message.getUsername() + ": " + message.getContent());
+        }
+        );
     }
 
     /**
      * Adds the MainView to the application frame.
      */
     public AppBuilder addMainView() {
-        this.mainView = new MainView();
+        this.mainView = new MainView(client, nameGenerator);
 
         this.frame.setContentPane(mainView);
 

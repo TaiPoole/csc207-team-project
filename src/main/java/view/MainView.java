@@ -1,5 +1,7 @@
 package view;
 
+import client.Client;
+import common.RandomNameGenerator;
 import gui.PermissionsDialog;
 import gui.Themes;
 import java.awt.BorderLayout;
@@ -26,6 +28,9 @@ import javax.swing.border.EmptyBorder;
  */
 public class MainView extends JPanel {
 
+    private  final Client client;
+    private final RandomNameGenerator nameGenerator;
+
     // ListModels
     private final DefaultListModel<String> channelModel = new DefaultListModel<>();
     private final DefaultListModel<String> messageModel = new DefaultListModel<>();
@@ -46,7 +51,9 @@ public class MainView extends JPanel {
     /**
      * Constructs the main messaging UI layout.
      */
-    public MainView() {
+    public MainView(Client client, RandomNameGenerator nameGenerator) {
+        this.client = client;
+        this.nameGenerator = nameGenerator;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JPanel leftBox = buildLeftPane();
@@ -61,6 +68,14 @@ public class MainView extends JPanel {
         channelModel.addElement("# this is a channel as well");
         channelModel.addElement("# ok another channel");
         messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
+
+        // Initialize username from client, or generate one if empty
+        String currentName = client.getUsername();
+        if (currentName == null || currentName.isEmpty()) {
+            currentName = nameGenerator.generate();
+            client.setUsername(currentName);
+        }
+        usernameField.setText(currentName);
 
         themes.theme.applyPalette(this);
         themeButton.setText(themes.theme.getClass().getName().substring(4));
@@ -131,10 +146,18 @@ public class MainView extends JPanel {
         settingsPanel.setLayout(new BorderLayout(5, 5));
         settingsPanel.setBorder(borderBox());
         settingsPanel.add(usernameField, BorderLayout.WEST);
-        settingsPanel.add(new JButton("New"), BorderLayout.CENTER);
+        JButton newButton = new JButton("New");
+        settingsPanel.add(newButton, BorderLayout.CENTER);
         settingsPanel.add(themeButton, BorderLayout.EAST);
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
+
+        // Random name generation
+        newButton.addActionListener(e -> {
+            String newName = nameGenerator.generate();
+            client.setUsername(newName);
+            usernameField.setText(newName);
+        });
 
         // themeButton
         themeButton.addActionListener(e -> {

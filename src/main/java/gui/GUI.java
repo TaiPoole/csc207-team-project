@@ -2,6 +2,7 @@ package gui;
 
 import client.Client;
 import client.sendmessage.*;
+import common.RandomNameGenerator;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -20,7 +21,10 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(final String[] args) {
-        Client client = new Client("test-user", "localhost", (System.out::println));
+        RandomNameGenerator nameGenerator = new RandomNameGenerator();
+        String initialName = nameGenerator.generate();
+
+        Client client = new Client(initialName, "localhost", (System.out::println));
         try {
             client.connect();
             client.sendMessage("test");
@@ -49,8 +53,10 @@ public class GUI {
             settingsPanel.setPreferredSize(new Dimension(800, 80));
             settingsPanel.setLayout(new BorderLayout(5, 5));
             settingsPanel.setBorder(borderBox());
-            settingsPanel.add(new JTextField("User Name"), BorderLayout.WEST);
-            settingsPanel.add(new JButton("New"), BorderLayout.CENTER);
+            JTextField usernameField = new JTextField(initialName);
+            settingsPanel.add(usernameField, BorderLayout.WEST);
+            JButton newButton = new JButton("New");
+            settingsPanel.add(newButton, BorderLayout.CENTER);
             JButton themeButton = new JButton("Dark");
             settingsPanel.add(themeButton, BorderLayout.EAST);
             rightBox.add(settingsPanel);
@@ -148,6 +154,11 @@ public class GUI {
                 theme.theme.applyPalette(mainPanel);
             });
 
+            newButton.addActionListener(e -> {
+                String newName = nameGenerator.generate();
+                client.setUsername(newName);       // update local identity
+                usernameField.setText(newName);    // reflect in UI
+            });
             // Send message listener
             SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
             SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
