@@ -8,6 +8,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -141,14 +144,28 @@ public class MainView extends JPanel {
         rightBox.setPreferredSize(new Dimension(400, 800));
 
         // settingsPanel
-        JPanel settingsPanel = new JPanel();
+        JPanel settingsPanel = new JPanel(new GridBagLayout());
         settingsPanel.setPreferredSize(new Dimension(800, 80));
-        settingsPanel.setLayout(new BorderLayout(5, 5));
         settingsPanel.setBorder(borderBox());
-        settingsPanel.add(usernameField, BorderLayout.WEST);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 5, 0, 5);
+        gbc.weighty = 1.0;
+        // usernameField - 50%
+        gbc.gridx = 0;
+        gbc.weightx = 0.5;
+        settingsPanel.add(usernameField, gbc);
+        // newButton - 20%
         JButton newButton = new JButton("New");
-        settingsPanel.add(newButton, BorderLayout.CENTER);
-        settingsPanel.add(themeButton, BorderLayout.EAST);
+        gbc.gridx = 1;
+        gbc.weightx = 0.2;
+        settingsPanel.add(newButton, gbc);
+        // themeButton - 30%
+        gbc.gridx = 2;
+        gbc.weightx = 0.3;
+        settingsPanel.add(themeButton, gbc);
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
