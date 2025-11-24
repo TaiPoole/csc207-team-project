@@ -3,11 +3,10 @@ package client.sendmessage;
 import client.Client;
 import common.Attachment;
 import common.Message;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class SendMessageInteractorTest {
@@ -37,8 +36,8 @@ public class SendMessageInteractorTest {
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         TestClient client = new TestClient("testUser");
 
-        BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
+        byte[] testFileBytes = "test file content".getBytes();
+        Attachment attachment = new Attachment("test.txt", testFileBytes);
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
         SendMessageInputData inputData = new SendMessageInputData("test-message", attachment);
 
@@ -109,8 +108,8 @@ public class SendMessageInteractorTest {
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
+        byte[] testFileBytes = "test file content".getBytes();
+        Attachment attachment = new Attachment("testfile.txt", testFileBytes);
         SendMessageInputData inputData = new SendMessageInputData("Hello World", attachment);
 
         interactor.execute(inputData);
@@ -139,8 +138,8 @@ public class SendMessageInteractorTest {
     @Test
     public void testInputDataWithAttachmentHasAttachment() {
 
-        BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
+        byte[] testFileBytes = "test file content".getBytes();
+        Attachment attachment = new Attachment("testfile.txt", testFileBytes);
         SendMessageInputData inputData = new SendMessageInputData("Test message", attachment);
 
         assertTrue(inputData.hasAttachment());
