@@ -3,6 +3,9 @@ package common;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
+/**
+ * A message with an attached file; file is base64 encoded.
+ */
 public class AttachmentMessage implements Message {
     private final String username;
     private final String content;
@@ -37,9 +40,7 @@ public class AttachmentMessage implements Message {
         String content = parts[2];
         String fileName = parts[3];
 
-        // Decode the Base64 encoded bytes
         byte[] fileBytes = Base64.getDecoder().decode(parts[4]);
-
         Attachment attachment = new Attachment(fileName, fileBytes);
 
         return new AttachmentMessage(username, content, timestamp, attachment);
@@ -55,9 +56,5 @@ public class AttachmentMessage implements Message {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
-    }
-
-    public Attachment getAttachment() {
-        return attachment;
     }
 }
