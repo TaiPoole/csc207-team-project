@@ -21,9 +21,16 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
 
             messageModel.addElement(formattedMessage);
 
+            // bodge; should be fixed at some point to display something other than string and check instanceof instead
             if (outputData.getAttachment() != null) {
                 Attachment attachment = outputData.getAttachment();
-                // TODO: handle attachments
+                String fileMessage = String.format("[%s] %s: %s | %s",
+                        outputData.getTimestamp(),
+                        outputData.getSender(),
+                        outputData.getContent(),
+                        attachment.getName()
+                );
+                messageModel.addElement(fileMessage);
             }
         });
 

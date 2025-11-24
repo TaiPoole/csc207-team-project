@@ -1,8 +1,8 @@
 package client;
 
+import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -23,6 +23,11 @@ public class Client {
 
     private final Consumer<Message> messageCallback;
 
+    /**
+     * Create a client for serverAddress.
+     *
+     * @param callback Function callback for received messages.
+     */
     public Client(String username, String serverAddress, Consumer<Message> callback) {
         this.username = username;
         this.serverAddress = serverAddress;
@@ -48,7 +53,7 @@ public class Client {
     }
 
     private void listen() {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
 
         while (connected && channel != null && channel.isOpen()) {
             try {
@@ -62,8 +67,8 @@ public class Client {
 
                 if (bytesRead > 0) {
                     buffer.flip();
-                    String s_message = StandardCharsets.UTF_8.decode(buffer).toString();
-                    String[] parts = s_message.split("\n", 2);
+                    String serialized = StandardCharsets.UTF_8.decode(buffer).toString();
+                    String[] parts = serialized.split("\n", 2);
 
                     if (parts.length < 2) {
                         throw new IllegalArgumentException("Invalid format");
@@ -100,6 +105,8 @@ public class Client {
             switch (simpleClassName) {
                 case "textMessage":
                     return TextMessage.deserialize(serializedData);
+                case "AttachmentMessage":
+                    return AttachmentMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;
@@ -110,10 +117,20 @@ public class Client {
         }
     }
 
+    /**
+     * Send a TextMessage to the connected server.
+     *
+     * @throws IOException Fails to connect to server.
+     */
     public void sendMessage(String message) throws IOException {
         sendMessage(new TextMessage(username, message, LocalDateTime.now()));
     }
 
+    /**
+     * Send a Message to the connected server.
+     *
+     * @throws IOException Fails to connect to server.
+     */
     public void sendMessage(Message message) throws IOException {
         if (!connected || channel == null) {
             throw new IllegalStateException("Not connected to server");

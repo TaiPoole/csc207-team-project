@@ -1,5 +1,6 @@
 package server;
 
+import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
 
@@ -68,7 +69,7 @@ public class Server {
     }
 
     private void handleClient(SocketChannel clientChannel, String clientAddress) {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         User user = null;
 
         try {
@@ -84,8 +85,6 @@ public class Server {
                 if (bytesRead > 0) {
                     buffer.flip();
                     String receivedData = StandardCharsets.UTF_8.decode(buffer).toString();
-
-                    // Parse the message: className\nserializedData
                     String[] parts = receivedData.split("\n", 2);
 
                     if (parts.length < 2) {
@@ -146,11 +145,11 @@ public class Server {
             // Remove "class " prefix if present
             simpleClassName = simpleClassName.replace("class ", "");
 
-            // Handle known message types
             switch (simpleClassName) {
                 case "TextMessage":
                     return TextMessage.deserialize(serializedData);
-                // Add other message types here as needed
+                case "AttachmentMessage":
+                    return AttachmentMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;

@@ -10,7 +10,6 @@ public class SendMessageInputData {
 
     public SendMessageInputData(String messageContent, Attachment attachment) {
         this.messageContent = messageContent;
-        //this.channelId = channelId;
         this.attachment = attachment;
     }
 

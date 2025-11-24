@@ -1,15 +1,25 @@
 package common;
 
-import java.awt.image.BufferedImage;
-
+/**
+ * A file Attachment to a message.
+ */
 public final class Attachment {
-    private final BufferedImage image;
+    private final String name;
+    private final byte[] file;
 
-    public Attachment(BufferedImage image) {
-        this.image = image;
+    /**
+     * Create an Attachment.
+     */
+    public Attachment(String name, byte[] file) {
+        this.name = name;
+        this.file = file;
     }
 
-    public BufferedImage getImage() {
-        return image;
+    public byte[] getAttachment() {
+        return file;
+    }
+
+    public String getName() {
+        return name;
     }
 }

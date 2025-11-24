@@ -2,9 +2,9 @@ package client;
 
 import common.Message;
 import common.TextMessage;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientTest {
     private static final int TEST_PORT = 8080;
@@ -29,13 +29,13 @@ public class ClientTest {
     private Consumer<Message> callback;
     private ServerSocketChannel mockServer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         receivedMessages = new ArrayList<>();
         callback = message -> receivedMessages.add(message);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         if (mockServer != null && mockServer.isOpen()) {
             mockServer.close();
@@ -45,8 +45,8 @@ public class ClientTest {
     @Test
     public void testClientConstructor() {
         client = new Client(TEST_USERNAME, TEST_SERVER, callback);
-        assertNotNull("Client should be created", client);
-        assertEquals("Username should match", TEST_USERNAME, client.getUsername());
+        assertNotNull(client, "Client should be created");
+        assertEquals(TEST_USERNAME, client.getUsername(), "Username should match");
     }
 
     @Test
@@ -75,13 +75,12 @@ public class ClientTest {
             Thread.sleep(10);
         }
 
-        assertNotNull("Server should accept connection", serverChannel);
+        assertNotNull(serverChannel, "Server should accept connection");
         connectThread.join(1000);
-
         serverChannel.close();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testConnectWhenAlreadyConnected() throws IOException, InterruptedException {
         mockServer = ServerSocketChannel.open();
         mockServer.bind(new InetSocketAddress(TEST_PORT));
@@ -104,6 +103,7 @@ public class ClientTest {
             serverChannel = mockServer.accept();
             Thread.sleep(10);
         }
+
         connectThread.join(1000);
 
         if (serverChannel != null) {
@@ -111,19 +111,19 @@ public class ClientTest {
         }
 
         // Try to connect again - should throw IllegalStateException
-        client.connect();
+        assertThrows(IllegalStateException.class, () -> client.connect());
     }
 
-    @Test(expected = java.nio.channels.UnresolvedAddressException.class)
-    public void testConnectWithInvalidAddress() throws IOException {
+    @Test
+    public void testConnectWithInvalidAddress() {
         client = new Client(TEST_USERNAME, "invalid.host.nowhere", callback);
-        client.connect();
+        assertThrows(java.nio.channels.UnresolvedAddressException.class, () -> client.connect());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testSendMessageWithoutConnection() throws IOException {
+    @Test
+    public void testSendMessageWithoutConnection() {
         client = new Client(TEST_USERNAME, TEST_SERVER, callback);
-        client.sendMessage("Test");
+        assertThrows(IllegalStateException.class, () -> client.sendMessage("Test"));
     }
 
     @Test
@@ -149,9 +149,9 @@ public class ClientTest {
             serverChannel = mockServer.accept();
             Thread.sleep(10);
         }
-        connectThread.join(1000);
 
-        assertNotNull("Server should accept connection", serverChannel);
+        connectThread.join(1000);
+        assertNotNull(serverChannel, "Server should accept connection");
         serverChannel.configureBlocking(false);
 
         String testMessage = "Hello Server";
@@ -159,14 +159,13 @@ public class ClientTest {
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         Thread.sleep(100);
-
         int bytesRead = serverChannel.read(buffer);
-        assertTrue("Server should receive data", bytesRead > 0);
 
+        assertTrue(bytesRead > 0, "Server should receive data");
         buffer.flip();
+
         String received = StandardCharsets.UTF_8.decode(buffer).toString();
-        assertTrue("Message should contain message text",
-                received.contains(testMessage));
+        assertTrue(received.contains(testMessage), "Message should contain message text");
 
         serverChannel.close();
     }
@@ -195,9 +194,9 @@ public class ClientTest {
             serverChannel = mockServer.accept();
             Thread.sleep(10);
         }
-        connectThread.join(1000);
 
-        assertNotNull("Server should accept connection", serverChannel);
+        connectThread.join(1000);
+        assertNotNull(serverChannel, "Server should accept connection");
         serverChannel.configureBlocking(false);
 
         TextMessage message = new TextMessage(TEST_USERNAME, "Test content", LocalDateTime.now());
@@ -205,9 +204,9 @@ public class ClientTest {
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         Thread.sleep(100);
-
         int bytesRead = serverChannel.read(buffer);
-        assertTrue("Server should receive data", bytesRead > 0);
+
+        assertTrue(bytesRead > 0, "Server should receive data");
 
         serverChannel.close();
     }
@@ -236,9 +235,9 @@ public class ClientTest {
             serverChannel = mockServer.accept();
             Thread.sleep(10);
         }
-        connectThread.join(1000);
 
-        assertNotNull("Server should accept connection", serverChannel);
+        connectThread.join(1000);
+        assertNotNull(serverChannel, "Server should accept connection");
 
         String className = "Common.textMessage";
         TextMessage testMsg = new TextMessage("server", "Test message from server", LocalDateTime.now());
@@ -252,9 +251,9 @@ public class ClientTest {
         Thread.sleep(500);
 
         boolean messageReceived = receivedMessages.stream()
-                .anyMatch(m -> m instanceof TextMessage &&
-                        m.getContent().contains("Test message from server"));
-        assertTrue("Client should receive message from server", messageReceived);
+                .anyMatch(m -> m instanceof TextMessage && m.getContent().contains("Test message from server"));
+
+        assertTrue(messageReceived, "Client should receive message from server");
 
         serverChannel.close();
     }
@@ -283,13 +282,14 @@ public class ClientTest {
             serverChannel = mockServer.accept();
             Thread.sleep(10);
         }
-        connectThread.join(1000);
 
-        assertNotNull("Server should accept connection", serverChannel);
+        connectThread.join(1000);
+        assertNotNull(serverChannel, "Server should accept connection");
+
         Thread.sleep(100);
         serverChannel.close();
-
         Thread.sleep(500);
-        assertTrue("Test completed successfully", true);
+
+        assertTrue(true, "Test completed successfully");
     }
 }
