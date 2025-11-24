@@ -129,10 +129,26 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800, 200));
             sendPanel.setBorder(borderBox());
-            JButton sendButton = new JButton("Send");
+
+            JPanel messageBox = new JPanel();
+            messageBox.setLayout(new BoxLayout(messageBox, BoxLayout.Y_AXIS));
             JTextField messageField = new JTextField();
-            sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
-            sendPanel.add(messageField, BorderLayout.CENTER);
+
+            messageBox.add(messageField);
+            JPanel fileDisplayPanel = new JPanel();
+
+            fileDisplayPanel.setLayout(new BoxLayout(fileDisplayPanel, BoxLayout.Y_AXIS));
+            messageBox.add(fileDisplayPanel);
+
+            JButton addFileButton = new JButton("Add File");
+            JButton sendButton = new JButton("Send");
+
+            // File selection functionality using separate listener class
+            PickFileListener filePicker = new PickFileListener(frame, fileDisplayPanel, client);
+            addFileButton.addActionListener(filePicker);
+
+            sendPanel.add(addFileButton, BorderLayout.WEST);
+            sendPanel.add(messageBox, BorderLayout.CENTER);
             sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
