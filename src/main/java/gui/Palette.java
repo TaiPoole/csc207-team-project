@@ -1,16 +1,15 @@
-package GUI;
+package gui;
 
 import javax.swing.*;
 import java.awt.*;
 
-//Holds colour information
+// Holds colour information
 public abstract class Palette {
     public Color mainBg;
     public Color panelBg;
     public Color text;
     public Color buttonBg;
     public Color buttonText;
-
 
     // applies a palette recursively, using the themes set by the abstract
     public void applyPalette(Component c) {
@@ -36,7 +35,7 @@ public abstract class Palette {
                 c.setForeground(this.text);
                 break;
         }
-        if  (c instanceof JComponent) {
+        if (c instanceof JComponent) {
             for (Component child : ((JComponent) c).getComponents()) {
                 applyPalette(child);
             }

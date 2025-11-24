@@ -1,16 +1,17 @@
-package Common;
+package common;
 
 import java.time.LocalDateTime;
 
-interface Message_Interface {
-
+public interface Message {
     String serialize();
+
+    static Message deserialize(String message) {
+        return null;
+    }
 
     String getUsername();
 
     String getContent();
 
     LocalDateTime getTimestamp();
-
-
 }

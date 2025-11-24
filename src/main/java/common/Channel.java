@@ -1,9 +1,9 @@
-package Common;
+package common;
+
+import client.Client;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import Client.Client;
 
 public class Channel {
     final String id;

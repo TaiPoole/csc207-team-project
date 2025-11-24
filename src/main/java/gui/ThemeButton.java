@@ -1,8 +1,8 @@
-package GUI;
-import GUI.Themes;
+package gui;
 import javax.swing.*;
+
 public class ThemeButton extends Button{
-    public ThemeButton(String s){
+    public ThemeButton(String s) {
         super(s);
     }
 

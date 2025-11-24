@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import javax.swing.*;
 // Each button will be a subclass and add an other methods/ functionality needed

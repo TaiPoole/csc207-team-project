@@ -1,10 +1,10 @@
-package Server;
+package server;
 
 import java.nio.channels.SocketChannel;
 
 public class User {
     private final String username;
-    private SocketChannel socketChannel;
+    private final SocketChannel socketChannel;
 
     public User(String username, SocketChannel socketChannel) {
         this.username = username;

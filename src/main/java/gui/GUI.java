@@ -1,15 +1,17 @@
-package GUI;
+package gui;
 
-import Client.Client;
-import Common.Message;
+import client.Client;
+import client.sendmessage.*;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class GUI {
 
-    private static Border BorderBox() {
+    private static Border borderBox() {
         return new CompoundBorder(
                 BorderFactory.createLineBorder(new Color(90, 90, 90), 1),
                 new EmptyBorder(4, 4, 4, 4)
@@ -17,8 +19,7 @@ public class GUI {
     }
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
-    public static void main(String[] args) {
-        // start client
+    public static void main(final String[] args) {
         Client client = new Client("test-user", "localhost", (System.out::println));
         try {
             client.connect();
@@ -36,6 +37,7 @@ public class GUI {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("The really cool messaging service");
 
             // Right "half" (top-bottom) : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
             JPanel rightBox = new JPanel();
@@ -44,11 +46,11 @@ public class GUI {
 
             // settingsPanel
             JPanel settingsPanel = new JPanel();
-            settingsPanel.setPreferredSize(new Dimension(800,80));
+            settingsPanel.setPreferredSize(new Dimension(800, 80));
             settingsPanel.setLayout(new BorderLayout(5, 5));
-            settingsPanel.setBorder(BorderBox());
-            settingsPanel.add(new JTextField("User Name"),  BorderLayout.WEST);
-            settingsPanel.add(new JButton("New"),  BorderLayout.CENTER);
+            settingsPanel.setBorder(borderBox());
+            settingsPanel.add(new JTextField("User Name"), BorderLayout.WEST);
+            settingsPanel.add(new JButton("New"), BorderLayout.CENTER);
             JButton themeButton = new JButton("Dark");
             settingsPanel.add(themeButton, BorderLayout.EAST);
             rightBox.add(settingsPanel);
@@ -56,11 +58,11 @@ public class GUI {
 
             // channelSearchPanel
             JPanel channelSearchPanel = new JPanel();
-            channelSearchPanel.setPreferredSize(new Dimension(800,80));
+            channelSearchPanel.setPreferredSize(new Dimension(800, 80));
             channelSearchPanel.setLayout(new BorderLayout(5, 5));
-            channelSearchPanel.setBorder(BorderBox());
+            channelSearchPanel.setBorder(borderBox());
             channelSearchPanel.add(new JTextField("Channel ID:"), BorderLayout.CENTER);
-            channelSearchPanel.add(new JButton("Join") ,BorderLayout.EAST);
+            channelSearchPanel.add(new JButton("Join"), BorderLayout.EAST);
             rightBox.add(channelSearchPanel);
             rightBox.add(Box.createVerticalStrut(8));
 
@@ -71,19 +73,26 @@ public class GUI {
             channelModel.addElement("# ok another channel");
             JList<String> channelList = new JList<>(channelModel);
             JScrollPane channelListScroll = new JScrollPane(channelList);
-            channelListScroll.setPreferredSize(new Dimension(800,540));
-            channelListScroll.setBorder(BorderBox());
+            channelListScroll.setPreferredSize(new Dimension(800, 540));
+            channelListScroll.setBorder(borderBox());
             rightBox.add(channelListScroll);
             rightBox.add(Box.createVerticalStrut(8));
 
             // channelManagePanel
             JPanel channelManagePanel = new JPanel();
-            channelManagePanel.setPreferredSize(new Dimension(800,80));
+            channelManagePanel.setPreferredSize(new Dimension(800, 80));
             channelManagePanel.setLayout(new BorderLayout(5, 5));
-            channelManagePanel.setBorder(BorderBox());
+            channelManagePanel.setBorder(borderBox());
             channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
             channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
-            channelManagePanel.add(new JButton("Manage"), BorderLayout.EAST);
+
+            JButton permsButton = new JButton("Manage");
+            permsButton.addActionListener(e -> {
+                PermissionsDialog dialog = new PermissionsDialog(frame);
+                dialog.setVisible(true);
+            });
+            channelManagePanel.add(permsButton, BorderLayout.EAST);
+
             rightBox.add(channelManagePanel);
             rightBox.add(Box.createVerticalStrut(8));
 
@@ -94,10 +103,10 @@ public class GUI {
 
             // searchPanel
             JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
-            searchPanel.setPreferredSize(new Dimension(800,80));
-            searchPanel.setBorder(BorderBox());
-            searchPanel.add(new JTextField("Search:"),  BorderLayout.CENTER);
-            searchPanel.add(new JButton("Go"),   BorderLayout.EAST);
+            searchPanel.setPreferredSize(new Dimension(800, 80));
+            searchPanel.setBorder(borderBox());
+            searchPanel.add(new JTextField("Search:"), BorderLayout.CENTER);
+            searchPanel.add(new JButton("Go"), BorderLayout.EAST);
             leftBox.add(searchPanel);
             leftBox.add(Box.createVerticalStrut(8));
 
@@ -106,18 +115,20 @@ public class GUI {
             messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
             JList<String> messageList = new JList<>(messageModel);
             JScrollPane messageScroll = new JScrollPane(messageList);
-            messageScroll.setPreferredSize(new Dimension(800,520));
-            messageScroll.setBorder(BorderBox());
+            messageScroll.setPreferredSize(new Dimension(800, 520));
+            messageScroll.setBorder(borderBox());
             leftBox.add(messageScroll);
             leftBox.add(Box.createVerticalStrut(8));
 
             // sendPanel
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
-            sendPanel.setPreferredSize(new Dimension(800,200));
-            sendPanel.setBorder(BorderBox());
+            sendPanel.setPreferredSize(new Dimension(800, 200));
+            sendPanel.setBorder(borderBox());
+            JButton sendButton = new JButton("Send");
+            JTextField messageField = new JTextField();
             sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
-            sendPanel.add(new JTextField("Type your message here..."),    BorderLayout.CENTER);
-            sendPanel.add(new JButton("Send"), BorderLayout.EAST);
+            sendPanel.add(messageField, BorderLayout.CENTER);
+            sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
             //Main Panel
@@ -137,9 +148,27 @@ public class GUI {
                 theme.theme.applyPalette(mainPanel);
             });
 
+            // Send message listener
+            SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
+            SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
+            SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
+            String message = messageField.getText().trim();
+            sendButton.addActionListener(e -> {
+                sendMessageController.sendMessage(message);
+                messageField.setText("");
+            });
+
+            // Allow Enter key to send message
+            messageField.addActionListener(e -> {
+                String messageText = messageField.getText().trim();
+                if (!messageText.isEmpty()) {
+                    sendMessageController.sendMessage(messageText);
+                    messageField.setText("");
+                }
+            });
+
             // Main Frame
             //TODO please don't let this be the final name
-            JFrame frame = new JFrame("The really cool messaging service");
             frame.setContentPane(mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
