@@ -23,6 +23,8 @@ public class GUI {
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(final String[] args) {
 
+        JFrame frame = new JFrame("The really cool messaging service");
+
         RandomNameGenerator nameGenerator = new RandomNameGenerator();
         String initialName = "User";
       
@@ -32,13 +34,57 @@ public class GUI {
         ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(messageModel);
         ReceiveMessageInputBoundary receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
 
-        Client client = new Client(initialName, "localhost", (message -> {
-            if (message != null) {
-                ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
-                receiveInteractor.execute(inputData);
+//        Client client = new Client(initialName, "localhost", (message -> {
+//            if (message != null) {
+//                ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
+//                receiveInteractor.execute(inputData);
+//            }
+//        }));
+
+        Client client = new Client(initialName, "localhost", message -> {
+            if (message == null) {
+                return;
             }
-        }));
-      
+            // channel creation SUCCESS
+            if (message instanceof common.ChannelCreationSuccessMessage) {
+                common.ChannelCreationSuccessMessage success =
+                        (common.ChannelCreationSuccessMessage) message;
+
+                SwingUtilities.invokeLater(() -> {
+                    AddChannelDialog.closeIfOpen();
+
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "Channel created: " + success.getChannelName(),
+                            "Channel Created",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+
+                });
+                return;
+            }
+
+            // channel creation FAILURE
+            if (message instanceof common.ChannelCreationErrorMessage) {
+                common.ChannelCreationErrorMessage error =
+                        (common.ChannelCreationErrorMessage) message;
+
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "Failed to create channel: " + error.getContent(),
+                            "Channel Creation Failed",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                });
+                return;
+            }
+
+            ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
+            receiveInteractor.execute(inputData);
+        });
+
+
         try {
             client.connect();
             client.sendMessage("test");
@@ -55,7 +101,7 @@ public class GUI {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("The really cool messaging service");
+            //JFrame frame = new JFrame("The really cool messaging service");
 
             // Right "half" (top-bottom) : settingsPanel, channelSearchPanel, channelListScroll, channelManagePanel
             JPanel rightBox = new JPanel();
@@ -103,8 +149,13 @@ public class GUI {
             channelManagePanel.setPreferredSize(new Dimension(800, 80));
             channelManagePanel.setLayout(new BorderLayout(5, 5));
             channelManagePanel.setBorder(borderBox());
-            channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
-            channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
+            //don't really need this since both add channel
+            // and manage permission has channel name in the dialog
+            //channelManagePanel.add(new JTextField("Name:"), BorderLayout.CENTER);
+
+            AddChannelButton plusButton = new AddChannelButton(frame, client);
+            channelManagePanel.add(plusButton);
+
 
             JButton permsButton = new JButton("Manage");
             permsButton.addActionListener(e -> {

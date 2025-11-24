@@ -15,4 +15,8 @@ public class Channel {
         clients = new ArrayList<>();
         messages = new ArrayList<>();
     }
+
+    public String getId() {
+        return id;
+    }
 }

@@ -1,7 +1,6 @@
 package server;
 
-import common.Message;
-import common.TextMessage;
+import common.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -111,6 +110,40 @@ public class Server {
                             System.out.println("User registered: " + username);
                         }
 
+                        if (message instanceof common.CreateChannelMessage) {
+                            common.CreateChannelMessage cmsg = (common.CreateChannelMessage) message;
+
+                            String name = cmsg.getChannelName();
+
+                            synchronized (channels) {
+                                boolean exists = channels.stream()
+                                        .anyMatch(ch -> ch.getId().equals(name));
+                                if (exists) {
+                                    // Send FAILURE
+                                    sendToClient(clientChannel,
+                                            new ChannelCreationErrorMessage(
+                                                    cmsg.getUsername(),
+                                                    "Channel '" + name + "' already exists."
+                                            )
+                                    );
+                                } else {
+                                    // Create channel
+                                    common.Channel newChannel = new common.Channel(name);
+                                    addChannel(newChannel);
+
+                                    // Send SUCCESS
+                                    sendToClient(clientChannel,
+                                            new ChannelCreationSuccessMessage(
+                                                    cmsg.getUsername(),
+                                                    name
+                                            )
+                                    );
+                                }
+                            }
+
+                            continue;
+                        }
+
                         // Broadcast to all other clients
                         if (user != null) {
                             broadcastMessage(message, user.getUsername());
@@ -151,6 +184,13 @@ public class Server {
                 case "TextMessage":
                     return TextMessage.deserialize(serializedData);
                 // Add other message types here as needed
+                case "CreateChannelMessage":
+                    return CreateChannelMessage.deserialize(serializedData);
+                case "ChannelCreationSuccessMessage":
+                    return ChannelCreationSuccessMessage.deserialize(serializedData);
+
+                case "ChannelCreationErrorMessage":
+                    return ChannelCreationErrorMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;
