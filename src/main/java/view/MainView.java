@@ -72,10 +72,10 @@ public class MainView extends JPanel {
         channelModel.addElement("# ok another channel");
         messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
 
-        // Initialize username from client, or generate one if empty
+        // Initialize username from client; default if somehow empty
         String currentName = client.getUsername();
         if (currentName == null || currentName.isEmpty()) {
-            currentName = nameGenerator.generate();
+            currentName = "User"; // fallback, should normally not happen
             client.setUsername(currentName);
         }
         usernameField.setText(currentName);

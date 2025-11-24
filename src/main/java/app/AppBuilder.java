@@ -22,10 +22,12 @@ public class AppBuilder {
      * Creates a new AppBuilder with a default application frame.
      */
     public AppBuilder() {
+        // TODO: PLEASE CHANGE THE NAME
         this.frame = new JFrame("The really cool messaging service");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.nameGenerator = new RandomNameGenerator();
-        this.client = new Client("", "localhost", message -> {
+        String defaultName = "User";
+        this.client = new Client(defaultName, "localhost", message -> {
             System.out.println(message.getUsername() + ": " + message.getContent());
         }
         );

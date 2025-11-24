@@ -22,8 +22,7 @@ public class GUI {
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(final String[] args) {
         RandomNameGenerator nameGenerator = new RandomNameGenerator();
-        String initialName = nameGenerator.generate();
-
+        String initialName = "User";
         Client client = new Client(initialName, "localhost", (System.out::println));
         try {
             client.connect();
