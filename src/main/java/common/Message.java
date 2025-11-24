@@ -45,4 +45,6 @@ public interface Message {
      * @return the message timestamp
      */
     LocalDateTime getTimestamp();
+
+    Attachment getAttachment();
 }

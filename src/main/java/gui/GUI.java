@@ -1,6 +1,7 @@
 package gui;
 
 import client.Client;
+import client.receivemessage.*;
 import client.sendmessage.*;
 import common.RandomNameGenerator;
 
@@ -21,9 +22,23 @@ public class GUI {
 
     //Notice about the buttons: we will have to make them their own variables since we have to add action listeners to them
     public static void main(final String[] args) {
+
         RandomNameGenerator nameGenerator = new RandomNameGenerator();
         String initialName = "User";
-        Client client = new Client(initialName, "localhost", (System.out::println));
+      
+        // moved messageModel initialisation to the top for the ReceiveMessage
+        DefaultListModel<String> messageModel = new DefaultListModel<>();
+
+        ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(messageModel);
+        ReceiveMessageInputBoundary receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
+
+        Client client = new Client(initialName, "localhost", (message -> {
+            if (message != null) {
+                ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
+                receiveInteractor.execute(inputData);
+            }
+        }));
+      
         try {
             client.connect();
             client.sendMessage("test");
@@ -116,7 +131,7 @@ public class GUI {
             leftBox.add(Box.createVerticalStrut(8));
 
             // messageScroll // IDK how the messages would be displayed so I just make it a Scroll-like right now.
-            DefaultListModel<String> messageModel = new DefaultListModel<>();
+            // moved messageModel initialisation to the top for the ReceiveMessage
             messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
             JList<String> messageList = new JList<>(messageModel);
             JScrollPane messageScroll = new JScrollPane(messageList);
@@ -129,26 +144,10 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800, 200));
             sendPanel.setBorder(borderBox());
-
-            JPanel messageBox = new JPanel();
-            messageBox.setLayout(new BoxLayout(messageBox, BoxLayout.Y_AXIS));
-            JTextField messageField = new JTextField();
-
-            messageBox.add(messageField);
-            JPanel fileDisplayPanel = new JPanel();
-
-            fileDisplayPanel.setLayout(new BoxLayout(fileDisplayPanel, BoxLayout.Y_AXIS));
-            messageBox.add(fileDisplayPanel);
-
-            JButton addFileButton = new JButton("Add File");
             JButton sendButton = new JButton("Send");
-
-            // File selection functionality using separate listener class
-            PickFileListener filePicker = new PickFileListener(frame, fileDisplayPanel);
-            addFileButton.addActionListener(filePicker);
-
-            sendPanel.add(addFileButton, BorderLayout.WEST);
-            sendPanel.add(messageBox, BorderLayout.CENTER);
+            JTextField messageField = new JTextField();
+            sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
+            sendPanel.add(messageField, BorderLayout.CENTER);
             sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
@@ -178,10 +177,20 @@ public class GUI {
             SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
             SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
             SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
-            SendButtonListener sendButtonListener = new SendButtonListener(messageField, filePicker, sendMessageController);
+            sendButton.addActionListener(e -> {
+                String message = messageField.getText().trim();
+                sendMessageController.sendMessage(message);
+                messageField.setText("");
+            });
 
-            sendButton.addActionListener(sendButtonListener);
-            messageField.addActionListener(sendButtonListener); // allow for enter button
+            // Allow Enter key to send message
+            messageField.addActionListener(e -> {
+                String message = messageField.getText().trim();
+                if (!message.isEmpty()) {
+                    sendMessageController.sendMessage(message);
+                    messageField.setText("");
+                }
+            });
 
             // Main Frame
             //TODO please don't let this be the final name
