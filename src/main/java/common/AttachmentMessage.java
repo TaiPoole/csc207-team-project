@@ -12,6 +12,9 @@ public class AttachmentMessage implements Message {
     private final LocalDateTime timestamp;
     private final Attachment attachment;
 
+    /**
+     * Create AttachmentMessage.
+     */
     public AttachmentMessage(String username, String content, LocalDateTime timestamp, Attachment attachment) {
         this.username = username;
         this.content = content;
@@ -19,6 +22,11 @@ public class AttachmentMessage implements Message {
         this.attachment = attachment;
     }
 
+    /**
+     * Serialize the Message.
+     *
+     * @return returns a serialized message.
+     */
     public String serialize() {
         String encodedBytes = Base64.getEncoder().encodeToString(this.attachment.getAttachment());
         return this.username + "\n"
@@ -28,6 +36,9 @@ public class AttachmentMessage implements Message {
                 + encodedBytes;
     }
 
+    /**
+     * Deserialize the Message.
+     */
     public static Message deserialize(String message) {
         String[] parts = message.split("\n", 5);
 

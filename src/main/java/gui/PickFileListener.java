@@ -1,21 +1,26 @@
 package gui;
 
 import common.Attachment;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import javax.swing.*;
 
+/**
+ * Open a file picker.
+ */
 public class PickFileListener implements ActionListener {
     private final JFrame parentFrame;
     private final JPanel fileDisplayPanel;
     private File selectedFile;
     private byte[] fileBytes;
 
+    /**
+     * Create a file picker listener.
+     */
     public PickFileListener(JFrame parentFrame, JPanel fileDisplayPanel) {
         this.parentFrame = parentFrame;
         this.fileDisplayPanel = fileDisplayPanel;
@@ -73,10 +78,18 @@ public class PickFileListener implements ActionListener {
         fileDisplayPanel.repaint();
     }
 
+    /**
+     * Do we have an attachment.
+     *
+     * @return True if we have an attachment.
+     */
     public boolean hasAttachment() {
         return selectedFile != null && fileBytes != null;
     }
 
+    /**
+     * Get the file attachment.
+     */
     public Attachment getAttachment() {
         if (!hasAttachment()) {
             return null;
@@ -84,6 +97,9 @@ public class PickFileListener implements ActionListener {
         return new Attachment(selectedFile.getName(), fileBytes);
     }
 
+    /**
+     * Clear the attachment.
+     */
     public void clearAttachment() {
         removeFile();
     }
