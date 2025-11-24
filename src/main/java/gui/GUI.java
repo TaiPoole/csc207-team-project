@@ -144,10 +144,26 @@ public class GUI {
             JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
             sendPanel.setPreferredSize(new Dimension(800, 200));
             sendPanel.setBorder(borderBox());
-            JButton sendButton = new JButton("Send");
+
+            JPanel messageBox = new JPanel();
+            messageBox.setLayout(new BoxLayout(messageBox, BoxLayout.Y_AXIS));
             JTextField messageField = new JTextField();
-            sendPanel.add(new JButton("Add File"), BorderLayout.WEST);
-            sendPanel.add(messageField, BorderLayout.CENTER);
+
+            messageBox.add(messageField);
+            JPanel fileDisplayPanel = new JPanel();
+
+            fileDisplayPanel.setLayout(new BoxLayout(fileDisplayPanel, BoxLayout.Y_AXIS));
+            messageBox.add(fileDisplayPanel);
+
+            JButton addFileButton = new JButton("Add File");
+            JButton sendButton = new JButton("Send");
+
+            // File selection functionality using separate listener class
+            PickFileListener filePicker = new PickFileListener(frame, fileDisplayPanel);
+            addFileButton.addActionListener(filePicker);
+
+            sendPanel.add(addFileButton, BorderLayout.WEST);
+            sendPanel.add(messageBox, BorderLayout.CENTER);
             sendPanel.add(sendButton, BorderLayout.EAST);
             leftBox.add(sendPanel);
 
@@ -177,20 +193,10 @@ public class GUI {
             SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
             SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
             SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
-            sendButton.addActionListener(e -> {
-                String message = messageField.getText().trim();
-                sendMessageController.sendMessage(message);
-                messageField.setText("");
-            });
+            SendButtonListener sendButtonListener = new SendButtonListener(messageField, filePicker, sendMessageController);
 
-            // Allow Enter key to send message
-            messageField.addActionListener(e -> {
-                String message = messageField.getText().trim();
-                if (!message.isEmpty()) {
-                    sendMessageController.sendMessage(message);
-                    messageField.setText("");
-                }
-            });
+            sendButton.addActionListener(sendButtonListener);
+            messageField.addActionListener(sendButtonListener); // allow for enter button
 
             // Main Frame
             //TODO please don't let this be the final name

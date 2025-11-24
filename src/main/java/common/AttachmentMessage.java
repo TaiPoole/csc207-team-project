@@ -68,4 +68,8 @@ public class AttachmentMessage implements Message {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
 }

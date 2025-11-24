@@ -1,5 +1,6 @@
 package client;
 
+import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
 import java.io.IOException;
@@ -104,6 +105,8 @@ public class Client {
             switch (simpleClassName) {
                 case "textMessage":
                     return TextMessage.deserialize(serializedData);
+                case "AttachmentMessage":
+                    return AttachmentMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;
