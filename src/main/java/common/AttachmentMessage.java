@@ -1,6 +1,7 @@
 package common;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class AttachmentMessage implements Message {
     private final String username;
@@ -16,7 +17,7 @@ public class AttachmentMessage implements Message {
     }
 
     public String serialize() {
-        return this.username + "\n" + this.timestamp + "\n" + this.content + "\n" + this.attachment.getImage();
+        return this.username + "\n" + this.timestamp + "\n" + this.content + "\n" + this.attachment.getName() + "\n" + Arrays.toString(this.attachment.getAttachment());
     }
 
     public static Message deserialize(String message) {

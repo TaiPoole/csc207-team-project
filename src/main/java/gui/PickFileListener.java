@@ -1,6 +1,6 @@
 package gui;
 
-import client.Client;
+import common.Attachment;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,14 +13,12 @@ import java.nio.file.Files;
 public class PickFileListener implements ActionListener {
     private final JFrame parentFrame;
     private final JPanel fileDisplayPanel;
-    private final Client client;
     private File selectedFile;
     private byte[] fileBytes;
 
-    public PickFileListener(JFrame parentFrame, JPanel fileDisplayPanel, Client client) {
+    public PickFileListener(JFrame parentFrame, JPanel fileDisplayPanel) {
         this.parentFrame = parentFrame;
         this.fileDisplayPanel = fileDisplayPanel;
-        this.client = client;
     }
 
     @Override
@@ -54,7 +52,6 @@ public class PickFileListener implements ActionListener {
         JLabel fileLabel = new JLabel(fileName);
         fileLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-        // Remove button
         JButton removeButton = new JButton("x");
         removeButton.setPreferredSize(new Dimension(60, 15));
         removeButton.setFocusPainted(false);
@@ -74,5 +71,20 @@ public class PickFileListener implements ActionListener {
         fileDisplayPanel.removeAll();
         fileDisplayPanel.revalidate();
         fileDisplayPanel.repaint();
+    }
+
+    public boolean hasAttachment() {
+        return selectedFile != null && fileBytes != null;
+    }
+
+    public Attachment getAttachment() {
+        if (!hasAttachment()) {
+            return null;
+        }
+        return new Attachment(selectedFile.getName(), fileBytes);
+    }
+
+    public void clearAttachment() {
+        removeFile();
     }
 }

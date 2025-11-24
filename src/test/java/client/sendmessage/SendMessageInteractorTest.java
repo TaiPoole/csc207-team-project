@@ -38,7 +38,7 @@ public class SendMessageInteractorTest {
         TestClient client = new TestClient("testUser");
 
         BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(testImage);
+        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
         SendMessageInputData inputData = new SendMessageInputData("test-message", attachment);
 
@@ -110,7 +110,7 @@ public class SendMessageInteractorTest {
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
         BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(testImage);
+        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
         SendMessageInputData inputData = new SendMessageInputData("Hello World", attachment);
 
         interactor.execute(inputData);
@@ -140,7 +140,7 @@ public class SendMessageInteractorTest {
     public void testInputDataWithAttachmentHasAttachment() {
 
         BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-        Attachment attachment = new Attachment(testImage);
+        Attachment attachment = new Attachment(selectedFile.getName(), testImage);
         SendMessageInputData inputData = new SendMessageInputData("Test message", attachment);
 
         assertTrue(inputData.hasAttachment());

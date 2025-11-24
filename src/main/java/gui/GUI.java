@@ -144,7 +144,7 @@ public class GUI {
             JButton sendButton = new JButton("Send");
 
             // File selection functionality using separate listener class
-            PickFileListener filePicker = new PickFileListener(frame, fileDisplayPanel, client);
+            PickFileListener filePicker = new PickFileListener(frame, fileDisplayPanel);
             addFileButton.addActionListener(filePicker);
 
             sendPanel.add(addFileButton, BorderLayout.WEST);
@@ -178,20 +178,10 @@ public class GUI {
             SendMessageOutputBoundary presenter = new SendMessagePresenter(messageModel);
             SendMessageInputBoundary sendMessageInteractor = new SendMessageInteractor(presenter, client);
             SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
-            String message = messageField.getText().trim();
-            sendButton.addActionListener(e -> {
-                sendMessageController.sendMessage(message);
-                messageField.setText("");
-            });
+            SendButtonListener sendButtonListener = new SendButtonListener(messageField, filePicker, sendMessageController);
 
-            // Allow Enter key to send message
-            messageField.addActionListener(e -> {
-                String messageText = messageField.getText().trim();
-                if (!messageText.isEmpty()) {
-                    sendMessageController.sendMessage(messageText);
-                    messageField.setText("");
-                }
-            });
+            sendButton.addActionListener(sendButtonListener);
+            messageField.addActionListener(sendButtonListener); // allow for enter button
 
             // Main Frame
             //TODO please don't let this be the final name
