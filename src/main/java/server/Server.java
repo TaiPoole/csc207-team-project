@@ -148,7 +148,7 @@ public class Server {
 
             // Handle known message types
             switch (simpleClassName) {
-                case "textMessage":
+                case "TextMessage":
                     return TextMessage.deserialize(serializedData);
                 // Add other message types here as needed
                 default:
