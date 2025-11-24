@@ -31,7 +31,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class MainView extends JPanel {
 
-    private  final Client client;
+    private final Client client;
     private final RandomNameGenerator nameGenerator;
 
     // ListModels
