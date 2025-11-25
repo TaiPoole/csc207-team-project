@@ -1,9 +1,14 @@
 package gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 
-// Holds colour information
+/** Palette class.
+ *  Synonymous with theme, this is the class that holds theme colours and applies them to the GUI
+ */
 public abstract class Palette {
     public Color mainBg;
     public Color panelBg;
@@ -11,7 +16,11 @@ public abstract class Palette {
     public Color buttonBg;
     public Color buttonText;
 
-    // applies a palette recursively, using the themes set by the abstract
+    /** applyPalette. Applies the current palette to passed in component
+     *  This function starts by passing in the mainPanel in our GUI, and recurses to colour in every sub-panel
+     *
+     * @param c component to be coloured (and/or recursed to access more components).
+     */
     public void applyPalette(Component c) {
         String o = c.getClass().getName().substring(12);
         switch (o) {

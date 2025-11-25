@@ -3,7 +3,7 @@ package view;
 import client.Client;
 import common.RandomNameGenerator;
 import gui.PermissionsDialog;
-import gui.Themes;
+import gui.ThemeButton;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -31,7 +31,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class MainView extends JPanel {
 
-    private  final Client client;
+    private final Client client;
     private final RandomNameGenerator nameGenerator;
 
     // ListModels
@@ -46,10 +46,7 @@ public class MainView extends JPanel {
     private final JTextField messageField = new JTextField("");
 
     // Buttons
-    private final JButton themeButton = new JButton("Dark");
-
-    // Theme manager from gui package
-    private final Themes themes = new Themes();
+    private final ThemeButton themeButton = new ThemeButton("Dark");
 
     /**
      * Constructs the main messaging UI layout.
@@ -67,10 +64,8 @@ public class MainView extends JPanel {
         add(rightBox);
 
         // Initial data
-        channelModel.addElement("# this is a channel");
-        channelModel.addElement("# this is a channel as well");
-        channelModel.addElement("# ok another channel");
-        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
+        channelModel.addElement("Channels:");
+        messageModel.addElement("Messages:");
 
         // Initialize username from client; default if somehow empty
         String currentName = client.getUsername();
@@ -79,9 +74,6 @@ public class MainView extends JPanel {
             client.setUsername(currentName);
         }
         usernameField.setText(currentName);
-
-        themes.theme.applyPalette(this);
-        themeButton.setText(themes.theme.getClass().getName().substring(4));
     }
 
     private JPanel buildLeftPane() {
@@ -176,13 +168,6 @@ public class MainView extends JPanel {
             usernameField.setText(newName);
         });
 
-        // themeButton
-        themeButton.addActionListener(e -> {
-            themes.cyclePalette();
-            themeButton.setText(themes.theme.getClass().getName().substring(4));
-            themes.theme.applyPalette(this);
-        });
-
         // channelSearchPanel
         JPanel channelSearchPanel = new JPanel();
         channelSearchPanel.setPreferredSize(new Dimension(800, 80));
@@ -227,6 +212,10 @@ public class MainView extends JPanel {
         rightBox.add(Box.createVerticalStrut(8));
 
         return rightBox;
+    }
+
+    public ThemeButton getThemeButton() {
+        return themeButton;
     }
 
     private void sendCurrentMessage() {

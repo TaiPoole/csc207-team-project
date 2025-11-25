@@ -71,7 +71,7 @@ public class GUI {
             settingsPanel.add(usernameField, BorderLayout.WEST);
             JButton newButton = new JButton("New");
             settingsPanel.add(newButton, BorderLayout.CENTER);
-            JButton themeButton = new JButton("Dark");
+            ThemeButton themeButton = new ThemeButton("Dark");
             settingsPanel.add(themeButton, BorderLayout.EAST);
             rightBox.add(settingsPanel);
             rightBox.add(Box.createVerticalStrut(8));
@@ -176,12 +176,16 @@ public class GUI {
 
             //Palette and theming stuff
             //Update from Tiger: I added createEnvironment inside ThemeButton, which can replace everything in action listener
-            Themes theme = new Themes();
+            /*Themes theme = new Themes();
             theme.theme.applyPalette(mainPanel);
             themeButton.addActionListener(e -> {
                 theme.cyclePalette();
                 themeButton.setText(theme.theme.getClass().getName().substring(4));
                 theme.theme.applyPalette(mainPanel);
+            });*/
+            themeButton.getTheme().theme.applyPalette(mainPanel);
+            themeButton.addActionListener(e -> {
+                themeButton.createEnvironment(mainPanel);
             });
 
             newButton.addActionListener(e -> {
