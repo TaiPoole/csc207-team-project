@@ -5,6 +5,8 @@ import client.Client;
 import common.RandomNameGenerator;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+
+import gui.ThemeButton;
 import view.MainView;
 
 /**
@@ -40,6 +42,13 @@ public class AppBuilder {
         this.mainView = new MainView(client, nameGenerator);
 
         this.frame.setContentPane(mainView);
+
+        // behaviour related to theming and changing themes
+        ThemeButton themeButton = mainView.getThemeButton();
+        themeButton.getTheme().theme.applyPalette(mainView);
+        themeButton.addActionListener(e -> {
+            themeButton.createEnvironment(mainView);
+        });
 
         return this;
     }
