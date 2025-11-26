@@ -12,4 +12,8 @@ public final class Attachment {
     public BufferedImage getImage() {
         return image;
     }
+
+    public void downloadImage(){
+
+    }
 }

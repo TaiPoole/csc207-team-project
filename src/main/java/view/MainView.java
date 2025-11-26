@@ -2,6 +2,7 @@ package view;
 
 import client.Client;
 import common.RandomNameGenerator;
+import gui.AddChannelButton;
 import gui.PermissionsDialog;
 import gui.Themes;
 import java.awt.BorderLayout;
@@ -206,7 +207,10 @@ public class MainView extends JPanel {
         channelManagePanel.setPreferredSize(new Dimension(800, 80));
         channelManagePanel.setLayout(new BorderLayout(5, 5));
         channelManagePanel.setBorder(borderBox());
-        channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
+        //add channel
+        AddChannelButton plusButton = new AddChannelButton(null, client);
+        channelManagePanel.add(plusButton, BorderLayout.WEST);
+
         channelManagePanel.add(channelNameField, BorderLayout.CENTER);
 
         JButton permsButton = new JButton("Manage");

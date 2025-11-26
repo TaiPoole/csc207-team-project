@@ -162,7 +162,6 @@ public class Server {
                     return CreateChannelMessage.deserialize(serializedData);
                 case "ChannelCreationSuccessMessage":
                     return ChannelCreationSuccessMessage.deserialize(serializedData);
-
                 case "ChannelCreationErrorMessage":
                     return ChannelCreationErrorMessage.deserialize(serializedData);
                 default:
