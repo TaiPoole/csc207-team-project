@@ -4,6 +4,8 @@ import client.Client;
 import client.sendmessage.*;
 import common.RandomNameGenerator;
 import gui.*;
+import gui.PermissionsView;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -204,7 +206,7 @@ public class MainView extends JPanel {
         permsButton.addActionListener(e -> {
             Window w = SwingUtilities.getWindowAncestor(this);
             Frame owner = (w instanceof Frame) ? (Frame) w : null;
-            PermissionsDialog dialog = new PermissionsDialog(owner);
+            PermissionsView dialog = new PermissionsView(owner);
             dialog.setVisible(true);
         });
 
