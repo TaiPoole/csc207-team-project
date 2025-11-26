@@ -3,7 +3,6 @@ package server;
 import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -16,7 +15,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/** Server class.
+ *  Centrally manages the messages between clients.
+ *  Holds channels, maps channels to users in channels, as well as server info like port, serverChannel,
+ *  and a handler pool for connected clients to the service.
+ */
 public class Server {
+    // TODO: checkstyle issues with channels and channelToUser not being queried, should be fixed with use cases
     private final ArrayList<common.Channel> channels; // server channels, not used for communication
     private final Map<String, User> connectedUsers;
     private final Map<SocketChannel, User> channelToUser; // Map channel to user
@@ -24,9 +29,12 @@ public class Server {
     private final int port;
     private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
-    private Thread acceptThread;
 
-
+    /** Server constructor.
+     *  Initializes server with empty variables (except for port)
+     *
+     * @param port the port for the server to listen on (default 8080 in our program)
+     */
     public Server(int port) {
         this.channels = new ArrayList<>();
         this.port = port;
@@ -35,21 +43,30 @@ public class Server {
         this.clientHandlerPool = Executors.newCachedThreadPool();
     }
 
+    /** Server runtime.
+     *
+     * @param args default main args, not used
+     */
     public static void main(String[] args) {
         Server server = new Server(8080);
         try {
             server.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to start server, error: " + e.getMessage());
         }
     }
 
+    /** Starts the server.
+     *  Binds the socket and starts listening for clients.
+     *
+     * @throws IOException if an I/O error occurs with opening the socket
+     */
     public void start() throws IOException {
         serverChannel = ServerSocketChannel.open();
         serverChannel.bind(new InetSocketAddress(port));
         System.out.println("Server started on port " + port);
 
-        acceptThread = new Thread(this::acceptClients);
+        Thread acceptThread = new Thread(this::acceptClients);
         acceptThread.start();
     }
 
@@ -156,13 +173,12 @@ public class Server {
             }
         } catch (Exception e) {
             System.err.println("Error deserializing message: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
 
-    /**
-     * Broadcast a message to all connected clients except the sender
+    /** Broadcasts a message.
+     * Sends a message to all connected clients except the sender
      */
     private void broadcastMessage(Message message, String senderUsername) {
         for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
@@ -182,8 +198,8 @@ public class Server {
         }
     }
 
-    /**
-     * Send a message to a specific client using the protocol format
+    /** Sends a message to a specific client.
+     * Uses the protocol format described below
      */
     public void sendToClient(SocketChannel clientChannel, Message message) throws IOException {
         if (!clientChannel.isOpen()) {
@@ -197,10 +213,10 @@ public class Server {
         clientChannel.write(buffer);
     }
 
-    /**
-     * Broadcast a message to all connected clients
+    // TODO: Cut this if it doesn't end up being used
+    /** Broadcast a message to all connected clients.
      */
-    public void sendToAll(Message message) throws IOException {
+    public void sendToAll(Message message) {
         ArrayList<String> disconnectedUsers = new ArrayList<>();
 
         for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
@@ -230,10 +246,19 @@ public class Server {
         }
     }
 
+    // TODO: Cut this if it doesn't end up being used
+    /** Adds a channel to channel list.
+     *
+     * @param channel channel to be added
+     */
     public void addChannel(common.Channel channel) {
         channels.add(channel);
     }
 
+    // TODO: Cut this if it doesn't end up being used
+    /** Shuts down the server.
+     *  Closes all channels first
+     */
     public void shutdown() {
         try {
             if (serverChannel != null && serverChannel.isOpen()) {

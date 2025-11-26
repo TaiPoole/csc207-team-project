@@ -1,14 +1,31 @@
 package view;
 
 import client.Client;
-import client.sendmessage.*;
+import client.sendmessage.SendMessageController;
+import client.sendmessage.SendMessageInputBoundary;
 import common.RandomNameGenerator;
-import gui.*;
-import gui.PermissionsView;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import gui.PickFileListener;
+import gui.SendButtonListener;
+import gui.ThemeButton;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Window;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 /**
  * The main messaging UI.
@@ -31,7 +48,7 @@ public class MainView extends JPanel {
     private final JTextField messageField = new JTextField("");
 
     // Buttons
-    private final ThemeButton themeButton = new ThemeButton("Dark");
+    private final ThemeButton themeButton = new ThemeButton("Dark Mode");
 
     // File picker for attachments
     private PickFileListener filePicker;
@@ -100,7 +117,7 @@ public class MainView extends JPanel {
 
     private JPanel buildSendPanel() {
         JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
-        sendPanel.setPreferredSize(new Dimension(800, 200));
+        sendPanel.setPreferredSize(new Dimension(800, 80));
         sendPanel.setBorder(borderBox());
 
         // Message box with text field and file display area
@@ -114,7 +131,7 @@ public class MainView extends JPanel {
         messageBox.add(fileDisplayPanel);
 
         JButton addFileButton = new JButton("Add File");
-        JButton sendButton = new JButton("Send");
+        final JButton sendButton = new JButton("Send");
 
         // Initialize file picker - need to get parent frame
         // Use a deferred initialization to ensure frame is available
@@ -157,9 +174,11 @@ public class MainView extends JPanel {
         settingsPanel.setLayout(new BorderLayout(5, 5));
         settingsPanel.setBorder(borderBox());
 
+        usernameField.setPreferredSize(new Dimension(125, 80));
         settingsPanel.add(usernameField, BorderLayout.WEST);
 
-        JButton newButton = new JButton("New");
+        JButton newButton = new JButton("New Name");
+        newButton.setPreferredSize(new Dimension(50, 80));
         settingsPanel.add(newButton, BorderLayout.CENTER);
         settingsPanel.add(themeButton, BorderLayout.EAST);
 

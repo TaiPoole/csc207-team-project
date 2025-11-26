@@ -1,13 +1,20 @@
 package gui;
 
 import common.Attachment;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  * Open a file picker.
@@ -79,7 +86,7 @@ public class PickFileListener implements ActionListener {
     }
 
     /**
-     * Do we have an attachment.
+     * Checks for attachment.
      *
      * @return True if we have an attachment.
      */

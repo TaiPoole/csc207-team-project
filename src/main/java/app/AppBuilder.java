@@ -1,15 +1,23 @@
 package app;
 
 import client.Client;
-import client.receivemessage.*;
-import client.sendmessage.*;
+import client.receivemessage.ReceiveMessageInputBoundary;
+import client.receivemessage.ReceiveMessageInputData;
+import client.receivemessage.ReceiveMessageInteractor;
+import client.receivemessage.ReceiveMessageOutputBoundary;
+import client.receivemessage.ReceiveMessagePresenter;
+import client.sendmessage.SendMessageInputBoundary;
+import client.sendmessage.SendMessageInteractor;
+import client.sendmessage.SendMessageOutputBoundary;
+import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
-import javax.swing.*;
-
 import gui.ThemeButton;
-import view.MainView;
-
 import java.io.IOException;
+import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import view.MainView;
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -24,8 +32,8 @@ public class AppBuilder {
     private final DefaultListModel<String> messageModel;
 
     // Clean Architecture components
-    private ReceiveMessageInputBoundary receiveInteractor;
-    private SendMessageInputBoundary sendMessageInteractor;
+    private final ReceiveMessageInputBoundary receiveInteractor;
+    private final SendMessageInputBoundary sendMessageInteractor;
 
     /**
      * Creates a new AppBuilder with a default application frame.
@@ -60,13 +68,12 @@ public class AppBuilder {
     /**
      * Sets the UI Look and Feel.
      */
-    public AppBuilder setLookAndFeel() {
+    public void setLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to reset default OS button formatting");
         }
-        return this;
     }
 
     /**
@@ -87,9 +94,9 @@ public class AppBuilder {
         themeButton.getTheme().theme.applyPalette(mainView);
 
         // Set up theme change listener
-        themeButton.addActionListener(e -> {
-            themeButton.createEnvironment(mainView);
-        });
+        themeButton.addActionListener(e ->
+                themeButton.createEnvironment(mainView)
+        );
 
         return this;
     }
