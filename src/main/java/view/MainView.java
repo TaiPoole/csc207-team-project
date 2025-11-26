@@ -4,7 +4,6 @@ import client.Client;
 import client.sendmessage.*;
 import common.RandomNameGenerator;
 import gui.*;
-import gui.PermissionsView;
 
 import java.awt.*;
 import javax.swing.*;
