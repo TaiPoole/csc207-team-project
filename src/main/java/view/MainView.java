@@ -1,30 +1,12 @@
 package view;
 
 import client.Client;
+import client.sendmessage.*;
 import common.RandomNameGenerator;
-import gui.PermissionsDialog;
-import gui.ThemeButton;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
+import gui.*;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * The main messaging UI.
@@ -33,28 +15,43 @@ public class MainView extends JPanel {
 
     private final Client client;
     private final RandomNameGenerator nameGenerator;
+    private final SendMessageInputBoundary sendMessageInteractor;
 
     // ListModels
     private final DefaultListModel<String> channelModel = new DefaultListModel<>();
-    private final DefaultListModel<String> messageModel = new DefaultListModel<>();
+    private final DefaultListModel<String> messageModel;
 
     // TextFields
-    private final JTextField usernameField = new JTextField("User Name");
+    private final JTextField usernameField;
     private final JTextField channelIdField = new JTextField("Channel ID:");
-    private final JTextField channelNameField = new JTextField("Channel Name:");
+    private final JTextField channelNameField = new JTextField("Name:");
     private final JTextField searchField = new JTextField("Search:");
     private final JTextField messageField = new JTextField("");
 
     // Buttons
     private final ThemeButton themeButton = new ThemeButton("Dark");
 
+    // File picker for attachments
+    private PickFileListener filePicker;
+    private JPanel fileDisplayPanel;
+
     /**
      * Constructs the main messaging UI layout.
      */
-    public MainView(Client client, RandomNameGenerator nameGenerator) {
+    public MainView(
+            Client client,
+            RandomNameGenerator nameGenerator,
+            DefaultListModel<String> messageModel,
+            SendMessageInputBoundary sendMessageInteractor
+    ) {
         this.client = client;
         this.nameGenerator = nameGenerator;
+        this.messageModel = messageModel;
+        this.sendMessageInteractor = sendMessageInteractor;
+
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+        this.usernameField = new JTextField(client.getUsername());
 
         JPanel leftBox = buildLeftPane();
         JPanel rightBox = buildRightPane();
@@ -63,17 +60,11 @@ public class MainView extends JPanel {
         add(Box.createHorizontalStrut(8));
         add(rightBox);
 
-        // Initial data
-        channelModel.addElement("Channels:");
-        messageModel.addElement("Messages:");
-
-        // Initialize username from client; default if somehow empty
-        String currentName = client.getUsername();
-        if (currentName == null || currentName.isEmpty()) {
-            currentName = "User"; // fallback, should normally not happen
-            client.setUsername(currentName);
-        }
-        usernameField.setText(currentName);
+        // Initial test data
+        channelModel.addElement("# this is a channel");
+        channelModel.addElement("# this is a channel as well");
+        channelModel.addElement("# ok another channel");
+        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
     }
 
     private JPanel buildLeftPane() {
@@ -98,36 +89,59 @@ public class MainView extends JPanel {
         leftBox.add(messageScroll);
         leftBox.add(Box.createVerticalStrut(8));
 
-        // sendPanel
+        // sendPanel with file support
+        JPanel sendPanel = buildSendPanel();
+        leftBox.add(sendPanel);
+
+        return leftBox;
+    }
+
+    private JPanel buildSendPanel() {
         JPanel sendPanel = new JPanel(new BorderLayout(5, 5));
         sendPanel.setPreferredSize(new Dimension(800, 200));
         sendPanel.setBorder(borderBox());
 
+        // Message box with text field and file display area
+        JPanel messageBox = new JPanel();
+        messageBox.setLayout(new BoxLayout(messageBox, BoxLayout.Y_AXIS));
+        messageBox.add(messageField);
+
+        // File display panel for showing selected files
+        fileDisplayPanel = new JPanel();
+        fileDisplayPanel.setLayout(new BoxLayout(fileDisplayPanel, BoxLayout.Y_AXIS));
+        messageBox.add(fileDisplayPanel);
+
         JButton addFileButton = new JButton("Add File");
         JButton sendButton = new JButton("Send");
 
-        sendPanel.add(addFileButton, BorderLayout.WEST);
-        sendPanel.add(messageField, BorderLayout.CENTER);
-        sendPanel.add(sendButton, BorderLayout.EAST);
+        // Initialize file picker - need to get parent frame
+        // Use a deferred initialization to ensure frame is available
+        filePicker = new PickFileListener(null, fileDisplayPanel);
 
-        leftBox.add(sendPanel);
-
-        // AddFile popup
         addFileButton.addActionListener(e -> {
-            Window w = SwingUtilities.getWindowAncestor(this);
-            Frame owner = null;
-            if (w instanceof Frame) {
-                owner = (Frame) w;
-            }
-            AddFileView dialog = new AddFileView(owner);
-            dialog.setVisible(true);
+            // Get the frame dynamically when button is clicked
+            Window window = SwingUtilities.getWindowAncestor(this);
+            JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
+            filePicker = new PickFileListener(owner, fileDisplayPanel);
+            filePicker.actionPerformed(e);
         });
 
-        // Sending messages (locally, no client)
-        sendButton.addActionListener(e -> sendCurrentMessage());
-        messageField.addActionListener(e -> sendCurrentMessage());
+        sendPanel.add(addFileButton, BorderLayout.WEST);
+        sendPanel.add(messageBox, BorderLayout.CENTER);
+        sendPanel.add(sendButton, BorderLayout.EAST);
 
-        return leftBox;
+        // Set up send message controller and listener
+        SendMessageController sendMessageController = new SendMessageController(sendMessageInteractor);
+        SendButtonListener sendButtonListener = new SendButtonListener(
+                messageField,
+                filePicker,
+                sendMessageController
+        );
+
+        sendButton.addActionListener(sendButtonListener);
+        messageField.addActionListener(sendButtonListener); // Allow Enter key to send
+
+        return sendPanel;
     }
 
     private JPanel buildRightPane() {
@@ -136,36 +150,25 @@ public class MainView extends JPanel {
         rightBox.setPreferredSize(new Dimension(400, 800));
 
         // settingsPanel
-        JPanel settingsPanel = new JPanel(new GridBagLayout());
+        JPanel settingsPanel = new JPanel();
         settingsPanel.setPreferredSize(new Dimension(800, 80));
+        settingsPanel.setLayout(new BorderLayout(5, 5));
         settingsPanel.setBorder(borderBox());
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(0, 5, 0, 5);
-        gbc.weighty = 1.0;
-        // usernameField - 50%
-        gbc.gridx = 0;
-        gbc.weightx = 0.5;
-        settingsPanel.add(usernameField, gbc);
-        // newButton - 20%
+        settingsPanel.add(usernameField, BorderLayout.WEST);
+
         JButton newButton = new JButton("New");
-        gbc.gridx = 1;
-        gbc.weightx = 0.2;
-        settingsPanel.add(newButton, gbc);
-        // themeButton - 30%
-        gbc.gridx = 2;
-        gbc.weightx = 0.3;
-        settingsPanel.add(themeButton, gbc);
+        settingsPanel.add(newButton, BorderLayout.CENTER);
+        settingsPanel.add(themeButton, BorderLayout.EAST);
+
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
-        // Random name generation
+        // Random name generation button
         newButton.addActionListener(e -> {
             String newName = nameGenerator.generate();
-            client.setUsername(newName);
-            usernameField.setText(newName);
+            client.setUsername(newName);       // update local identity
+            usernameField.setText(newName);    // reflect in UI
         });
 
         // channelSearchPanel
@@ -197,13 +200,10 @@ public class MainView extends JPanel {
         JButton permsButton = new JButton("Manage");
         channelManagePanel.add(permsButton, BorderLayout.EAST);
 
-        // Perms popup
+        // Permissions dialog popup
         permsButton.addActionListener(e -> {
             Window w = SwingUtilities.getWindowAncestor(this);
-            Frame owner = null;
-            if (w instanceof Frame) {
-                owner = (Frame) w;
-            }
+            Frame owner = (w instanceof Frame) ? (Frame) w : null;
             PermissionsDialog dialog = new PermissionsDialog(owner);
             dialog.setVisible(true);
         });
@@ -214,18 +214,16 @@ public class MainView extends JPanel {
         return rightBox;
     }
 
+    /**
+     * Returns the theme button for external theme management.
+     */
     public ThemeButton getThemeButton() {
         return themeButton;
     }
 
-    private void sendCurrentMessage() {
-        String text = messageField.getText();
-        if (!text.isEmpty()) {
-            messageModel.addElement(text);
-            messageField.setText("");
-        }
-    }
-
+    /**
+     * Creates a standardized border for panels.
+     */
     private Border borderBox() {
         return new CompoundBorder(
                 BorderFactory.createLineBorder(new Color(90, 90, 90), 1),
