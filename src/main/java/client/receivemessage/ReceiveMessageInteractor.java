@@ -1,15 +1,21 @@
 package client.receivemessage;
 
 import common.Message;
-
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/** ReceiveMessage Interactor class.
+ *  follows ReceiveMessageInputBoundary restrictions
+ *  in charge of managing incoming received messages and turning them to an output format its presenter can use
+ */
 public class ReceiveMessageInteractor implements ReceiveMessageInputBoundary {
 
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private ReceiveMessageOutputBoundary presenter;
+    private final ReceiveMessageOutputBoundary presenter;
 
+    /** Basic Constructor.
+     *
+     * @param presenter presenter for ui displaying once the input is formatted
+     */
     public ReceiveMessageInteractor(ReceiveMessageOutputBoundary presenter) {
         this.presenter = presenter;
     }

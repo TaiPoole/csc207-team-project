@@ -76,6 +76,7 @@ public class Client {
 
                     notifyMessage(deserializeMessage(parts[0], parts[1]));
                 }
+                // TODO: unfortunate non-fixable checkstyle error? 1 of 2 potential suppresses? -Tai
                 Thread.sleep(10);
 
             } catch (InterruptedException e) {

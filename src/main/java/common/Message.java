@@ -14,14 +14,14 @@ public interface Message {
      */
     String serialize();
 
+    // TODO: Checkstyle error with this not being used. I think this might be impossible to refactor with our current logic. First and only suppress? -Tai
     /**
      * Reconstructs a message from its serialized string format.
      * Implementations should override this method.
      *
-     * @param message the serialized message string
      * @return the deserialized Message object, or null if invalid
      */
-    static Message deserialize(String message) {
+    static Message deserialize() {
         return null;
     }
 
@@ -46,5 +46,9 @@ public interface Message {
      */
     LocalDateTime getTimestamp();
 
+    /** Gets a potential attachment.
+     *
+     * @return attachment for the message (always exists in the contexts it's called)
+     */
     Attachment getAttachment();
 }

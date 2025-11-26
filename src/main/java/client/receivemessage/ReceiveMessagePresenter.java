@@ -1,11 +1,20 @@
 package client.receivemessage;
 
 import common.Attachment;
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
 
+/** Manager for incoming received messages.
+ *  follows restrictions set by ReceiveMessageOutputBoundary
+ *  in charge of updating the UI when a message is received
+ */
 public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
     private final DefaultListModel<String> messageModel;
 
+    /** Basic constructor.
+     *
+     * @param messageModel message list to update when message is received
+     */
     public ReceiveMessagePresenter(DefaultListModel<String> messageModel) {
         this.messageModel = messageModel;
     }
