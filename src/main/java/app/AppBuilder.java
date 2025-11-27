@@ -12,12 +12,16 @@ import client.sendmessage.SendMessageOutputBoundary;
 import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
 import gui.ThemeButton;
+import permissions.*;
+
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+
 import view.MainView;
+import view.PermissionsView;
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -34,6 +38,8 @@ public class AppBuilder {
     // Clean Architecture components
     private final ReceiveMessageInputBoundary receiveInteractor;
     private final SendMessageInputBoundary sendMessageInteractor;
+    private final ManagePermissionsInputBoundary permissionsInteractor;
+    private final PermissionsView permissionsView;
 
     /**
      * Creates a new AppBuilder with a default application frame.
@@ -58,11 +64,15 @@ public class AppBuilder {
             }
         });
 
-        // Set up send message chain
+        this.client.connect();
+
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
-        this.client.connect();
+        this.permissionsView = new PermissionsView(this.frame);
+        ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
+        ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
+        this.permissionsInteractor = new ManagePermissionsInteractor(permissionGateway, managePresenter);
     }
 
     /**
@@ -84,7 +94,9 @@ public class AppBuilder {
                 client,
                 nameGenerator,
                 messageModel,
-                sendMessageInteractor
+                sendMessageInteractor,
+                permissionsInteractor,
+                permissionsView
         );
 
         this.frame.setContentPane(mainView);

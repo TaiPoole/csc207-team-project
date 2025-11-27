@@ -9,14 +9,13 @@ public class PermissionsController {
     private final PermissionsView view;
     private final ManagePermissionsInputBoundary interactor;
 
-    public PermissionsController(Frame parent, ManagePermissionsInputBoundary interactor) {
-        this.view = new PermissionsView(parent);
+    public PermissionsController(PermissionsView view, ManagePermissionsInputBoundary interactor) {
+        this.view = view;
         this.interactor = interactor;
 
         // Hook up the grant button
         view.addGrantButtonListener(e -> handleGrantPermission());
 
-        view.setVisible(true);
     }
 
     private void handleGrantPermission() {
@@ -31,6 +30,10 @@ public class PermissionsController {
 
         ManagePermissionsInputData inputData = new ManagePermissionsInputData(currentUser, username, permission);
         interactor.execute(inputData);
+    }
+
+    public void show() {
+        view.setVisible(true);
     }
 
     // Implement SetPermissionsOutputBoundary

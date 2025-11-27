@@ -139,12 +139,4 @@ public class PermissionsView extends JDialog {
     public void addCancelButtonListener(ActionListener listener) {
         cancelButton.addActionListener(listener);
     }
-
-    /** Enables or disables the grant button.
-     *
-     * @param enabled true to enable, false to disable
-     */
-    public void setGrantButtonEnabled(boolean enabled) {
-        grantButton.setEnabled(enabled);
-    }
 }
