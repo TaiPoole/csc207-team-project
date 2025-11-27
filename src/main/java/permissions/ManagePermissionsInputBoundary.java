@@ -1,4 +1,5 @@
 package permissions;
 
-public class ManagePermissionsInputBoundary {
+public interface ManagePermissionsInputBoundary {
+    void execute(ManagePermissionsInputData managePermissionsInputData);
 }

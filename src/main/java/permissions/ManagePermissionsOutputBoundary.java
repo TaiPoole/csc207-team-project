@@ -1,4 +1,6 @@
 package permissions;
 
-public class ManagePermissionsOutputBoundary {
+public interface ManagePermissionsOutputBoundary {
+    void prepareSuccessView(ManagePermissionsOutputData outputData);
+    void prepareFailView(String error);
 }
