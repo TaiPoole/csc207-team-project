@@ -1,8 +1,10 @@
-package server;
+package permissions;
 
-import common.Permission;
-import java.util.ArrayList;
+import server.User;
+
 import java.util.HashMap;
+import java.util.ArrayList;
+
 
 // TODO: Checkstyle is angry cuz this isn't used but it will be when the permission use case is added.
 /** Permission Manager.
