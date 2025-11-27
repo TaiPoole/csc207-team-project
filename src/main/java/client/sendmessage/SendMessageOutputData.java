@@ -37,5 +37,6 @@ public class SendMessageOutputData {
     }
 
     public Attachment getAttachment() {
-        return attachment; }
+        return attachment;
+    }
 }
