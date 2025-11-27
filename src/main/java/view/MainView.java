@@ -271,6 +271,5 @@ public class MainView extends JPanel {
     private void joinChannel(String channelId) {
         messageModel.clear();
         messageModel.addElement("=== Joined channel: " + channelId + " ===");
-
     }
 }
