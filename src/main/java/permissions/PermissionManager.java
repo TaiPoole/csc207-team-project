@@ -1,12 +1,9 @@
 package permissions;
 
 import server.User;
-
 import java.util.HashMap;
 import java.util.ArrayList;
 
-
-// TODO: Checkstyle is angry cuz this isn't used but it will be when the permission use case is added.
 /** Permission Manager.
  *  Holds information regarding permissions for users in a given channel
  */
@@ -17,7 +14,7 @@ public class PermissionManager {
      *  Initializes empty hashmap
      */
     public PermissionManager() {
-        permissions = new HashMap<User, ArrayList<Permission>>();
+        permissions = new HashMap<>();
     }
 
     /** Gets a given users permissions.
@@ -35,7 +32,7 @@ public class PermissionManager {
      * @param permission permissions to be granted
      */
     public void addPermission(User user, Permission permission) {
-        this.permissions.get(user).add(permission);
+        permissions.computeIfAbsent(user, k -> new ArrayList<>()).add(permission);
     }
 
     /** Manually sets permissions for a user.
@@ -54,6 +51,6 @@ public class PermissionManager {
      * @return True if user has perm, False otherwise
      */
     public boolean userHasPermission(User user, Permission permission) {
-        return permissions.get(user).contains(permission);
+        return permissions.containsKey(user) && permissions.get(user).contains(permission);
     }
 }
