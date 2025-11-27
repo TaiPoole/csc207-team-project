@@ -42,8 +42,7 @@ public class MainView extends JPanel {
 
     // TextFields
     private final JTextField usernameField;
-    private final JTextField channelIdField = new JTextField("Channel ID:");
-    private final JTextField channelNameField = new JTextField("Name:");
+    private final JTextField channelIdField = new JTextField("Channel Name:");
     private final JTextField searchField = new JTextField("Search:");
     private final JTextField messageField = new JTextField("");
 
@@ -139,10 +138,11 @@ public class MainView extends JPanel {
 
         addFileButton.addActionListener(e -> {
             // Get the frame dynamically when button is clicked
-            Window window = SwingUtilities.getWindowAncestor(this);
-            JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
-            filePicker = new PickFileListener(owner, fileDisplayPanel);
+//            Window window = SwingUtilities.getWindowAncestor(this);
+//            JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
+//            filePicker = new PickFileListener(owner, fileDisplayPanel);
             filePicker.actionPerformed(e);
+
         });
 
         sendPanel.add(addFileButton, BorderLayout.WEST);
@@ -218,9 +218,6 @@ public class MainView extends JPanel {
         // "+" Add Channel button
         JButton addChannelButton = new JButton("+");
         channelManagePanel.add(addChannelButton, BorderLayout.WEST);
-
-        channelManagePanel.add(channelNameField, BorderLayout.CENTER);
-
         JButton permsButton = new JButton("Manage");
         channelManagePanel.add(permsButton, BorderLayout.EAST);
 

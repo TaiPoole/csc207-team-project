@@ -1,5 +1,6 @@
 package client.sendmessage;
 
+import common.Attachment;
 import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 
@@ -21,11 +22,26 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
     @Override
     public void prepareSuccessView(SendMessageOutputData outputData) {
         SwingUtilities.invokeLater(() -> {
-            String formattedMessage = String.format("[%s] %s: %s",
-                    outputData.getTimestamp(),
-                    outputData.getSender(),
-                    outputData.getMessageContent()
-            );
+            Attachment attachment = outputData.getAttachment();
+
+            String formattedMessage;
+            if (attachment != null) {
+                // Show file name in chat when sending with attachment
+                formattedMessage = String.format("[%s] %s: %s | %s",
+                        outputData.getTimestamp(),
+                        outputData.getSender(),
+                        outputData.getMessageContent(),
+                        attachment.getName()
+                );
+            } else {
+                // Text-only message
+                formattedMessage = String.format("[%s] %s: %s",
+                        outputData.getTimestamp(),
+                        outputData.getSender(),
+                        outputData.getMessageContent()
+                );
+            }
+
             messageModel.addElement(formattedMessage);
         });
     }
