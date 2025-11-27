@@ -4,6 +4,7 @@ import client.Client;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
 import common.RandomNameGenerator;
+import gui.JoinChannelButton;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
@@ -198,14 +199,14 @@ public class MainView extends JPanel {
         channelSearchPanel.setLayout(new BorderLayout(5, 5));
         channelSearchPanel.setBorder(borderBox());
         channelSearchPanel.add(channelIdField, BorderLayout.CENTER);
-        JButton joinButton = new JButton("Join");
+        JoinChannelButton joinButton = new JoinChannelButton("Join");
         channelSearchPanel.add(joinButton, BorderLayout.EAST);
 
         // Join button action - join channel by ID
         joinButton.addActionListener(e -> {
             String channelId = channelIdField.getText();
             if (channelModel.contains(channelId)) {
-                joinChannel(channelId);
+                joinButton.joinChannel(channelId, messageModel);
             }
         });
 
@@ -268,13 +269,4 @@ public class MainView extends JPanel {
         );
     }
 
-    /** Updates message model for new channel.
-     *
-     * @param channelId id of the channel
-     */
-    private void joinChannel(String channelId) {
-        messageModel.clear();
-        messageModel.addElement("=== Joined channel: " + channelId + " ===");
-
-    }
 }

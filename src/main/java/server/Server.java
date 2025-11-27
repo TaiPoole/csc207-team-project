@@ -1,6 +1,7 @@
 package server;
 
 import common.AttachmentMessage;
+import common.Channel;
 import common.Message;
 import common.TextMessage;
 import java.io.IOException;
@@ -269,4 +270,5 @@ public class Server {
             System.err.println("Error shutting down server: " + e.getMessage());
         }
     }
+
 }
