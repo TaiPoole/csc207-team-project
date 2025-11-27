@@ -22,4 +22,9 @@ public class Channel {
         clients = new ArrayList<>();
         messages = new ArrayList<>();
     }
+
+    /** Returns the identifier/name of this channel. */
+    public String getId() {
+        return id;
+    }
 }

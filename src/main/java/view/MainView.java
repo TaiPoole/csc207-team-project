@@ -215,11 +215,23 @@ public class MainView extends JPanel {
         channelManagePanel.setPreferredSize(new Dimension(800, 80));
         channelManagePanel.setLayout(new BorderLayout(5, 5));
         channelManagePanel.setBorder(borderBox());
-        channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
+        // "+" Add Channel button
+        JButton addChannelButton = new JButton("+");
+        channelManagePanel.add(addChannelButton, BorderLayout.WEST);
+
         channelManagePanel.add(channelNameField, BorderLayout.CENTER);
 
         JButton permsButton = new JButton("Manage");
         channelManagePanel.add(permsButton, BorderLayout.EAST);
+
+        // Add Channel dialog popup
+        addChannelButton.addActionListener(e -> {
+            Window w = SwingUtilities.getWindowAncestor(this);
+            Frame owner = (w instanceof Frame) ? (Frame) w : null;
+
+            AddChannelDialog dialog = new AddChannelDialog(owner, channelModel, client);
+            dialog.setVisible(true);
+        });
 
         // Permissions dialog popup
         permsButton.addActionListener(e -> {
