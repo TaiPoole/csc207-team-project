@@ -104,7 +104,7 @@ public class Client {
 
             // Handle known message types
             switch (simpleClassName) {
-                case "textMessage":
+                case "TextMessage":
                     return TextMessage.deserialize(serializedData);
                 case "AttachmentMessage":
                     return AttachmentMessage.deserialize(serializedData);
