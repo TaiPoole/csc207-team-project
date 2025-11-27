@@ -268,6 +268,10 @@ public class MainView extends JPanel {
         );
     }
 
+    /** Updates message model for new channel.
+     *
+     * @param channelId id of the channel
+     */
     private void joinChannel(String channelId) {
         messageModel.clear();
         messageModel.addElement("=== Joined channel: " + channelId + " ===");

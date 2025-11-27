@@ -11,6 +11,7 @@ public class Channel {
     final String id;
     ArrayList<User> clients;
     LocalDateTime timestamp;
+    ArrayList<Message> messages;
 
     /** Basic constructor.
      *  initializes with empty client and message lists
@@ -32,6 +33,14 @@ public class Channel {
                 this.clients.add(user);
             }
         }
+    }
+
+    /** Add message to this.messages.
+     *
+     * @param message message to be added
+     */
+    public void addMessage(Message message) {
+        this.messages.add(message);
     }
 
 }
