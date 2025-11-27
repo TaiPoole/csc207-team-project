@@ -198,20 +198,7 @@ public class MainView extends JPanel {
         channelSearchPanel.setLayout(new BorderLayout(5, 5));
         channelSearchPanel.setBorder(borderBox());
         channelSearchPanel.add(channelIdField, BorderLayout.CENTER);
-        JButton joinButton = new JButton("Join");
-        channelSearchPanel.add(joinButton, BorderLayout.EAST);
-
-        // Join button action - join channel by ID
-        joinButton.addActionListener(e -> {
-            String channelId = channelIdField.getText();
-            if (channelModel.contains(channelId)) {
-                joinChannel(channelId);
-            }
-        });
-
-
-
-
+        channelSearchPanel.add(new JButton("Join"), BorderLayout.EAST);
         rightBox.add(channelSearchPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
@@ -230,9 +217,6 @@ public class MainView extends JPanel {
         channelManagePanel.setBorder(borderBox());
         channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
         channelManagePanel.add(channelNameField, BorderLayout.CENTER);
-        JButton addChannelButton = new JButton("+");
-        channelManagePanel.add(addChannelButton, BorderLayout.WEST);
-
 
         JButton permsButton = new JButton("Manage");
         channelManagePanel.add(permsButton, BorderLayout.EAST);
@@ -266,11 +250,5 @@ public class MainView extends JPanel {
                 BorderFactory.createLineBorder(new Color(90, 90, 90), 1),
                 new EmptyBorder(4, 4, 4, 4)
         );
-    }
-
-    private void joinChannel(String channelId) {
-        messageModel.clear();
-        messageModel.addElement("=== Joined channel: " + channelId + " ===");
-
     }
 }
