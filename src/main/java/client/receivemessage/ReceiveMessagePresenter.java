@@ -22,14 +22,6 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
     @Override
     public void displayMessage(ReceiveMessageOutputData outputData) {
         SwingUtilities.invokeLater(() -> {
-            String formattedMessage = String.format("[%s] %s: %s",
-                    outputData.getTimestamp(),
-                    outputData.getSender(),
-                    outputData.getContent()
-            );
-
-            messageModel.addElement(formattedMessage);
-
             // bodge; should be fixed at some point to display something other than string and check instanceof instead
             if (outputData.getAttachment() != null) {
                 Attachment attachment = outputData.getAttachment();
@@ -40,6 +32,15 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
                         attachment.getName()
                 );
                 messageModel.addElement(fileMessage);
+            } else {
+                String formattedMessage = String.format("[%s] %s: %s",
+                        outputData.getTimestamp(),
+                        outputData.getSender(),
+                        outputData.getContent()
+                );
+
+                messageModel.addElement(formattedMessage);
+
             }
         });
 

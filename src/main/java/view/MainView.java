@@ -141,7 +141,7 @@ public class MainView extends JPanel {
             // Get the frame dynamically when button is clicked
             Window window = SwingUtilities.getWindowAncestor(this);
             JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
-            filePicker = new PickFileListener(owner, fileDisplayPanel);
+            filePicker.setParentFrame(owner);
             filePicker.actionPerformed(e);
         });
 

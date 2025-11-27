@@ -51,7 +51,8 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
             SendMessageOutputData outputData = new SendMessageOutputData(
                     client.getUsername(),
                     input.getMessageContent(),
-                    formattedTime
+                    formattedTime,
+                    input.getAttachment()
             );
 
             presenter.prepareSuccessView(outputData);
