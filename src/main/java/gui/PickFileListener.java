@@ -20,7 +20,7 @@ import javax.swing.JPanel;
  * Open a file picker.
  */
 public class PickFileListener implements ActionListener {
-    private final JFrame parentFrame;
+    private JFrame parentFrame;
     private final JPanel fileDisplayPanel;
     private File selectedFile;
     private byte[] fileBytes;
@@ -83,6 +83,10 @@ public class PickFileListener implements ActionListener {
         fileDisplayPanel.removeAll();
         fileDisplayPanel.revalidate();
         fileDisplayPanel.repaint();
+    }
+
+    public void setParentFrame(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
     }
 
     /**
