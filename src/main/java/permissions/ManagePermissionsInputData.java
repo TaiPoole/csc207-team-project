@@ -3,8 +3,10 @@ package permissions;
 public class ManagePermissionsInputData {
     final String username;
     final String permissionName;
+    final String currentUser;
 
-    public ManagePermissionsInputData(String username, String permissionName) {
+    public ManagePermissionsInputData(String currentUser, String username, String permissionName) {
+        this.currentUser = currentUser;
         this.username = username;
         this.permissionName = permissionName;
     }
@@ -15,5 +17,9 @@ public class ManagePermissionsInputData {
 
     public String getPermissionName() {
         return permissionName;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
     }
 }

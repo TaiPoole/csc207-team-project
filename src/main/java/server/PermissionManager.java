@@ -1,6 +1,8 @@
-package permissions;
+package server;
 
-import server.User;
+import common.User;
+import common.Permission;
+
 import java.util.HashMap;
 import java.util.ArrayList;
 
