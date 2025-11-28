@@ -32,11 +32,6 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
      * @param input data for a potential outbound message
      */
     public void execute(SendMessageInputData input) {
-//        if (input.getMessageContent() == null || input.getMessageContent().trim().isEmpty()) {
-//            presenter.prepareFailureView("Message cannot be empty");
-//            return;
-//        }
-
         String content = input.getMessageContent();
         boolean hasText = content != null && !content.trim().isEmpty();
         boolean hasAttachment = input.hasAttachment();
@@ -49,7 +44,6 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
         try {
             Message message;
             if (hasAttachment) {
-                //message = new AttachmentMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
                 String safeContent = (content == null) ? "" : content;
                 message = new AttachmentMessage(
                         client.getUsername(),
@@ -58,7 +52,6 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
                         input.getAttachment()
                 );
             } else {
-                //message = new TextMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
                 message = new TextMessage(
                         client.getUsername(),
                         content,

@@ -133,21 +133,12 @@ public class Server {
                             String content = message.getContent();
 
                             // --- Handle channel creation command ---
+                            //Channel creation message is TextMessage that starts with create-channel
                             if (content != null && content.startsWith("/create-channel ")) {
                                 String channelName = content.substring("/create-channel ".length()).trim();
 
                                 // Update channel list
                                 handleCreateChannel(channelName);
-
-                                // Optionally broadcast a user-friendly system message
-                                if (!channelName.isEmpty()) {
-                                    TextMessage systemMessage = new TextMessage(
-                                            "SYSTEM",
-                                            "Channel #" + channelName + " created.",
-                                            LocalDateTime.now()
-                                    );
-                                    broadcastMessage(systemMessage, "SYSTEM");
-                                }
 
                                 // NOT broadcast the raw command message
                                 continue;
@@ -269,6 +260,9 @@ public class Server {
         }
     }
 
+    /** Handling the addChannel method
+     * @param channelName channel to be added
+     */
     private void handleCreateChannel(String channelName) {
         if (channelName == null || channelName.isEmpty()) {
             return;

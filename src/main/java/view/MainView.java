@@ -12,20 +12,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
+import java.io.IOException;
 
 /**
  * The main messaging UI.
@@ -45,6 +38,12 @@ public class MainView extends JPanel {
     private final JTextField channelIdField = new JTextField("Channel Name:");
     private final JTextField searchField = new JTextField("Search:");
     private final JTextField messageField = new JTextField("");
+
+    // Current channel name (just the plain name, e.g. "general")
+    private String currentChannel = null;
+
+    // Label to show which channel we’re in
+    private final JLabel currentChannelLabel = new JLabel("# global");
 
     // Buttons
     private final ThemeButton themeButton = new ThemeButton("Dark Mode");
@@ -98,6 +97,14 @@ public class MainView extends JPanel {
         searchPanel.add(new JButton("Go"), BorderLayout.EAST);
         leftBox.add(searchPanel);
         leftBox.add(Box.createVerticalStrut(8));
+
+        JPanel channelHeader = new JPanel(new BorderLayout(5, 5));
+        channelHeader.setBorder(borderBox());
+        channelHeader.add(new JLabel("Channel:"), BorderLayout.WEST);
+        channelHeader.add(currentChannelLabel, BorderLayout.CENTER);
+
+        leftBox.add(channelHeader);
+        leftBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // messageScroll
         JList<String> messageList = new JList<>(messageModel);
@@ -210,6 +217,18 @@ public class MainView extends JPanel {
         rightBox.add(channelListScroll);
         rightBox.add(Box.createVerticalStrut(8));
 
+        channelList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selected = channelList.getSelectedValue();
+                if (selected != null) {
+                    String name = selected.startsWith("# ")
+                            ? selected.substring(2)
+                            : selected;
+                    joinChannel(name);
+                }
+            }
+        });
+
         // channelManagePanel
         JPanel channelManagePanel = new JPanel();
         channelManagePanel.setPreferredSize(new Dimension(800, 80));
@@ -259,5 +278,28 @@ public class MainView extends JPanel {
                 BorderFactory.createLineBorder(new Color(90, 90, 90), 1),
                 new EmptyBorder(4, 4, 4, 4)
         );
+    }
+
+    /**
+     * Switch to the given channel: update UI label and notify the server/backend.
+     */
+    private void joinChannel(String channelName) {
+        if (channelName == null || channelName.isEmpty()) {
+            return;
+        }
+
+        // Update current channel state
+        this.currentChannel = channelName;
+        currentChannelLabel.setText("# " + channelName);
+
+        // Tell the backend / server that this client is joining the channel.
+        // This uses the existing TextMessage pipeline with a join command,
+        // so the join logic another developer wrote can pick it up.
+        try {
+            client.sendMessage("/join-channel " + channelName);
+        } catch (IOException e) {
+            // Show a short error in the chat if join fails
+            messageModel.addElement("ERROR: Failed to join channel \"" + channelName + "\": " + e.getMessage());
+        }
     }
 }
