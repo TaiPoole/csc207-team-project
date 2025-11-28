@@ -22,6 +22,10 @@ public class Channel {
         this.timestamp = timestamp;
     }
 
+    public Channel(String id) {
+        this.id = id;
+    }
+
     /** Returns the identifier/name of this channel. */
     public String getId() {
         return id;
