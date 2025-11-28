@@ -189,6 +189,14 @@ public class MainView extends JPanel {
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
+        // Listener for usernameField
+        usernameField.addActionListener(e -> {
+            String typedName = usernameField.getText().trim();
+            if (!typedName.isEmpty()) {
+                client.setUsername(typedName);
+            }
+        });
+
         // Random name generation button
         newButton.addActionListener(e -> {
             generateRandomNameController.generateRandomName();
