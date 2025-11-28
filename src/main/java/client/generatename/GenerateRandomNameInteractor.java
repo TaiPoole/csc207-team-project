@@ -16,7 +16,6 @@ public class GenerateRandomNameInteractor implements GenerateRandomNameInputBoun
         this.presenter = presenter;
     }
 
-    // acutally not need to do this, keep just for structure.
     @Override
     public void generate(GenerateRandomNameInputData inputData) {
         String name = randomNameGenerator.generate();

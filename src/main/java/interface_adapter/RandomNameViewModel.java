@@ -1,11 +1,10 @@
 package interface_adapter;
 
 /**
- * ViewModel for the "Generate Random Name" use case.
- *
+ * ViewModel for the Generate Random Name use case.
  * NOTE: For such a simple use case we could let the controller return the
- * generated name directly to the view, but we keep a dedicated ViewModel
- * to follow the View ↔ ViewModel separation used in Clean Architecture.
+ * generated name directly to the view, but I keep a dedicated ViewModel
+ * to follow the View <-> ViewModel separation used in Clean Architecture.
  */
 public class RandomNameViewModel {
 
