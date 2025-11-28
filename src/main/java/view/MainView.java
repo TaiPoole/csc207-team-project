@@ -1,12 +1,13 @@
 package view;
 
 import client.Client;
+import client.generatename.GenerateRandomNameController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
-import common.RandomNameGenerator;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
+import interface_adapter.RandomNameViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -33,7 +34,8 @@ import javax.swing.border.EmptyBorder;
 public class MainView extends JPanel {
 
     private final Client client;
-    private final RandomNameGenerator nameGenerator;
+    private final GenerateRandomNameController generateRandomNameController;
+    private final RandomNameViewModel randomNameViewModel;
     private final SendMessageInputBoundary sendMessageInteractor;
 
     // ListModels
@@ -59,12 +61,14 @@ public class MainView extends JPanel {
      */
     public MainView(
             Client client,
-            RandomNameGenerator nameGenerator,
+            GenerateRandomNameController generateRandomNameController,
+            RandomNameViewModel randomNameViewModel,
             DefaultListModel<String> messageModel,
             SendMessageInputBoundary sendMessageInteractor
     ) {
         this.client = client;
-        this.nameGenerator = nameGenerator;
+        this.generateRandomNameController = generateRandomNameController;
+        this.randomNameViewModel = randomNameViewModel;
         this.messageModel = messageModel;
         this.sendMessageInteractor = sendMessageInteractor;
 
@@ -187,9 +191,10 @@ public class MainView extends JPanel {
 
         // Random name generation button
         newButton.addActionListener(e -> {
-            String newName = nameGenerator.generate();
-            client.setUsername(newName);       // update local identity
-            usernameField.setText(newName);    // reflect in UI
+            generateRandomNameController.generateRandomName();
+            String newName = randomNameViewModel.getLatestName();
+            client.setUsername(newName);        // update local client identity
+            usernameField.setText(newName);     // reflect in UI field
         });
 
         // channelSearchPanel
