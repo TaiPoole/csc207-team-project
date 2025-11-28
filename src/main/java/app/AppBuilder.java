@@ -1,6 +1,7 @@
 package app;
 
 import client.Client;
+import client.generatename.*;
 import client.receivemessage.ReceiveMessageInputBoundary;
 import client.receivemessage.ReceiveMessageInputData;
 import client.receivemessage.ReceiveMessageInteractor;
@@ -17,6 +18,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import interface_adapter.RandomNameViewModel;
 import view.MainView;
 
 /**
@@ -28,12 +30,16 @@ public class AppBuilder {
     private MainView mainView;
 
     private final Client client;
-    private final RandomNameGenerator nameGenerator;
+    private final RandomNameGenerator randomNameGenerator;
     private final DefaultListModel<String> messageModel;
+    private final RandomNameViewModel randomNameViewModel;
 
     // Clean Architecture components
     private final ReceiveMessageInputBoundary receiveInteractor;
     private final SendMessageInputBoundary sendMessageInteractor;
+    private final GenerateRandomNameOutputBoundary randomNamePresenter;
+    private final GenerateRandomNameInputBoundary randomNameInteractor;
+    private final GenerateRandomNameController randomNameController;
 
     /**
      * Creates a new AppBuilder with a default application frame.
@@ -41,8 +47,9 @@ public class AppBuilder {
     public AppBuilder() throws IOException {
         this.frame = new JFrame("The really cool messaging service");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.nameGenerator = new RandomNameGenerator();
+        this.randomNameGenerator = new RandomNameGenerator();
         this.messageModel = new DefaultListModel<>();
+        this.randomNameViewModel = new RandomNameViewModel();
 
         String defaultName = "User";
 
@@ -61,6 +68,14 @@ public class AppBuilder {
         // Set up send message chain
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
+
+        // Generate random name chain
+        this.randomNamePresenter =
+                new GenerateRandomNamePresenter(randomNameViewModel);
+        this.randomNameInteractor =
+                new GenerateRandomNameInteractor(randomNameGenerator, randomNamePresenter);
+        this.randomNameController =
+                new GenerateRandomNameController(randomNameInteractor);
 
         this.client.connect();
     }
@@ -82,7 +97,8 @@ public class AppBuilder {
     public AppBuilder addMainView() {
         this.mainView = new MainView(
                 client,
-                nameGenerator,
+                randomNameController,
+                randomNameViewModel,
                 messageModel,
                 sendMessageInteractor
         );
