@@ -1,7 +1,11 @@
 package app;
 
 import client.Client;
-import client.generatename.*;
+import client.generatename.GenerateRandomNameController;
+import client.generatename.GenerateRandomNameInputBoundary;
+import client.generatename.GenerateRandomNameInteractor;
+import client.generatename.GenerateRandomNameOutputBoundary;
+import client.generatename.GenerateRandomNamePresenter;
 import client.receivemessage.ReceiveMessageInputBoundary;
 import client.receivemessage.ReceiveMessageInputData;
 import client.receivemessage.ReceiveMessageInteractor;
@@ -13,12 +17,12 @@ import client.sendmessage.SendMessageOutputBoundary;
 import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
 import gui.ThemeButton;
+import interfaceadapter.RandomNameViewModel;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import interface_adapter.RandomNameViewModel;
 import view.MainView;
 
 /**

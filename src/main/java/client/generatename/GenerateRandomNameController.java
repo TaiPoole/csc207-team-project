@@ -7,6 +7,9 @@ public class GenerateRandomNameController {
 
     private final GenerateRandomNameInputBoundary interactor;
 
+    /**
+     * Creates a controller with the given interactor.
+     * */
     public GenerateRandomNameController(GenerateRandomNameInputBoundary interactor) {
         this.interactor = interactor;
     }

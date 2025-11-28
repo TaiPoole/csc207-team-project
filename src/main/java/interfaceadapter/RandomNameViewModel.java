@@ -1,4 +1,4 @@
-package interface_adapter;
+package interfaceadapter;
 
 /**
  * ViewModel for the Generate Random Name use case.

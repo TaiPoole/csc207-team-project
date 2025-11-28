@@ -7,7 +7,7 @@ import client.sendmessage.SendMessageInputBoundary;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
-import interface_adapter.RandomNameViewModel;
+import interfaceadapter.RandomNameViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

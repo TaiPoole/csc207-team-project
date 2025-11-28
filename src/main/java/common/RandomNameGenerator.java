@@ -43,7 +43,6 @@ public class RandomNameGenerator {
 
     private Random random = new Random();
 
-
     /** Generates new random username.
      *  new name is just a random adjective, animal and user number
      *
