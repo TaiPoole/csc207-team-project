@@ -11,7 +11,6 @@ public class SendMessageOutputData {
     private final String timestamp;
     private final Attachment attachment;
 
-
     /** Basic Constructor.
      *
      * @param sender user that sent it
