@@ -43,4 +43,12 @@ public class Channel {
         this.messages.add(message);
     }
 
+    /** return messages array list.
+     *
+     * @return array list of messages to be returned
+     */
+    public ArrayList<Message> getMessages() {
+        return this.messages;
+    }
+
 }

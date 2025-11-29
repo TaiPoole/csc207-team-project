@@ -23,10 +23,10 @@ import java.util.concurrent.Executors;
  */
 public class Server {
     // TODO: checkstyle issues with channels and channelToUser not being queried, should be fixed with use cases
-    private final ArrayList<common.Channel> channels; // server channels, not used for communication
+    private final ArrayList<Channel> channels; // server channels, not used for communication
     private final Map<String, User> connectedUsers;
     private final Map<SocketChannel, User> channelToUser; // Map channel to user
-
+    private static final Map<String, Channel> nameToChannel = new HashMap<>(); // Map channel name to channel object
     private final int port;
     private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
@@ -252,7 +252,7 @@ public class Server {
      *
      * @param channel channel to be added
      */
-    public void addChannel(common.Channel channel) {
+    public void addChannel(Channel channel) {
         channels.add(channel);
     }
 
@@ -269,6 +269,15 @@ public class Server {
         } catch (IOException e) {
             System.err.println("Error shutting down server: " + e.getMessage());
         }
+    }
+
+    /** Return the channel object corresponding to channel name.
+     *
+     * @param name name of the channel
+     * @return the channel object
+     */
+    public static Channel getChannel(String name) {
+        return nameToChannel.get(name);
     }
 
 }
