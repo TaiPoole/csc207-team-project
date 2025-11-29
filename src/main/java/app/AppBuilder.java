@@ -1,6 +1,11 @@
 package app;
 
 import client.Client;
+import client.generatename.GenerateRandomNameController;
+import client.generatename.GenerateRandomNameInputBoundary;
+import client.generatename.GenerateRandomNameInteractor;
+import client.generatename.GenerateRandomNameOutputBoundary;
+import client.generatename.GenerateRandomNamePresenter;
 import client.receivemessage.ReceiveMessageInputBoundary;
 import client.receivemessage.ReceiveMessageInputData;
 import client.receivemessage.ReceiveMessageInteractor;
@@ -13,7 +18,7 @@ import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
 import gui.ThemeButton;
 import permissions.*;
-
+import interfaceadapter.RandomNameViewModel;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -32,14 +37,18 @@ public class AppBuilder {
     private MainView mainView;
 
     private final Client client;
-    private final RandomNameGenerator nameGenerator;
+    private final RandomNameGenerator randomNameGenerator;
     private final DefaultListModel<String> messageModel;
+    private final RandomNameViewModel randomNameViewModel;
 
     // Clean Architecture components
     private final ReceiveMessageInputBoundary receiveInteractor;
     private final SendMessageInputBoundary sendMessageInteractor;
     private final ManagePermissionsInputBoundary permissionsInteractor;
     private final PermissionsView permissionsView;
+    private final GenerateRandomNameOutputBoundary randomNamePresenter;
+    private final GenerateRandomNameInputBoundary randomNameInteractor;
+    private final GenerateRandomNameController randomNameController;
 
     /**
      * Creates a new AppBuilder with a default application frame.
@@ -47,8 +56,9 @@ public class AppBuilder {
     public AppBuilder() throws IOException {
         this.frame = new JFrame("The really cool messaging service");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.nameGenerator = new RandomNameGenerator();
+        this.randomNameGenerator = new RandomNameGenerator();
         this.messageModel = new DefaultListModel<>();
+        this.randomNameViewModel = new RandomNameViewModel();
 
         String defaultName = "User";
 
@@ -73,6 +83,15 @@ public class AppBuilder {
         ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
         ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
         this.permissionsInteractor = new ManagePermissionsInteractor(permissionGateway, managePresenter);
+        // Generate random name chain
+        this.randomNamePresenter =
+                new GenerateRandomNamePresenter(randomNameViewModel);
+        this.randomNameInteractor =
+                new GenerateRandomNameInteractor(randomNameGenerator, randomNamePresenter);
+        this.randomNameController =
+                new GenerateRandomNameController(randomNameInteractor);
+
+        this.client.connect();
     }
 
     /**
@@ -92,7 +111,8 @@ public class AppBuilder {
     public AppBuilder addMainView() {
         this.mainView = new MainView(
                 client,
-                nameGenerator,
+                randomNameController,
+                randomNameViewModel,
                 messageModel,
                 sendMessageInteractor,
                 permissionsInteractor,

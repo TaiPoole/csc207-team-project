@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.time.LocalDateTime;
+
 
 /** Server class.
  *  Centrally manages the messages between clients.
@@ -130,9 +132,21 @@ public class Server {
                             System.out.println("User registered: " + username);
                         }
 
-                        // Broadcast to all other clients
                         if (user != null) {
-                            broadcastMessage(message, clientChannel);
+                            String content = message.getContent();
+
+                            // --- Handle channel creation command ---
+                            //Channel creation message is TextMessage that starts with create-channel
+                            if (content != null && content.startsWith("/create-channel ")) {
+                                String channelName = content.substring("/create-channel ".length()).trim();
+
+                                // Update channel list
+                                handleCreateChannel(channelName);
+
+                                // NOT broadcast the raw command message
+                                continue;
+                            }
+                            broadcastMessage(message, user.getUsername());
                         }
                     }
                 }
@@ -235,5 +249,80 @@ public class Server {
 
         ByteBuffer buffer = ByteBuffer.wrap(serializedMessage.getBytes(StandardCharsets.UTF_8));
         clientChannel.write(buffer);
+    }
+
+    // TODO: Cut this if it doesn't end up being used
+    /** Broadcast a message to all connected clients.
+     */
+    public void sendToAll(Message message) {
+        ArrayList<String> disconnectedUsers = new ArrayList<>();
+
+        for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
+            String username = entry.getKey();
+            User user = entry.getValue();
+            SocketChannel channel = user.getChannel();
+
+            if (channel.isOpen()) {
+                try {
+                    sendToClient(channel, message);
+                } catch (IOException e) {
+                    System.err.println("Error sending to " + username + ": " + e.getMessage());
+                    disconnectedUsers.add(username);
+                }
+            } else {
+                disconnectedUsers.add(username);
+            }
+        }
+
+        // Clean up disconnected users
+        for (String username : disconnectedUsers) {
+            User userToRemove = connectedUsers.remove(username);
+            if (userToRemove != null) {
+                channelToUser.remove(userToRemove.getChannel());
+            }
+            System.out.println("Removed disconnected user: " + username);
+        }
+    }
+
+    /** Handling the addChannel method
+     * @param channelName channel to be added
+     */
+    private void handleCreateChannel(String channelName) {
+        if (channelName == null || channelName.isEmpty()) {
+            return;
+        }
+        common.Channel newChannel = new common.Channel(channelName);
+        addChannel(newChannel);
+    }
+
+    /** Adds a channel to channel list.
+     *
+     * @param channel channel to be added
+     */
+    public synchronized void addChannel(common.Channel channel) {
+        // Avoid duplicate channels by id
+        for (common.Channel existing : channels) {
+            if (existing.getId().equals(channel.getId())) {
+                System.out.println("Channel already exists: " + channel.getId());
+                return;
+            }
+        }
+        channels.add(channel);
+        System.out.println("Channel added: " + channel.getId());
+    }
+
+    // TODO: Cut this if it doesn't end up being used
+    /** Shuts down the server.
+     *  Closes all channels first
+     */
+    public void shutdown() {
+        try {
+            if (serverChannel != null && serverChannel.isOpen()) {
+                serverChannel.close();
+            }
+            clientHandlerPool.shutdown();
+        } catch (IOException e) {
+            System.err.println("Error shutting down server: " + e.getMessage());
+        }
     }
 }

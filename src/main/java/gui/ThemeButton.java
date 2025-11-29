@@ -29,7 +29,7 @@ public class ThemeButton extends Button {
      */
     public void createEnvironment(JPanel mainPanel) {
         this.theme.cyclePalette();
-        this.setText(theme.theme.getClass().getName().substring(4));
+        this.setText(theme.theme.getClass().getName().substring(4) + " Mode");
         theme.theme.applyPalette(mainPanel);
     }
 }

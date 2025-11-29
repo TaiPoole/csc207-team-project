@@ -50,6 +50,25 @@ public class SendMessageInteractorTest {
     }
 
     @Test
+    public void testSendNullMessageWithAttachment() throws InterruptedException{
+        DefaultListModel<String> messageModel = new DefaultListModel<>();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        TestClient client = new TestClient("testUser");
+
+        byte[] testFileBytes = "test file content".getBytes();
+        Attachment attachment = new Attachment("test.txt", testFileBytes);
+        SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
+        SendMessageInputData inputData = new SendMessageInputData(null, attachment);
+
+        interactor.execute(inputData);
+        Thread.sleep(100);
+
+        assertEquals(1, messageModel.getSize());
+        assertNotNull(client.lastMessageSent);
+        assertEquals("", client.lastMessageSent.getContent());
+    }
+
+    @Test
     public void testSendEmptyMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
