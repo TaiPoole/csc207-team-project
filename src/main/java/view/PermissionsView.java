@@ -1,32 +1,46 @@
 package view;
 
+import common.Permission;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+
 
 public class PermissionsView extends JDialog {
-    private JComboBox<String> comboBox;
-    private JTextField textField;
-    private JButton okButton;
-    private JButton cancelButton;
+    private final JComboBox<String> permissionComboBox;
+    private final JTextField usernameField;
+    private final JButton grantButton;
+    private final JButton cancelButton;
+    private final JLabel statusLabel;
+
 
     public PermissionsView(Frame parent) {
-        super(parent, "Permissions", true);
-        initComponents();
-        layoutComponents();
+        super(parent, "Manage Permissions", true);
 
-        setSize(400, 300);
+        // Initialize components
+        this.permissionComboBox = new JComboBox<>(getPermissionNames());
+        this.usernameField = new JTextField(20);
+        this.grantButton = new JButton("Grant Permission");
+        this.cancelButton = new JButton("Cancel");
+        this.statusLabel = new JLabel(" ");
+
+        layoutComponents();
+        setupListeners();
+
+        setSize(450, 250);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
     }
 
-    private void initComponents() {
-        String[] choices = {"Perm A", "Perm B", "Perm C"};
-        comboBox = new JComboBox<>(choices);
-
-        textField = new JTextField(20);
-
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
+    private String[] getPermissionNames() {
+        Permission[] permissions = Permission.values();
+        String[] names = new String[permissions.length];
+        for (int i = 0; i < permissions.length; i++) {
+            names[i] = permissions[i].name();
+        }
+        return names;
     }
 
     private void layoutComponents() {
@@ -34,27 +48,95 @@ public class PermissionsView extends JDialog {
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
 
-        JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        comboPanel.add(new JLabel("Select Permissions:"));
-        comboPanel.add(comboBox);
+        JPanel usernamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel usernameLabel = new JLabel("Target Username:");
+        usernameLabel.setPreferredSize(new Dimension(130, 25));
+        usernamePanel.add(usernameLabel);
+        usernamePanel.add(usernameField);
 
-        JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        textPanel.add(new JLabel("Enter name:"));
-        textPanel.add(textField);
+        JPanel permissionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel permissionLabel = new JLabel("Permission Type:");
+        permissionLabel.setPreferredSize(new Dimension(130, 25));
+        permissionPanel.add(permissionLabel);
+        permissionPanel.add(permissionComboBox);
 
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        statusLabel.setForeground(Color.BLUE);
+        statusPanel.add(statusLabel);
+
+        // Add spacing and panels
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainPanel.add(comboPanel);
+        mainPanel.add(usernamePanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainPanel.add(textPanel);
+        mainPanel.add(permissionPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        mainPanel.add(statusPanel);
 
+        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(okButton);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        buttonPanel.add(grantButton);
         buttonPanel.add(cancelButton);
 
         add(mainPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    private void setupListeners() {
+        cancelButton.addActionListener(e -> dispose());
+    }
+
+    public String getSelectedPermission() {
+        return (String) permissionComboBox.getSelectedItem();
+    }
+
+    public String getUsername() {
+        return usernameField.getText().trim();
+    }
+
+    /** Clears the username input field. */
+    public void clearUsername() {
+        usernameField.setText("");
+    }
+
+    /** Displays a success message.
+     *
+     * @param message the success message to display
+     */
+    public void showSuccess(String message) {
+        statusLabel.setForeground(new Color(0, 128, 0));
+        statusLabel.setText(message);
+    }
+
+    /** Displays an error message.
+     *
+     * @param error the error message to display
+     */
+    public void showError(String error) {
+        statusLabel.setForeground(Color.RED);
+        statusLabel.setText(error);
+    }
+
+    /** Clears the status message. */
+    public void clearStatus() {
+        statusLabel.setText(" ");
+    }
+
+    /** Adds an action listener to the grant button.
+     *
+     * @param listener the action listener
+     */
+    public void addGrantButtonListener(ActionListener listener) {
+        grantButton.addActionListener(listener);
+    }
+
+    /** Adds an action listener to the cancel button.
+     *
+     * @param listener the action listener
+     */
+    public void addCancelButtonListener(ActionListener listener) {
+        cancelButton.addActionListener(listener);
+    }
 }

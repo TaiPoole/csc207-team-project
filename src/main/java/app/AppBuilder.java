@@ -17,13 +17,16 @@ import client.sendmessage.SendMessageOutputBoundary;
 import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
 import gui.ThemeButton;
+import permissions.*;
 import interfaceadapter.RandomNameViewModel;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+
 import view.MainView;
+import view.PermissionsView;
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -41,6 +44,8 @@ public class AppBuilder {
     // Clean Architecture components
     private final ReceiveMessageInputBoundary receiveInteractor;
     private final SendMessageInputBoundary sendMessageInteractor;
+    private final ManagePermissionsInputBoundary permissionsInteractor;
+    private final PermissionsView permissionsView;
     private final GenerateRandomNameOutputBoundary randomNamePresenter;
     private final GenerateRandomNameInputBoundary randomNameInteractor;
     private final GenerateRandomNameController randomNameController;
@@ -69,10 +74,15 @@ public class AppBuilder {
             }
         });
 
-        // Set up send message chain
+        this.client.connect();
+
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
+        this.permissionsView = new PermissionsView(this.frame);
+        ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
+        ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
+        this.permissionsInteractor = new ManagePermissionsInteractor(permissionGateway, managePresenter);
         // Generate random name chain
         this.randomNamePresenter =
                 new GenerateRandomNamePresenter(randomNameViewModel);
@@ -104,7 +114,9 @@ public class AppBuilder {
                 randomNameController,
                 randomNameViewModel,
                 messageModel,
-                sendMessageInteractor
+                sendMessageInteractor,
+                permissionsInteractor,
+                permissionsView
         );
 
         this.frame.setContentPane(mainView);

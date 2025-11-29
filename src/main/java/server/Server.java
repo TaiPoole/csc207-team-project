@@ -3,6 +3,8 @@ package server;
 import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
+import common.User;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -10,8 +12,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.time.LocalDateTime;
@@ -23,10 +25,9 @@ import java.time.LocalDateTime;
  *  and a handler pool for connected clients to the service.
  */
 public class Server {
-    // TODO: checkstyle issues with channels and channelToUser not being queried, should be fixed with use cases
     private final ArrayList<common.Channel> channels; // server channels, not used for communication
-    private final Map<String, User> connectedUsers;
-    private final Map<SocketChannel, User> channelToUser; // Map channel to user
+    private final Map<SocketChannel, User> channelToUser; // Map channel to user (primary mapping)
+    private final Map<String, SocketChannel> usernameToChannel; // Reverse lookup for convenience
 
     private final int port;
     private ServerSocketChannel serverChannel;
@@ -40,8 +41,8 @@ public class Server {
     public Server(int port) {
         this.channels = new ArrayList<>();
         this.port = port;
-        this.connectedUsers = new HashMap<>();
-        this.channelToUser = new HashMap<>();
+        this.channelToUser = new ConcurrentHashMap<>();
+        this.usernameToChannel = new ConcurrentHashMap<>();
         this.clientHandlerPool = Executors.newCachedThreadPool();
     }
 
@@ -123,9 +124,11 @@ public class Server {
 
                         // Register user on first message
                         if (user == null && username != null) {
-                            user = new User(username, clientChannel);
-                            connectedUsers.put(username, user);
+                            user = new User(username);
+
                             channelToUser.put(clientChannel, user);
+                            usernameToChannel.put(username, clientChannel);
+
                             System.out.println("User registered: " + username);
                         }
 
@@ -151,17 +154,29 @@ public class Server {
         } catch (IOException e) {
             System.err.println("Error handling client " + clientAddress + ": " + e.getMessage());
         } finally {
-            // Clean up when client disconnects
-            if (user != null) {
-                connectedUsers.remove(user.getUsername());
-                channelToUser.remove(clientChannel);
-                System.out.println("User disconnected: " + user.getUsername());
-            }
-            try {
+            disconnectClient(clientChannel);
+        }
+    }
+
+    /** Handles client disconnection cleanup.
+     *  Removes client from both maps and closes the channel.
+     *
+     * @param clientChannel the channel to disconnect
+     */
+    private void disconnectClient(SocketChannel clientChannel) {
+        User user = channelToUser.remove(clientChannel);
+
+        if (user != null) {
+            usernameToChannel.remove(user.getUsername());
+            System.out.println("User disconnected: " + user.getUsername());
+        }
+
+        try {
+            if (clientChannel.isOpen()) {
                 clientChannel.close();
-            } catch (IOException e) {
-                System.err.println("Error closing channel: " + e.getMessage());
             }
+        } catch (IOException e) {
+            System.err.println("Error closing channel: " + e.getMessage());
         }
     }
 
@@ -193,27 +208,36 @@ public class Server {
 
     /** Broadcasts a message.
      * Sends a message to all connected clients except the sender
+     *
+     * @param message the message to broadcast
+     * @param senderChannel the channel of the sender (to exclude from broadcast)
      */
-    private void broadcastMessage(Message message, String senderUsername) {
-        for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
-            String username = entry.getKey();
+    private void broadcastMessage(Message message, SocketChannel senderChannel) {
+        for (Map.Entry<SocketChannel, User> entry : channelToUser.entrySet()) {
+            SocketChannel channel = entry.getKey();
             User user = entry.getValue();
 
             // Don't send message back to sender
-            if (username.equals(senderUsername)) {
+            if (channel.equals(senderChannel)) {
                 continue;
             }
 
             try {
-                sendToClient(user.getChannel(), message);
+                sendToClient(channel, message);
             } catch (IOException e) {
-                System.err.println("Error sending to " + username + ": " + e.getMessage());
+                System.err.println("Error sending to " + user.getUsername() + ": " + e.getMessage());
+                // Schedule disconnection (can't modify map during iteration)
+                clientHandlerPool.execute(() -> disconnectClient(channel));
             }
         }
     }
 
     /** Sends a message to a specific client.
      * Uses the protocol format described below
+     *
+     * @param clientChannel the channel to send to
+     * @param message the message to send
+     * @throws IOException if an I/O error occurs
      */
     public void sendToClient(SocketChannel clientChannel, Message message) throws IOException {
         if (!clientChannel.isOpen()) {
