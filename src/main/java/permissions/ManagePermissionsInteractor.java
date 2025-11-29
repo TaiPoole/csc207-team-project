@@ -31,8 +31,6 @@ public class ManagePermissionsInteractor implements ManagePermissionsInputBounda
 
         } catch (IllegalArgumentException e) {
             presenter.prepareFailView("Invalid Permission Type: " + inputData.getPermissionName());
-        } catch (Exception e) {
-            presenter.prepareFailView("Error: " + e.getMessage());
         }
     }
 }

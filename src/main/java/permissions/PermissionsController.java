@@ -1,9 +1,6 @@
 package permissions;
 
-
 import view.PermissionsView;
-
-import java.awt.*;
 
 public class PermissionsController {
     private final PermissionsView view;
