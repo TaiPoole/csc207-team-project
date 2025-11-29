@@ -3,6 +3,7 @@ package client.sendmessage;
 import client.Client;
 import common.Attachment;
 import common.Message;
+import interfaceadapter.AttachmentRegistry;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +16,8 @@ public class SendMessageInteractorTest {
     public void testSendMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         TestClient client = new TestClient("testUser");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -33,7 +35,8 @@ public class SendMessageInteractorTest {
     public void testSendMessageWithAttachment() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         TestClient client = new TestClient("testUser");
 
         byte[] testFileBytes = "test file content".getBytes();
@@ -52,7 +55,8 @@ public class SendMessageInteractorTest {
     @Test
     public void testSendNullMessageWithAttachment() throws InterruptedException{
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         TestClient client = new TestClient("testUser");
 
         byte[] testFileBytes = "test file content".getBytes();
@@ -72,7 +76,8 @@ public class SendMessageInteractorTest {
     public void testSendEmptyMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -89,7 +94,8 @@ public class SendMessageInteractorTest {
     public void testSendNullMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -106,7 +112,8 @@ public class SendMessageInteractorTest {
     public void testSendMessageNotConnected() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -123,7 +130,8 @@ public class SendMessageInteractorTest {
     public void testSendMessageWithAttachmentNotConnected() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -171,7 +179,8 @@ public class SendMessageInteractorTest {
     public void testIOException() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        AttachmentRegistry attachmentRegistry = new AttachmentRegistry();
+        SendMessagePresenter presenter = new SendMessagePresenter(messageModel, attachmentRegistry);
         TestClient client = new TestClient("testUser");
         client.shouldThrowIOException = true;
 

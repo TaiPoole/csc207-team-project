@@ -24,6 +24,8 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import view.MainView;
+import interfaceadapter.AttachmentRegistry;
+
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -37,6 +39,8 @@ public class AppBuilder {
     private final RandomNameGenerator randomNameGenerator;
     private final DefaultListModel<String> messageModel;
     private final RandomNameViewModel randomNameViewModel;
+    private final AttachmentRegistry attachmentRegistry;
+
 
     // Clean Architecture components
     private final ReceiveMessageInputBoundary receiveInteractor;
@@ -54,11 +58,14 @@ public class AppBuilder {
         this.randomNameGenerator = new RandomNameGenerator();
         this.messageModel = new DefaultListModel<>();
         this.randomNameViewModel = new RandomNameViewModel();
+        this.attachmentRegistry = new AttachmentRegistry();
+
 
         String defaultName = "User";
 
         // Set up receive message chain first
-        ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(messageModel);
+        ReceiveMessageOutputBoundary receivePresenter =
+                new ReceiveMessagePresenter(messageModel, attachmentRegistry);
         this.receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
 
         // Create client with message handler
@@ -70,7 +77,8 @@ public class AppBuilder {
         });
 
         // Set up send message chain
-        SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
+        SendMessageOutputBoundary sendPresenter =
+                new SendMessagePresenter(messageModel, attachmentRegistry);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
         // Generate random name chain
@@ -104,7 +112,8 @@ public class AppBuilder {
                 randomNameController,
                 randomNameViewModel,
                 messageModel,
-                sendMessageInteractor
+                sendMessageInteractor,
+                attachmentRegistry
         );
 
         this.frame.setContentPane(mainView);

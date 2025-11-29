@@ -1,6 +1,8 @@
 package client.receivemessage;
 
 import common.Attachment;
+import interfaceadapter.AttachmentRegistry;
+
 import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 
@@ -10,37 +12,47 @@ import javax.swing.SwingUtilities;
  */
 public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
     private final DefaultListModel<String> messageModel;
+    private final AttachmentRegistry attachmentRegistry;
 
     /** Basic constructor.
      *
      * @param messageModel message list to update when message is received
      */
-    public ReceiveMessagePresenter(DefaultListModel<String> messageModel) {
+    public ReceiveMessagePresenter(DefaultListModel<String> messageModel, AttachmentRegistry attachmentRegistry) {
         this.messageModel = messageModel;
+        this.attachmentRegistry = attachmentRegistry;
     }
 
     @Override
     public void displayMessage(ReceiveMessageOutputData outputData) {
+        Attachment attachment = outputData.getAttachment();
+
+        String formattedMessage;
+        if (attachment != null) {
+            formattedMessage = String.format(
+                    "[%s] %s: %s | %s",
+                    outputData.getTimestamp(),
+                    outputData.getSender(),
+                    outputData.getContent(),
+                    attachment.getName()
+            );
+        } else {
+            formattedMessage = String.format(
+                    "[%s] %s: %s",
+                    outputData.getTimestamp(),
+                    outputData.getSender(),
+                    outputData.getContent()
+            );
+        }
+
+        String finalFormattedMessage = formattedMessage;
+
         SwingUtilities.invokeLater(() -> {
-            // bodge; should be fixed at some point to display something other than string and check instanceof instead
-            if (outputData.getAttachment() != null) {
-                Attachment attachment = outputData.getAttachment();
-                String fileMessage = String.format("[%s] %s: %s | %s",
-                        outputData.getTimestamp(),
-                        outputData.getSender(),
-                        outputData.getContent(),
-                        attachment.getName()
-                );
-                messageModel.addElement(fileMessage);
-            } else {
-                String formattedMessage = String.format("[%s] %s: %s",
-                        outputData.getTimestamp(),
-                        outputData.getSender(),
-                        outputData.getContent()
-                );
+            messageModel.addElement(finalFormattedMessage);
 
-                messageModel.addElement(formattedMessage);
-
+            if (attachment != null) {
+                int index = messageModel.getSize() - 1;
+                attachmentRegistry.registerAttachment(index, attachment);
             }
         });
 

@@ -5,6 +5,8 @@ import client.generatename.GenerateRandomNameController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
 import common.RandomNameGenerator;
+import common.Attachment;
+import interfaceadapter.AttachmentRegistry;
 import interfaceadapter.RandomNameViewModel;
 import gui.PickFileListener;
 import gui.SendButtonListener;
@@ -14,6 +16,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -35,6 +42,7 @@ public class MainView extends JPanel {
     // ListModels
     private final DefaultListModel<String> channelModel = new DefaultListModel<>();
     private final DefaultListModel<String> messageModel;
+    private final AttachmentRegistry attachmentRegistry;
 
     // TextFields
     private final JTextField usernameField;
@@ -58,13 +66,15 @@ public class MainView extends JPanel {
             GenerateRandomNameController generateRandomNameController,
             RandomNameViewModel randomNameViewModel,
             DefaultListModel<String> messageModel,
-            SendMessageInputBoundary sendMessageInteractor
+            SendMessageInputBoundary sendMessageInteractor,
+            AttachmentRegistry attachmentRegistry
     ) {
         this.client = client;
         this.generateRandomNameController = generateRandomNameController;
         this.randomNameViewModel = randomNameViewModel;
         this.messageModel = messageModel;
         this.sendMessageInteractor = sendMessageInteractor;
+        this.attachmentRegistry = attachmentRegistry;
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
@@ -100,7 +110,46 @@ public class MainView extends JPanel {
 
         // messageScroll
         JList<String> messageList = new JList<>(messageModel);
+
+        // Double-click a message with an attachment to download it
+        messageList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+                    int index = messageList.locationToIndex(e.getPoint());
+                    if (index < 0) {
+                        return;
+                    }
+
+                    Attachment attachment = attachmentRegistry.getAttachment(index);
+                    if (attachment == null) {
+                        // No file attached
+                        return;
+                    }
+
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setSelectedFile(new File(attachment.getName()));
+                    int result = chooser.showSaveDialog(MainView.this);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File target = chooser.getSelectedFile();
+                        try (FileOutputStream out = new FileOutputStream(target)) {
+                            out.write(attachment.getAttachment());
+                            out.flush();
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(
+                                    MainView.this,
+                                    "Failed to save file: " + ex.getMessage(),
+                                    "Save Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
+                    }
+                }
+            }
+        });
+
         JScrollPane messageScroll = new JScrollPane(messageList);
+
         messageScroll.setPreferredSize(new Dimension(800, 520));
         messageScroll.setBorder(borderBox());
         leftBox.add(messageScroll);
@@ -139,7 +188,10 @@ public class MainView extends JPanel {
             // Get the frame dynamically when button is clicked
             Window window = SwingUtilities.getWindowAncestor(this);
             JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
-            filePicker = new PickFileListener(owner, fileDisplayPanel);
+            //filePicker = new PickFileListener(owner, fileDisplayPanel);
+            //use the same filePicker
+            filePicker.setParentFrame(owner);
+
             filePicker.actionPerformed(e);
         });
 
