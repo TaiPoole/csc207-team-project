@@ -4,29 +4,23 @@ import client.Client;
 import client.generatename.GenerateRandomNameController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
+import common.RandomNameGenerator;
+import interfaceadapter.RandomNameViewModel;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
-import interfaceadapter.RandomNameViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
+import java.io.IOException;
 
 /**
  * The main messaging UI.
@@ -145,7 +139,7 @@ public class MainView extends JPanel {
             // Get the frame dynamically when button is clicked
             Window window = SwingUtilities.getWindowAncestor(this);
             JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
-            filePicker.setParentFrame(owner);
+            filePicker = new PickFileListener(owner, fileDisplayPanel);
             filePicker.actionPerformed(e);
         });
 
@@ -189,20 +183,12 @@ public class MainView extends JPanel {
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
-        // Listener for usernameField
-        usernameField.addActionListener(e -> {
-            String typedName = usernameField.getText().trim();
-            if (!typedName.isEmpty()) {
-                client.setUsername(typedName);
-            }
-        });
-
         // Random name generation button
         newButton.addActionListener(e -> {
             generateRandomNameController.generateRandomName();
             String newName = randomNameViewModel.getLatestName();
-            client.setUsername(newName);        // update local client identity
-            usernameField.setText(newName);     // reflect in UI field
+            client.setUsername(newName);       // update local identity
+            usernameField.setText(newName);    // reflect in UI
         });
 
         // channelSearchPanel
@@ -228,11 +214,20 @@ public class MainView extends JPanel {
         channelManagePanel.setPreferredSize(new Dimension(800, 80));
         channelManagePanel.setLayout(new BorderLayout(5, 5));
         channelManagePanel.setBorder(borderBox());
-        channelManagePanel.add(new JButton("+"), BorderLayout.WEST);
-        channelManagePanel.add(channelNameField, BorderLayout.CENTER);
-
+        // "+" Add Channel button
+        JButton addChannelButton = new JButton("+");
+        channelManagePanel.add(addChannelButton, BorderLayout.WEST);
         JButton permsButton = new JButton("Manage");
         channelManagePanel.add(permsButton, BorderLayout.EAST);
+
+        // Add Channel dialog popup
+        addChannelButton.addActionListener(e -> {
+            Window w = SwingUtilities.getWindowAncestor(this);
+            Frame owner = (w instanceof Frame) ? (Frame) w : null;
+
+            AddChannelDialog dialog = new AddChannelDialog(owner, channelModel, client);
+            dialog.setVisible(true);
+        });
 
         // Permissions dialog popup
         permsButton.addActionListener(e -> {

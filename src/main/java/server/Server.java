@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.time.LocalDateTime;
+
 
 /** Server class.
  *  Centrally manages the messages between clients.
@@ -127,8 +129,20 @@ public class Server {
                             System.out.println("User registered: " + username);
                         }
 
-                        // Broadcast to all other clients
                         if (user != null) {
+                            String content = message.getContent();
+
+                            // --- Handle channel creation command ---
+                            //Channel creation message is TextMessage that starts with create-channel
+                            if (content != null && content.startsWith("/create-channel ")) {
+                                String channelName = content.substring("/create-channel ".length()).trim();
+
+                                // Update channel list
+                                handleCreateChannel(channelName);
+
+                                // NOT broadcast the raw command message
+                                continue;
+                            }
                             broadcastMessage(message, user.getUsername());
                         }
                     }
@@ -246,13 +260,31 @@ public class Server {
         }
     }
 
-    // TODO: Cut this if it doesn't end up being used
+    /** Handling the addChannel method
+     * @param channelName channel to be added
+     */
+    private void handleCreateChannel(String channelName) {
+        if (channelName == null || channelName.isEmpty()) {
+            return;
+        }
+        common.Channel newChannel = new common.Channel(channelName);
+        addChannel(newChannel);
+    }
+
     /** Adds a channel to channel list.
      *
      * @param channel channel to be added
      */
-    public void addChannel(common.Channel channel) {
+    public synchronized void addChannel(common.Channel channel) {
+        // Avoid duplicate channels by id
+        for (common.Channel existing : channels) {
+            if (existing.getId().equals(channel.getId())) {
+                System.out.println("Channel already exists: " + channel.getId());
+                return;
+            }
+        }
         channels.add(channel);
+        System.out.println("Channel added: " + channel.getId());
     }
 
     // TODO: Cut this if it doesn't end up being used

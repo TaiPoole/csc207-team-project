@@ -22,6 +22,15 @@ public class Channel {
         this.timestamp = timestamp;
     }
 
+    public Channel(String id) {
+        this.id = id;
+    }
+
+    /** Returns the identifier/name of this channel. */
+    public String getId() {
+        return id;
+    }
+
     /** Add users to a channel.
      *
      * @param users users to be added
