@@ -11,15 +11,15 @@ public class Channel {
     final String id;
     ArrayList<User> clients;
     LocalDateTime timestamp;
+    ArrayList<Message> messages;
 
     /** Basic constructor.
      *  initializes with empty client and message lists
      *
      * @param id id to assign
      */
-    public Channel(String id,  LocalDateTime timestamp) {
+    public Channel(String id) {
         this.id = id;
-        this.timestamp = timestamp;
     }
 
     /** Add users to a channel.
@@ -34,4 +34,23 @@ public class Channel {
         }
     }
 
+    /** Add message to this.messages.
+     *
+     * @param message message to be added
+     */
+    public void addMessage(Message message) {
+        this.messages.add(message);
+    }
+
+    /** return messages array list.
+     *
+     * @return array list of messages to be returned
+     */
+    public ArrayList<Message> getMessages() {
+        return this.messages;
+    }
+
+    public String getChannelName() {
+        return this.id;
+    }
 }

@@ -1,6 +1,8 @@
 package gui;
 
 import client.sendmessage.SendMessageController;
+import server.Server;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTextField;
@@ -13,6 +15,7 @@ public class SendButtonListener implements ActionListener {
     private final JTextField messageField;
     private final PickFileListener filePicker;
     private final SendMessageController sendMessageController;
+    private final JTextField channelIdField;
 
     /** Basic Constructor.
      *
@@ -22,21 +25,23 @@ public class SendButtonListener implements ActionListener {
      */
     public SendButtonListener(JTextField messageField,
                               PickFileListener filePicker,
-                              SendMessageController sendMessageController) {
+                              SendMessageController sendMessageController, JTextField channelIdField) {
         this.messageField = messageField;
         this.filePicker = filePicker;
         this.sendMessageController = sendMessageController;
+        this.channelIdField = channelIdField;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String message = messageField.getText().trim();
-
+        String channelId = channelIdField.getText();
         if (filePicker.hasAttachment()) {
-            sendMessageController.sendMessageWithAttachment(message, filePicker.getAttachment());
+            sendMessageController.sendMessageWithAttachment(message, filePicker.getAttachment(),
+                    Server.getChannel(channelId));
             filePicker.clearAttachment();
         } else if (!message.isEmpty()) {
-            sendMessageController.sendMessage(message);
+            sendMessageController.sendMessage(message, Server.getChannel(channelId));
         }
         messageField.setText("");
     }

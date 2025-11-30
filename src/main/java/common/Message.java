@@ -51,4 +51,10 @@ public interface Message {
      * @return attachment for the message (always exists in the contexts it's called)
      */
     Attachment getAttachment();
+
+    /** Get the channel that the message is in.
+     *
+     * @return the channel
+     */
+    Channel getChannel();
 }

@@ -3,6 +3,7 @@ package client.sendmessage;
 import client.Client;
 import common.Attachment;
 import common.Message;
+import common.Channel;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,9 +18,10 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         TestClient client = new TestClient("testUser");
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData("test-message");
+        SendMessageInputData inputData = new SendMessageInputData("test-message", channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);
@@ -35,11 +37,12 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         TestClient client = new TestClient("testUser");
+        Channel channel = new Channel("TestChannel");
 
         byte[] testFileBytes = "test file content".getBytes();
         Attachment attachment = new Attachment("test.txt", testFileBytes);
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData("test-message", attachment);
+        SendMessageInputData inputData = new SendMessageInputData("test-message", attachment, channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);
@@ -55,9 +58,10 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         Client client = new Client("testUser", "localhost", null);
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData(" ", null);
+        SendMessageInputData inputData = new SendMessageInputData(" ", null, channel);
 
         interactor.execute(inputData);
         Thread.sleep(100); // Wait for SwingUtilities.invokeLater
@@ -72,9 +76,10 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         Client client = new Client("testUser", "localhost", null);
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData(null);
+        SendMessageInputData inputData = new SendMessageInputData(null, channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);
@@ -89,9 +94,10 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         Client client = new Client("testUser", "localhost", null);
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData("test-message");
+        SendMessageInputData inputData = new SendMessageInputData("test-message", channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);
@@ -106,11 +112,12 @@ public class SendMessageInteractorTest {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         Client client = new Client("testUser", "localhost", null);
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
         byte[] testFileBytes = "test file content".getBytes();
         Attachment attachment = new Attachment("testfile.txt", testFileBytes);
-        SendMessageInputData inputData = new SendMessageInputData("Hello World", attachment);
+        SendMessageInputData inputData = new SendMessageInputData("Hello World", attachment, channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);
@@ -128,8 +135,8 @@ public class SendMessageInteractorTest {
 
     @Test
     public void testInputDataWithoutAttachmentHasNoAttachment() {
-
-        SendMessageInputData inputData = new SendMessageInputData("Test message");
+        Channel channel = new Channel("TestChannel");
+        SendMessageInputData inputData = new SendMessageInputData("Test message", channel);
 
         assertFalse(inputData.hasAttachment());
         assertNull(inputData.getAttachment());
@@ -140,7 +147,8 @@ public class SendMessageInteractorTest {
 
         byte[] testFileBytes = "test file content".getBytes();
         Attachment attachment = new Attachment("testfile.txt", testFileBytes);
-        SendMessageInputData inputData = new SendMessageInputData("Test message", attachment);
+        Channel channel = new Channel("TestChannel");
+        SendMessageInputData inputData = new SendMessageInputData("Test message", attachment, channel);
 
         assertTrue(inputData.hasAttachment());
         assertNotNull(inputData.getAttachment());
@@ -155,9 +163,10 @@ public class SendMessageInteractorTest {
         SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
         TestClient client = new TestClient("testUser");
         client.shouldThrowIOException = true;
+        Channel channel = new Channel("TestChannel");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
-        SendMessageInputData inputData = new SendMessageInputData("Test message");
+        SendMessageInputData inputData = new SendMessageInputData("Test message", channel);
 
         interactor.execute(inputData);
         Thread.sleep(100);

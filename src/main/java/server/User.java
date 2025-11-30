@@ -1,5 +1,6 @@
 package server;
 
+import common.Channel;
 import java.nio.channels.SocketChannel;
 
 /** User class.
@@ -8,6 +9,7 @@ import java.nio.channels.SocketChannel;
 public class User {
     private final String username;
     private final SocketChannel socketChannel;
+    private Channel currentChannel;
 
     /** Basic User constructor.
      *
@@ -25,5 +27,13 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public Channel getCurrentChannel() {
+        return currentChannel;
+    }
+
+    public void setCurrentChannel(Channel channel) {
+        this.currentChannel = channel;
     }
 }

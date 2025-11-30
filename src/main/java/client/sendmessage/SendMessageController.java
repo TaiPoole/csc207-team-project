@@ -1,6 +1,7 @@
 package client.sendmessage;
 
 import common.Attachment;
+import common.Channel;
 
 /** SendMessageController class.
  *  holds all the logic for interacting/input/output, wraps it for general calling
@@ -21,8 +22,8 @@ public class SendMessageController {
      *
      * @param messageContent raw input from user
      */
-    public void sendMessage(String messageContent) {
-        SendMessageInputData inputData = new SendMessageInputData(messageContent);
+    public void sendMessage(String messageContent, Channel channel) {
+        SendMessageInputData inputData = new SendMessageInputData(messageContent, channel);
         sendMessageInteractor.execute(inputData);
     }
 
@@ -32,8 +33,8 @@ public class SendMessageController {
      * @param messageContent raw text input from user
      * @param attachment file attached to message by user
      */
-    public void sendMessageWithAttachment(String messageContent, Attachment attachment) {
-        SendMessageInputData inputData = new SendMessageInputData(messageContent, attachment);
+    public void sendMessageWithAttachment(String messageContent, Attachment attachment, Channel channel) {
+        SendMessageInputData inputData = new SendMessageInputData(messageContent, attachment, channel);
         sendMessageInteractor.execute(inputData);
     }
 }

@@ -1,6 +1,7 @@
 package client;
 
 import common.AttachmentMessage;
+import common.Channel;
 import common.Message;
 import common.TextMessage;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
+import server.Server;
 
 /**
  * Client that communicates with server - sends and receives Message.
@@ -123,8 +125,8 @@ public class Client {
      *
      * @throws IOException Fails to connect to server.
      */
-    public void sendMessage(String message) throws IOException {
-        sendMessage(new TextMessage(username, message, LocalDateTime.now()));
+    public void sendMessage(String message, Channel channel) throws IOException {
+        sendMessage(new TextMessage(username, message, LocalDateTime.now(), channel));
     }
 
     /**

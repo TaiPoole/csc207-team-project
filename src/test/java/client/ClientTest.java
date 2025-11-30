@@ -1,5 +1,6 @@
 package client;
 
+import common.Channel;
 import common.Message;
 import common.TextMessage;
 import org.junit.jupiter.api.AfterEach;
@@ -123,7 +124,8 @@ public class ClientTest {
     @Test
     public void testSendMessageWithoutConnection() {
         client = new Client(TEST_USERNAME, TEST_SERVER, callback);
-        assertThrows(IllegalStateException.class, () -> client.sendMessage("Test"));
+        Channel testChannel = new Channel("test");
+        assertThrows(IllegalStateException.class, () -> client.sendMessage("Test", testChannel));
     }
 
     @Test
@@ -155,7 +157,8 @@ public class ClientTest {
         serverChannel.configureBlocking(false);
 
         String testMessage = "Hello Server";
-        client.sendMessage(testMessage);
+        Channel testChannel = new Channel("test");
+        client.sendMessage(testMessage, testChannel);
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         Thread.sleep(100);
@@ -198,8 +201,8 @@ public class ClientTest {
         connectThread.join(1000);
         assertNotNull(serverChannel, "Server should accept connection");
         serverChannel.configureBlocking(false);
-
-        TextMessage message = new TextMessage(TEST_USERNAME, "Test content", LocalDateTime.now());
+        Channel testChannel = new Channel("test");
+        TextMessage message = new TextMessage(TEST_USERNAME, "Test content", LocalDateTime.now(), testChannel);
         client.sendMessage(message);
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -238,9 +241,9 @@ public class ClientTest {
 
         connectThread.join(1000);
         assertNotNull(serverChannel, "Server should accept connection");
-
+        Channel testChannel = new Channel("test");
         String className = "Common.textMessage";
-        TextMessage testMsg = new TextMessage("server", "Test message from server", LocalDateTime.now());
+        TextMessage testMsg = new TextMessage("server", "Test message from server", LocalDateTime.now(), testChannel);
         String serialized = testMsg.serialize();
         String fullMessage = className + "\n" + serialized;
 

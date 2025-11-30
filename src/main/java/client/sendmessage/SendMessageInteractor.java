@@ -40,13 +40,15 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
         try {
             Message message;
             if (input.hasAttachment()) {
-                message = new AttachmentMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(), input.getAttachment());
+                message = new AttachmentMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(),
+                        input.getAttachment(), input.getChannel());
             } else {
-                message = new TextMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now());
+                message = new TextMessage(client.getUsername(), input.getMessageContent(), LocalDateTime.now(),
+                        input.getChannel());
             }
 
             client.sendMessage(message);
-
+            input.getChannel().addMessage(message);
             String formattedTime = LocalDateTime.now().format(TIME_FORMATTER);
             SendMessageOutputData outputData = new SendMessageOutputData(
                     client.getUsername(),

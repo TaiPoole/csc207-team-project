@@ -1,5 +1,7 @@
 package common;
 
+import server.Server;
+
 import java.time.LocalDateTime;
 
 /** TextMessage Class.
@@ -10,6 +12,8 @@ public class TextMessage implements Message {
     private final String username;
     private final String content;
     private final LocalDateTime timestamp;
+    private final Channel channel;
+
 
     /** Basic Constructor.
      *
@@ -17,10 +21,11 @@ public class TextMessage implements Message {
      * @param content contents of the image
      * @param timestamp when it was sent
      */
-    public TextMessage(String username, String content, LocalDateTime timestamp) {
+    public TextMessage(String username, String content, LocalDateTime timestamp, Channel channel) {
         this.username = username;
         this.content = content;
         this.timestamp = timestamp;
+        this.channel = channel;
     }
 
     /** Deserializes message.
@@ -35,13 +40,14 @@ public class TextMessage implements Message {
             throw new IllegalArgumentException("Serialized message cannot be null or empty");
         }
 
-        String[] parts = message.split("\n", 3);
+        String[] parts = message.split("\n", 4);
 
-        if (parts.length < 3) {
+        if (parts.length < 4) {
             throw new IllegalArgumentException("Invalid format");
         }
+        String channelId = parts[3];
 
-        return new TextMessage(parts[0], parts[2], LocalDateTime.parse(parts[1]));
+        return new TextMessage(parts[0], parts[2], LocalDateTime.parse(parts[1]), Server.getChannel(channelId));
     }
 
     /** Serializes message.
@@ -50,7 +56,7 @@ public class TextMessage implements Message {
      * @return TextMessage-converted String
      */
     public String serialize() {
-        return this.username + "\n" + this.timestamp + "\n" + this.content;
+        return this.username + "\n" + this.timestamp + "\n" + this.content + "\n" + this.channel.getChannelName();
     }
 
     public String getUsername() {
@@ -67,6 +73,10 @@ public class TextMessage implements Message {
 
     public Attachment getAttachment() {
         return null;
+    }
+
+    public Channel getChannel() {
+        return channel;
     }
 
 }
