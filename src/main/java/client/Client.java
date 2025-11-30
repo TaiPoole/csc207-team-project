@@ -22,6 +22,8 @@ public class Client {
     private Boolean connected; // connected to server?
 
     private final Consumer<Message> messageCallback;
+    private String currentChannel = "general";
+
 
     /**
      * Create a client for serverAddress.
@@ -152,5 +154,13 @@ public class Client {
 
     public SocketChannel getConnection() {
         return channel;
+    }
+
+    public String getCurrentChannel() {
+        return currentChannel;
+    }
+
+    public void setCurrentChannel(String currentChannel) {
+        this.currentChannel = currentChannel;
     }
 }

@@ -15,6 +15,13 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import client.createchannel.CreateChannelController;
+import client.createchannel.CreateChannelInputBoundary;
+import client.createchannel.CreateChannelInteractor;
+import client.createchannel.CreateChannelOutputBoundary;
+import client.createchannel.CreateChannelPresenter;
+import interfaceadapter.ChatViewModel;
+
 
 /**
  * Dialog for creating a new channel.
@@ -28,6 +35,10 @@ public class AddChannelDialog extends JDialog {
     private final JButton addButton;
     private final JButton closeButton;
 
+    private final DefaultListModel<String> channelModel;
+    private final CreateChannelController createChannelController;
+    private final ChatViewModel chatViewModel;
+
     /**
      * @param owner         parent frame (Main window)
      * @param channelModel  the model that backs the channel JList in MainView
@@ -35,8 +46,12 @@ public class AddChannelDialog extends JDialog {
      */
     public AddChannelDialog(Frame owner,
                             DefaultListModel<String> channelModel,
-                            Client client) {
+                            Client client,
+                            ChatViewModel chatViewModel) {
         super(owner, "Add Channel", true);
+
+        this.channelModel = channelModel;
+        this.chatViewModel = chatViewModel;
 
         this.channelNameField = new JTextField(20);
         this.statusLabel = new JLabel(" ");
@@ -66,6 +81,14 @@ public class AddChannelDialog extends JDialog {
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
+        // === Build the Clean Architecture chain for Create Channel ===
+        CreateChannelOutputBoundary presenter =
+                new CreateChannelPresenter(channelModel, statusLabel, this, chatViewModel, client);
+        CreateChannelInputBoundary interactor =
+                new CreateChannelInteractor(client, presenter);
+        this.createChannelController =
+                new CreateChannelController(interactor);
+
 
         // When "Add" is clicked, try to create the channel.
         addButton.addActionListener(e -> {
@@ -81,17 +104,9 @@ public class AddChannelDialog extends JDialog {
                 return;
             }
 
-            try {
-                String command = "/create-channel " + name;
-                client.sendMessage(command);
-
-                channelModel.addElement("# " + name);
-
-                statusLabel.setText("Channel \"" + name + "\" created.");
-                channelNameField.setText("");
-            } catch (IOException ex) {
-                statusLabel.setText("Failed to contact server.");
-            }
+            // Delegate to the use case
+            createChannelController.createChannel(name);
+            // On success, the presenter will update UI and close the dialog.
         });
 
         // Close button just closes the dialog.

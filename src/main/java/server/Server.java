@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -281,5 +282,15 @@ public class Server {
         }
         channels.add(channel);
         System.out.println("Channel added: " + channel.getId());
+
+        // Notify all connected clients that a new channel was created
+        TextMessage systemMessage = new TextMessage(
+                "System",
+                "New channel created: " + channel.getId(),
+                LocalDateTime.now()
+        );
+        // senderChannel = null → goes to everyone (no one is excluded)
+        broadcastMessage(systemMessage, null);
+
     }
 }
