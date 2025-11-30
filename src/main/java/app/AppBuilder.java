@@ -91,6 +91,8 @@ public class AppBuilder {
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(chatViewModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
+        this.client.connect();
+
         this.permissionsView = new PermissionsView(this.frame);
         ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
         ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
@@ -102,9 +104,6 @@ public class AppBuilder {
                 new GenerateRandomNameInteractor(randomNameGenerator, randomNamePresenter);
         this.randomNameController =
                 new GenerateRandomNameController(randomNameInteractor);
-
-        this.client.connect();
-
     }
 
     /**
