@@ -74,8 +74,6 @@ public class AppBuilder {
             }
         });
 
-        this.client.connect();
-
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.time.LocalDateTime;
 
 
 /** Server class.
@@ -33,8 +32,9 @@ public class Server {
     private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
 
-    /** Server constructor.
-     *  Initializes server with empty variables (except for port)
+    /**
+     * Server constructor.
+     * Initializes server with empty variables (except for port)
      *
      * @param port the port for the server to listen on (default 8080 in our program)
      */
@@ -46,7 +46,8 @@ public class Server {
         this.clientHandlerPool = Executors.newCachedThreadPool();
     }
 
-    /** Server runtime.
+    /**
+     * Server runtime.
      *
      * @param args default main args, not used
      */
@@ -59,8 +60,9 @@ public class Server {
         }
     }
 
-    /** Starts the server.
-     *  Binds the socket and starts listening for clients.
+    /**
+     * Starts the server.
+     * Binds the socket and starts listening for clients.
      *
      * @throws IOException if an I/O error occurs with opening the socket
      */
@@ -146,7 +148,7 @@ public class Server {
                                 // NOT broadcast the raw command message
                                 continue;
                             }
-                            broadcastMessage(message, user.getUsername());
+                            broadcastMessage(message, usernameToChannel.get(username));
                         }
                     }
                 }
@@ -158,8 +160,9 @@ public class Server {
         }
     }
 
-    /** Handles client disconnection cleanup.
-     *  Removes client from both maps and closes the channel.
+    /**
+     * Handles client disconnection cleanup.
+     * Removes client from both maps and closes the channel.
      *
      * @param clientChannel the channel to disconnect
      */
@@ -206,10 +209,11 @@ public class Server {
         }
     }
 
-    /** Broadcasts a message.
+    /**
+     * Broadcasts a message.
      * Sends a message to all connected clients except the sender
      *
-     * @param message the message to broadcast
+     * @param message       the message to broadcast
      * @param senderChannel the channel of the sender (to exclude from broadcast)
      */
     private void broadcastMessage(Message message, SocketChannel senderChannel) {
@@ -232,11 +236,12 @@ public class Server {
         }
     }
 
-    /** Sends a message to a specific client.
+    /**
+     * Sends a message to a specific client.
      * Uses the protocol format described below
      *
      * @param clientChannel the channel to send to
-     * @param message the message to send
+     * @param message       the message to send
      * @throws IOException if an I/O error occurs
      */
     public void sendToClient(SocketChannel clientChannel, Message message) throws IOException {
@@ -249,39 +254,6 @@ public class Server {
 
         ByteBuffer buffer = ByteBuffer.wrap(serializedMessage.getBytes(StandardCharsets.UTF_8));
         clientChannel.write(buffer);
-    }
-
-    // TODO: Cut this if it doesn't end up being used
-    /** Broadcast a message to all connected clients.
-     */
-    public void sendToAll(Message message) {
-        ArrayList<String> disconnectedUsers = new ArrayList<>();
-
-        for (Map.Entry<String, User> entry : connectedUsers.entrySet()) {
-            String username = entry.getKey();
-            User user = entry.getValue();
-            SocketChannel channel = user.getChannel();
-
-            if (channel.isOpen()) {
-                try {
-                    sendToClient(channel, message);
-                } catch (IOException e) {
-                    System.err.println("Error sending to " + username + ": " + e.getMessage());
-                    disconnectedUsers.add(username);
-                }
-            } else {
-                disconnectedUsers.add(username);
-            }
-        }
-
-        // Clean up disconnected users
-        for (String username : disconnectedUsers) {
-            User userToRemove = connectedUsers.remove(username);
-            if (userToRemove != null) {
-                channelToUser.remove(userToRemove.getChannel());
-            }
-            System.out.println("Removed disconnected user: " + username);
-        }
     }
 
     /** Handling the addChannel method
@@ -309,20 +281,5 @@ public class Server {
         }
         channels.add(channel);
         System.out.println("Channel added: " + channel.getId());
-    }
-
-    // TODO: Cut this if it doesn't end up being used
-    /** Shuts down the server.
-     *  Closes all channels first
-     */
-    public void shutdown() {
-        try {
-            if (serverChannel != null && serverChannel.isOpen()) {
-                serverChannel.close();
-            }
-            clientHandlerPool.shutdown();
-        } catch (IOException e) {
-            System.err.println("Error shutting down server: " + e.getMessage());
-        }
     }
 }
