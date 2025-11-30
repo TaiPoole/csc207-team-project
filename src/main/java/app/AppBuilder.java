@@ -59,7 +59,7 @@ public class AppBuilder {
      * Creates a new AppBuilder with a default application frame.
      */
     public AppBuilder() throws IOException {
-        this.frame = new JFrame("The really cool messaging service");
+        this.frame = new JFrame("TRIUMPH");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.randomNameGenerator = new RandomNameGenerator();
         this.messageModel = new DefaultListModel<>();
