@@ -120,7 +120,7 @@ public class AppBuilder {
                 randomNameViewModel,
                 messageModel,
                 sendMessageInteractor,
-                attachmentRegistry
+                attachmentRegistry,
                 permissionsInteractor,
                 permissionsView
         );

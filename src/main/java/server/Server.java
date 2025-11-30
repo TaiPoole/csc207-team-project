@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -286,13 +287,12 @@ public class Server {
 
         // Broadcast a system message so all connected clients learn about the new channel.
         // This uses a special command-style content that clients can handle if needed.
-        Message systemMessage = new TextMessage(
-                "SERVER",
-                "/channel-created " + channel.getId(),
+        TextMessage systemMessage = new TextMessage(
+                "System",
+                "New channel created: " + channel.getId(),
                 LocalDateTime.now()
         );
-
-        // Notify all currently connected users about the new channel.
-        sendToAll(systemMessage);
+        // senderChannel = null → goes to everyone (no one is excluded)
+        broadcastMessage(systemMessage, null);
     }
 }

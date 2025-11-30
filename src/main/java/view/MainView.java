@@ -74,7 +74,7 @@ public class MainView extends JPanel {
             RandomNameViewModel randomNameViewModel,
             DefaultListModel<String> messageModel,
             SendMessageInputBoundary sendMessageInteractor,
-            AttachmentRegistry attachmentRegistry
+            AttachmentRegistry attachmentRegistry,
             ManagePermissionsInputBoundary permissionsInteractor,
             PermissionsView permissionsView
     ) {
