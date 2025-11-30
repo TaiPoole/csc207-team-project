@@ -21,6 +21,11 @@ public class Channel {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Constructs a channel with the given ID.
+     *
+     * @param id the channel identifier
+     */
     public Channel(String id) {
         this.id = id;
     }

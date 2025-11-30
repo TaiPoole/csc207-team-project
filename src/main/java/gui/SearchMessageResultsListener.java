@@ -1,18 +1,29 @@
 package gui;
 
 import interfaceadapter.SearchMessageViewModel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
+/**
+ * Listener that displays search results when the view model updates.
+ */
 public class SearchMessageResultsListener implements PropertyChangeListener {
 
     private final JComponent parent;
     private final SearchMessageViewModel viewModel;
 
+    /**
+     * Constructs the listener.
+     *
+     * @param parent the parent component for dialogs
+     * @param viewModel the search view model
+     */
     public SearchMessageResultsListener(JComponent parent,
                                         SearchMessageViewModel viewModel) {
         this.parent = parent;

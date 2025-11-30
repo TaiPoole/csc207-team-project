@@ -10,7 +10,9 @@ import gui.SearchMessageFocusListener;
 import gui.SearchMessageResultsListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
+import interfaceadapter.ChatViewModel;
 import interfaceadapter.RandomNameViewModel;
+import interfaceadapter.SearchMessageViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -30,14 +32,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.io.IOException;
-import interfaceadapter.ChatViewModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import interfaceadapter.SearchMessageViewModel;
 import permissions.ManagePermissionsInputBoundary;
 import permissions.PermissionsController;
 
@@ -114,11 +110,6 @@ public class MainView extends JPanel {
         add(Box.createHorizontalStrut(8));
         add(rightBox);
 
-        // Initial test data
-//        channelModel.addElement("# this is a channel");
-//        channelModel.addElement("# this is a channel as well");
-//        channelModel.addElement("# ok another channel");
-//        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
         // Initial channel: general
         channelModel.addElement("# general");
 

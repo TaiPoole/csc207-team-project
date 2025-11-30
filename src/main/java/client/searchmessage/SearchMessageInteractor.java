@@ -4,17 +4,31 @@ import interfaceadapter.ChatViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Interactor for the Search Message use case.
+ */
 public class SearchMessageInteractor implements SearchMessageInputBoundary {
 
     private final SearchMessageOutputBoundary presenter;
     private final ChatViewModel chatViewModel;
 
+    /**
+     * Constructs the interactor.
+     *
+     * @param chatViewModel the chat view model holding messages
+     * @param presenter the output boundary
+     */
     public SearchMessageInteractor(ChatViewModel chatViewModel,
                                    SearchMessageOutputBoundary presenter) {
         this.chatViewModel = chatViewModel;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes a search on the current channel.
+     *
+     * @param inputData the search term input
+     */
     @Override
     public void execute(SearchMessageInputData inputData) {
         String query = inputData.getTerm();

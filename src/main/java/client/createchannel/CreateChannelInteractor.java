@@ -12,12 +12,23 @@ public class CreateChannelInteractor implements CreateChannelInputBoundary {
     private final Client client;
     private final CreateChannelOutputBoundary presenter;
 
+    /**
+     * Constructs the interactor.
+     *
+     * @param client the client used to send commands
+     * @param presenter the output boundary
+     */
     public CreateChannelInteractor(Client client,
                                    CreateChannelOutputBoundary presenter) {
         this.client = client;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes the use case.
+     *
+     * @param inputData the channel name input
+     */
     @Override
     public void execute(CreateChannelInputData inputData) {
         String rawName = inputData.getChannelName();

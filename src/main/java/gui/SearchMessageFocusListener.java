@@ -1,8 +1,8 @@
 package gui;
 
-import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import javax.swing.JTextField;
 
 /**
  * Clears placeholder text when focused, restores if empty.
@@ -13,6 +13,12 @@ public class SearchMessageFocusListener implements FocusListener {
     private final String placeholder;
     private boolean firstFocus = true;   // flag to resolve the initial focus issue for swing
 
+    /**
+     * Constructs the listener.
+     *
+     * @param field the text field
+     * @param placeholder the placeholder text
+     */
     public SearchMessageFocusListener(JTextField field, String placeholder) {
         this.field = field;
         this.placeholder = placeholder;
