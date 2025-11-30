@@ -11,16 +11,12 @@ import interfaceadapter.ChatViewModel;
  *  in charge of updating the UI when a message is received
  */
 public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
-    //private final DefaultListModel<String> messageModel;
     private final ChatViewModel chatViewModel;
 
     /** Basic constructor.
      *
      * @param chatViewModel message list to update when message is received
      */
-//    public ReceiveMessagePresenter(DefaultListModel<String> messageModel) {
-//        this.messageModel = messageModel;
-//    }
     public ReceiveMessagePresenter(ChatViewModel chatViewModel) {
         this.chatViewModel = chatViewModel;
     }

@@ -35,7 +35,6 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
                         outputData.getMessageContent(),
                         attachment.getName()
                 );
-                //messageModel.addElement(fileMessage);
                 chatViewModel.addMessage(chatViewModel.getActiveChannel(), fileMessage);
 
 
@@ -46,8 +45,6 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
                         outputData.getSender(),
                         outputData.getMessageContent()
                 );
-
-                //messageModel.addElement(formattedMessage);
                 chatViewModel.addMessage(chatViewModel.getActiveChannel(), formattedMessage);
 
             }
@@ -57,7 +54,6 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
     @Override
     public void prepareFailureView(String error) {
         SwingUtilities.invokeLater(() ->
-                //messageModel.addElement("ERROR: " + error)
                 chatViewModel.addMessage(chatViewModel.getActiveChannel(), "ERROR: " + error)
         );
     }
