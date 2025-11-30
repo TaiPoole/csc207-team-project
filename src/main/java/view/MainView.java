@@ -4,27 +4,31 @@ import client.Client;
 import client.generatename.GenerateRandomNameController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
-import common.RandomNameGenerator;
-import interfaceadapter.RandomNameViewModel;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
-import permissions.ManagePermissionsInputBoundary;
-import permissions.ManagePermissionsInteractor;
-import permissions.PermissionsController;
-
+import interfaceadapter.RandomNameViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.io.IOException;
+import permissions.ManagePermissionsInputBoundary;
+import permissions.PermissionsController;
 
 /**
  * The main messaging UI.
@@ -48,8 +52,8 @@ public class MainView extends JPanel {
     private final JTextField searchField = new JTextField("Search:");
     private final JTextField messageField = new JTextField("");
 
-    // Buttons
-    private final ThemeButton themeButton = new ThemeButton("Dark Mode");
+    // Themes
+    private final ThemeButton themeButton = new ThemeButton();
 
     // File picker for attachments
     private PickFileListener filePicker;
@@ -261,9 +265,6 @@ public class MainView extends JPanel {
         return rightBox;
     }
 
-    /**
-     * Returns the theme button for external theme management.
-     */
     public ThemeButton getThemeButton() {
         return themeButton;
     }

@@ -1,15 +1,13 @@
 package gui_tests;
-import gui.Themes;
+import gui.ThemeInteractor;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import javax.swing.*;
 
 public class ThemeTest {
 
     @Test
     public void themeTest() {
-        Themes themes = new Themes();
+        ThemeInteractor themes = new ThemeInteractor(null);
         themes.cyclePalette();
         assertEquals("Palettes not cycling correctly", "gui.Sakura", themes.theme.getClass().getName());
         themes.cyclePalette();
