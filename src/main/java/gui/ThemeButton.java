@@ -1,35 +1,26 @@
 package gui;
 
-import javax.swing.JPanel;
-
 /** ThemeButton class.
  *  an extension of the JButton class for the button that changes the theme
  */
 public class ThemeButton extends Button {
-    private final Themes theme;
+    private ThemeController themeController;
 
-    /** ThemeButton constructor.
-     *  makes the theme button as an extension of JButton
-     *
-     * @param s the string to pass as initial text
+    /** Empty constructor.
+     *  Since theming needs a reference to the full frame to paint,
+     *  and theme button has to be placed AS the frame is being made,
+     *  we make an empty constructor and set the values later
      */
-    public ThemeButton(String s) {
-        super(s);
-        theme = new Themes();
-    }
+    public ThemeButton() {}
 
-    public Themes getTheme() {
-        return theme;
-    }
-
-    /** Create Environment.
-     *  changes the theme and text, and applies the new theme palette
+    /** Populates the necessary values (basically the constructor).
      *
-     * @param mainPanel the mainPanel that holds everything to be painted
+     * @param s string to initialize with
+     * @param themeController controller for it to hold
      */
-    public void createEnvironment(JPanel mainPanel) {
-        this.theme.cyclePalette();
-        this.setText(theme.theme.getClass().getName().substring(4) + " Mode");
-        theme.theme.applyPalette(mainPanel);
+    public void setValues(String s, ThemeController themeController) {
+        this.setText(s);
+        this.themeController = themeController;
+        addActionListener(e -> this.themeController.changeTheme());
     }
 }

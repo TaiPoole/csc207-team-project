@@ -16,15 +16,20 @@ import client.sendmessage.SendMessageInteractor;
 import client.sendmessage.SendMessageOutputBoundary;
 import client.sendmessage.SendMessagePresenter;
 import common.RandomNameGenerator;
-import gui.ThemeButton;
-import permissions.*;
+import gui.ThemeController;
+import gui.ThemeInteractor;
+import gui.ThemePresenter;
 import interfaceadapter.RandomNameViewModel;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-
+import permissions.ManageMessagePresenter;
+import permissions.ManagePermissionsInputBoundary;
+import permissions.ManagePermissionsInteractor;
+import permissions.ManagePermissionsOutputBoundary;
+import permissions.ServerPermissionsGateway;
 import view.MainView;
 import view.PermissionsView;
 import interfaceadapter.ChatViewModel;
@@ -57,7 +62,7 @@ public class AppBuilder {
      * Creates a new AppBuilder with a default application frame.
      */
     public AppBuilder() throws IOException {
-        this.frame = new JFrame("The really cool messaging service");
+        this.frame = new JFrame("TRIUMPH");
         this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.randomNameGenerator = new RandomNameGenerator();
         this.messageModel = new DefaultListModel<>();
@@ -99,6 +104,7 @@ public class AppBuilder {
                 new GenerateRandomNameController(randomNameInteractor);
 
         this.client.connect();
+
     }
 
     /**
@@ -127,16 +133,15 @@ public class AppBuilder {
                 permissionsView
         );
 
+        ThemePresenter themePresenter = new ThemePresenter(mainView.getThemeButton(), mainView);
+        ThemeInteractor themeInteractor = new ThemeInteractor(themePresenter);
+        ThemeController themeController = new ThemeController(themeInteractor);
+        this.mainView.getThemeButton().setValues("Dark Mode", themeController);
+
         this.frame.setContentPane(mainView);
 
         // Apply initial theme
-        ThemeButton themeButton = mainView.getThemeButton();
-        themeButton.getTheme().theme.applyPalette(mainView);
-
-        // Set up theme change listener
-        themeButton.addActionListener(e ->
-                themeButton.createEnvironment(mainView)
-        );
+        themePresenter.applyPalette(themeInteractor.theme);
 
         return this;
     }
