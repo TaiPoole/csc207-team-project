@@ -4,21 +4,25 @@ import common.Attachment;
 import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 
+import interfaceadapter.ChatViewModel;
+
+
 /** Manager for send message outputs.
  *  follows the restrictions set by SendMessageOutputBoundary
  *  in charge of updating the UI when a message is sent
  */
 public class SendMessagePresenter implements SendMessageOutputBoundary {
-    private final DefaultListModel<String> messageModel;
+    //private final DefaultListModel<String> messageModel;
+    private final ChatViewModel chatViewModel;
+
 
     /** Basic constructor.
      *
-     * @param messageModel message list to update when message is sent
+     * @param chatViewModel message list to update when message is sent
      */
-    public SendMessagePresenter(DefaultListModel<String> messageModel) {
-        this.messageModel = messageModel;
+    public SendMessagePresenter(ChatViewModel chatViewModel) {
+        this.chatViewModel = chatViewModel;
     }
-
     @Override
     public void prepareSuccessView(SendMessageOutputData outputData) {
         SwingUtilities.invokeLater(() -> {
@@ -31,7 +35,9 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
                         outputData.getMessageContent(),
                         attachment.getName()
                 );
-                messageModel.addElement(fileMessage);
+                //messageModel.addElement(fileMessage);
+                chatViewModel.addMessage(chatViewModel.getActiveChannel(), fileMessage);
+
 
 
             } else {
@@ -41,13 +47,18 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
                         outputData.getMessageContent()
                 );
 
-                messageModel.addElement(formattedMessage);
+                //messageModel.addElement(formattedMessage);
+                chatViewModel.addMessage(chatViewModel.getActiveChannel(), formattedMessage);
+
             }
         });
     }
 
     @Override
     public void prepareFailureView(String error) {
-        SwingUtilities.invokeLater(() -> messageModel.addElement("ERROR: " + error));
+        SwingUtilities.invokeLater(() ->
+                //messageModel.addElement("ERROR: " + error)
+                chatViewModel.addMessage(chatViewModel.getActiveChannel(), "ERROR: " + error)
+        );
     }
 }

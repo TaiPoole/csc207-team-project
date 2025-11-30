@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 
 import view.MainView;
 import view.PermissionsView;
+import interfaceadapter.ChatViewModel;
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -50,6 +51,8 @@ public class AppBuilder {
     private final GenerateRandomNameInputBoundary randomNameInteractor;
     private final GenerateRandomNameController randomNameController;
 
+    private ChatViewModel chatViewModel;
+
     /**
      * Creates a new AppBuilder with a default application frame.
      */
@@ -62,8 +65,11 @@ public class AppBuilder {
 
         String defaultName = "User";
 
+        this.chatViewModel = new ChatViewModel(messageModel);
+        this.chatViewModel.setActiveChannel("general");
+
         // Set up receive message chain first
-        ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(messageModel);
+        ReceiveMessageOutputBoundary receivePresenter = new ReceiveMessagePresenter(chatViewModel);
         this.receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
 
         // Create client with message handler
@@ -74,7 +80,10 @@ public class AppBuilder {
             }
         });
 
-        SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(messageModel);
+        client.setCurrentChannel("general");
+
+
+        SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(chatViewModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
         this.permissionsView = new PermissionsView(this.frame);
@@ -112,6 +121,7 @@ public class AppBuilder {
                 randomNameController,
                 randomNameViewModel,
                 messageModel,
+                chatViewModel,
                 sendMessageInteractor,
                 permissionsInteractor,
                 permissionsView

@@ -25,6 +25,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.io.IOException;
+import interfaceadapter.ChatViewModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 
 /**
  * The main messaging UI.
@@ -40,6 +44,7 @@ public class MainView extends JPanel {
     // ListModels
     private final DefaultListModel<String> channelModel = new DefaultListModel<>();
     private final DefaultListModel<String> messageModel;
+    private final ChatViewModel chatViewModel;
 
     // TextFields
     private final JTextField usernameField;
@@ -65,6 +70,7 @@ public class MainView extends JPanel {
             GenerateRandomNameController generateRandomNameController,
             RandomNameViewModel randomNameViewModel,
             DefaultListModel<String> messageModel,
+            ChatViewModel chatViewModel,
             SendMessageInputBoundary sendMessageInteractor,
             ManagePermissionsInputBoundary permissionsInteractor,
             PermissionsView permissionsView
@@ -73,6 +79,7 @@ public class MainView extends JPanel {
         this.generateRandomNameController = generateRandomNameController;
         this.randomNameViewModel = randomNameViewModel;
         this.messageModel = messageModel;
+        this.chatViewModel = chatViewModel;
         this.sendMessageInteractor = sendMessageInteractor;
         this.permissionsInteractor = permissionsInteractor;
         this.permissionsView = permissionsView;
@@ -89,10 +96,16 @@ public class MainView extends JPanel {
         add(rightBox);
 
         // Initial test data
-        channelModel.addElement("# this is a channel");
-        channelModel.addElement("# this is a channel as well");
-        channelModel.addElement("# ok another channel");
-        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
+//        channelModel.addElement("# this is a channel");
+//        channelModel.addElement("# this is a channel as well");
+//        channelModel.addElement("# ok another channel");
+//        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
+        // Initial channel: general
+        channelModel.addElement("# general");
+
+        // Make sure the active channel is general
+        chatViewModel.setActiveChannel("general");
+        client.setCurrentChannel("general");
     }
 
     private JPanel buildLeftPane() {
@@ -220,6 +233,24 @@ public class MainView extends JPanel {
         rightBox.add(channelListScroll);
         rightBox.add(Box.createVerticalStrut(8));
 
+        channelList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    String selected = channelList.getSelectedValue();
+                    if (selected != null) {
+                        // Our display names are "# channelName"
+                        String channelId = selected.startsWith("# ")
+                                ? selected.substring(2)
+                                : selected.startsWith("#") ? selected.substring(1) : selected;
+
+                        chatViewModel.setActiveChannel(channelId);
+                        client.setCurrentChannel(channelId);
+                    }
+                }
+            }
+        });
+
         // channelManagePanel
         JPanel channelManagePanel = new JPanel();
         channelManagePanel.setPreferredSize(new Dimension(800, 80));
@@ -236,7 +267,7 @@ public class MainView extends JPanel {
             Window w = SwingUtilities.getWindowAncestor(this);
             Frame owner = (w instanceof Frame) ? (Frame) w : null;
 
-            AddChannelDialog dialog = new AddChannelDialog(owner, channelModel, client);
+            AddChannelDialog dialog = new AddChannelDialog(owner, channelModel, client, chatViewModel);
             dialog.setVisible(true);
         });
 
