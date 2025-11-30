@@ -2,7 +2,6 @@ package common;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import server.User;
 
 /** Channel Class.
  *  a bundle of users, holds info for server organization
