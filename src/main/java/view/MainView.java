@@ -9,6 +9,10 @@ import interfaceadapter.RandomNameViewModel;
 import gui.PickFileListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
+import permissions.ManagePermissionsInputBoundary;
+import permissions.ManagePermissionsInteractor;
+import permissions.PermissionsController;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -31,6 +35,7 @@ public class MainView extends JPanel {
     private final GenerateRandomNameController generateRandomNameController;
     private final RandomNameViewModel randomNameViewModel;
     private final SendMessageInputBoundary sendMessageInteractor;
+    private final ManagePermissionsInputBoundary permissionsInteractor;
 
     // ListModels
     private final DefaultListModel<String> channelModel = new DefaultListModel<>();
@@ -49,6 +54,8 @@ public class MainView extends JPanel {
     // File picker for attachments
     private PickFileListener filePicker;
     private JPanel fileDisplayPanel;
+    private PermissionsController permissionsController;
+    private PermissionsView permissionsView;
 
     /**
      * Constructs the main messaging UI layout.
@@ -58,13 +65,17 @@ public class MainView extends JPanel {
             GenerateRandomNameController generateRandomNameController,
             RandomNameViewModel randomNameViewModel,
             DefaultListModel<String> messageModel,
-            SendMessageInputBoundary sendMessageInteractor
+            SendMessageInputBoundary sendMessageInteractor,
+            ManagePermissionsInputBoundary permissionsInteractor,
+            PermissionsView permissionsView
     ) {
         this.client = client;
         this.generateRandomNameController = generateRandomNameController;
         this.randomNameViewModel = randomNameViewModel;
         this.messageModel = messageModel;
         this.sendMessageInteractor = sendMessageInteractor;
+        this.permissionsInteractor = permissionsInteractor;
+        this.permissionsView = permissionsView;
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
@@ -233,9 +244,16 @@ public class MainView extends JPanel {
         permsButton.addActionListener(e -> {
             Window w = SwingUtilities.getWindowAncestor(this);
             Frame owner = (w instanceof Frame) ? (Frame) w : null;
-            PermissionsView dialog = new PermissionsView(owner);
-            dialog.setVisible(true);
+
+            if (permissionsController == null && owner != null) {
+                permissionsController = new PermissionsController(permissionsView, permissionsInteractor);
+            }
+
+            if (permissionsController != null) {
+                permissionsController.show();
+            }
         });
+
 
         rightBox.add(channelManagePanel);
         rightBox.add(Box.createVerticalStrut(8));
