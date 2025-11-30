@@ -279,7 +279,20 @@ public class Server {
                 return;
             }
         }
+
+        // Add to server-side channel list
         channels.add(channel);
         System.out.println("Channel added: " + channel.getId());
+
+        // Broadcast a system message so all connected clients learn about the new channel.
+        // This uses a special command-style content that clients can handle if needed.
+        Message systemMessage = new TextMessage(
+                "SERVER",
+                "/channel-created " + channel.getId(),
+                LocalDateTime.now()
+        );
+
+        // Notify all currently connected users about the new channel.
+        sendToAll(systemMessage);
     }
 }
