@@ -1,11 +1,11 @@
 package client.createchannel;
 
+import client.Client;
+import interfaceadapter.ChatViewModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import client.Client;
-import interfaceadapter.ChatViewModel;
 
 /**
  * Presenter for the Create Channel use case.
@@ -19,6 +19,15 @@ public class CreateChannelPresenter implements CreateChannelOutputBoundary {
     private final ChatViewModel chatViewModel;
     private final Client client;
 
+    /**
+     * Constructs the presenter.
+     *
+     * @param channelModel the list model of channels
+     * @param statusLabel  the label to display status messages
+     * @param dialog       the dialog that owns this presenter
+     * @param chatViewModel the chat view model
+     * @param client       the client instance
+     */
     public CreateChannelPresenter(DefaultListModel<String> channelModel,
                                   JLabel statusLabel,
                                   JDialog dialog,
@@ -31,6 +40,11 @@ public class CreateChannelPresenter implements CreateChannelOutputBoundary {
         this.client = client;
     }
 
+    /**
+     * Updates the UI for a successful channel creation.
+     *
+     * @param data the output data
+     */
     @Override
     public void prepareSuccessView(CreateChannelOutputData data) {
         SwingUtilities.invokeLater(() -> {
@@ -53,6 +67,11 @@ public class CreateChannelPresenter implements CreateChannelOutputBoundary {
         });
     }
 
+    /**
+     * Displays a failure message.
+     *
+     * @param errorMessage the error message
+     */
     @Override
     public void prepareFailureView(String errorMessage) {
         SwingUtilities.invokeLater(() ->

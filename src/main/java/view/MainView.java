@@ -2,12 +2,17 @@ package view;
 
 import client.Client;
 import client.generatename.GenerateRandomNameController;
+import client.searchmessage.SearchMessageController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
 import gui.PickFileListener;
+import gui.SearchMessageFocusListener;
+import gui.SearchMessageResultsListener;
 import gui.SendButtonListener;
 import gui.ThemeButton;
+import interfaceadapter.ChatViewModel;
 import interfaceadapter.RandomNameViewModel;
+import interfaceadapter.SearchMessageViewModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,10 +32,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.io.IOException;
-import interfaceadapter.ChatViewModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import permissions.ManagePermissionsInputBoundary;
@@ -43,7 +44,9 @@ public class MainView extends JPanel {
 
     private final Client client;
     private final GenerateRandomNameController generateRandomNameController;
+    private final SearchMessageController searchMessageController;
     private final RandomNameViewModel randomNameViewModel;
+    private final SearchMessageViewModel searchMessageViewModel;
     private final SendMessageInputBoundary sendMessageInteractor;
     private final ManagePermissionsInputBoundary permissionsInteractor;
 
@@ -55,8 +58,6 @@ public class MainView extends JPanel {
     // TextFields
     private final JTextField usernameField;
     private final JTextField channelIdField = new JTextField("Channel ID:");
-    private final JTextField channelNameField = new JTextField("Name:");
-    private final JTextField searchField = new JTextField("Search:");
     private final JTextField messageField = new JTextField("");
 
     // Themes
@@ -79,7 +80,9 @@ public class MainView extends JPanel {
             ChatViewModel chatViewModel,
             SendMessageInputBoundary sendMessageInteractor,
             ManagePermissionsInputBoundary permissionsInteractor,
-            PermissionsView permissionsView
+            PermissionsView permissionsView,
+            SearchMessageController searchMessageController,
+            SearchMessageViewModel searchMessageViewModel
     ) {
         this.client = client;
         this.generateRandomNameController = generateRandomNameController;
@@ -89,6 +92,12 @@ public class MainView extends JPanel {
         this.sendMessageInteractor = sendMessageInteractor;
         this.permissionsInteractor = permissionsInteractor;
         this.permissionsView = permissionsView;
+        this.searchMessageController = searchMessageController;
+        this.searchMessageViewModel = searchMessageViewModel;
+
+        SearchMessageResultsListener searchListener =
+                new SearchMessageResultsListener(this, searchMessageViewModel);
+        searchMessageViewModel.addPropertyChangeListener(searchListener);
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
@@ -101,11 +110,6 @@ public class MainView extends JPanel {
         add(Box.createHorizontalStrut(8));
         add(rightBox);
 
-        // Initial test data
-//        channelModel.addElement("# this is a channel");
-//        channelModel.addElement("# this is a channel as well");
-//        channelModel.addElement("# ok another channel");
-//        messageModel.addElement("THIS IS WHERE THE MESSAGES GO");
         // Initial channel: general
         channelModel.addElement("# general");
 
@@ -123,8 +127,19 @@ public class MainView extends JPanel {
         JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
         searchPanel.setPreferredSize(new Dimension(800, 80));
         searchPanel.setBorder(borderBox());
+        JTextField searchField = new JTextField(20);
+        searchField.addFocusListener(new SearchMessageFocusListener(searchField, "Search Chat History:"));
+        // Press Enter in search field to run search
+        searchField.addActionListener(e ->
+                searchMessageController.search(searchField.getText())
+        );
         searchPanel.add(searchField, BorderLayout.CENTER);
-        searchPanel.add(new JButton("Go"), BorderLayout.EAST);
+        // Click "Go" to run search
+        JButton searchButton = new JButton("Go");
+        searchButton.addActionListener(e ->
+                searchMessageController.search(searchField.getText())
+        );
+        searchPanel.add(searchButton, BorderLayout.EAST);
         leftBox.add(searchPanel);
         leftBox.add(Box.createVerticalStrut(8));
 
@@ -212,6 +227,14 @@ public class MainView extends JPanel {
 
         rightBox.add(settingsPanel);
         rightBox.add(Box.createVerticalStrut(8));
+
+        // Listener for usernameField
+        usernameField.addActionListener(e -> {
+            String typedName = usernameField.getText().trim();
+            if (!typedName.isEmpty()) {
+                client.setUsername(typedName);
+            }
+        });
 
         // Random name generation button
         newButton.addActionListener(e -> {

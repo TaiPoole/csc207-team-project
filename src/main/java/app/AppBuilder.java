@@ -11,6 +11,11 @@ import client.receivemessage.ReceiveMessageInputData;
 import client.receivemessage.ReceiveMessageInteractor;
 import client.receivemessage.ReceiveMessageOutputBoundary;
 import client.receivemessage.ReceiveMessagePresenter;
+import client.searchmessage.SearchMessageController;
+import client.searchmessage.SearchMessageInputBoundary;
+import client.searchmessage.SearchMessageInteractor;
+import client.searchmessage.SearchMessageOutputBoundary;
+import client.searchmessage.SearchMessagePresenter;
 import client.sendmessage.SendMessageInputBoundary;
 import client.sendmessage.SendMessageInteractor;
 import client.sendmessage.SendMessageOutputBoundary;
@@ -19,7 +24,9 @@ import common.RandomNameGenerator;
 import gui.ThemeController;
 import gui.ThemeInteractor;
 import gui.ThemePresenter;
+import interfaceadapter.ChatViewModel;
 import interfaceadapter.RandomNameViewModel;
+import interfaceadapter.SearchMessageViewModel;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -32,7 +39,6 @@ import permissions.ManagePermissionsOutputBoundary;
 import permissions.ServerPermissionsGateway;
 import view.MainView;
 import view.PermissionsView;
-import interfaceadapter.ChatViewModel;
 
 /**
  * Builder for initializing and configuring the main application frame.
@@ -55,6 +61,9 @@ public class AppBuilder {
     private final GenerateRandomNameOutputBoundary randomNamePresenter;
     private final GenerateRandomNameInputBoundary randomNameInteractor;
     private final GenerateRandomNameController randomNameController;
+    private final SearchMessageInputBoundary searchMessageInteractor;
+    private final SearchMessageViewModel searchMessageViewModel;
+    private final SearchMessageController searchMessageController;
 
     private ChatViewModel chatViewModel;
 
@@ -68,7 +77,7 @@ public class AppBuilder {
         this.messageModel = new DefaultListModel<>();
         this.randomNameViewModel = new RandomNameViewModel();
 
-        String defaultName = "User";
+        final String defaultName = "User";
 
         this.chatViewModel = new ChatViewModel(messageModel);
         this.chatViewModel.setActiveChannel("general");
@@ -95,13 +104,23 @@ public class AppBuilder {
         ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
         ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
         this.permissionsInteractor = new ManagePermissionsInteractor(permissionGateway, managePresenter);
-        // Generate random name chain
+
+        // Set up generate random name chain
         this.randomNamePresenter =
                 new GenerateRandomNamePresenter(randomNameViewModel);
         this.randomNameInteractor =
                 new GenerateRandomNameInteractor(randomNameGenerator, randomNamePresenter);
         this.randomNameController =
                 new GenerateRandomNameController(randomNameInteractor);
+
+        // Set up search message chain
+        this.searchMessageViewModel = new SearchMessageViewModel();
+        SearchMessageOutputBoundary searchPresenter =
+                new SearchMessagePresenter(searchMessageViewModel);
+        this.searchMessageInteractor =
+                new SearchMessageInteractor(chatViewModel, searchPresenter);
+        this.searchMessageController =
+                new SearchMessageController(searchMessageInteractor);
 
         this.client.connect();
 
@@ -130,7 +149,9 @@ public class AppBuilder {
                 chatViewModel,
                 sendMessageInteractor,
                 permissionsInteractor,
-                permissionsView
+                permissionsView,
+                searchMessageController,
+                searchMessageViewModel
         );
 
         ThemePresenter themePresenter = new ThemePresenter(mainView.getThemeButton(), mainView);
