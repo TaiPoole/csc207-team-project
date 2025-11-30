@@ -53,4 +53,16 @@ public class ChatViewModel {
             messageModel.addElement(formattedMessage);
         }
     }
+
+    /**
+     * Returns a copy of the messages in the currently active channel.
+     * Used by the search use case so it only searches the current channel.
+     */
+    public List<String> getMessagesForActiveChannel() {
+        List<String> msgs = messagesByChannel.get(activeChannel);
+        if (msgs == null) {
+            return java.util.Collections.emptyList();
+        }
+        return new ArrayList<>(msgs);
+    }
 }
