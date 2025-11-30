@@ -29,6 +29,8 @@ public class ThemePresenter implements ThemeOutputBoundary {
      * @param palette palette to paint
      */
     public void applyPalette(Palette palette) {
+        mainPanel.setBackground(palette.mainBg);
+        mainPanel.setForeground(palette.text);
         for (Component child : this.mainPanel.getComponents()) {
             applyPalette(palette, child);
         }
