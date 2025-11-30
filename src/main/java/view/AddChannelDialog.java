@@ -15,13 +15,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import client.Client;
-import client.createchannel.CreateChannelController;
-import client.createchannel.CreateChannelInputBoundary;
-import client.createchannel.CreateChannelInteractor;
-import client.createchannel.CreateChannelOutputBoundary;
-import client.createchannel.CreateChannelPresenter;
-
 
 /**
  * Dialog for creating a new channel.
@@ -35,9 +28,6 @@ public class AddChannelDialog extends JDialog {
     private final JButton addButton;
     private final JButton closeButton;
 
-    private final DefaultListModel<String> channelModel;
-    private final CreateChannelController createChannelController;
-
     /**
      * @param owner         parent frame (Main window)
      * @param channelModel  the model that backs the channel JList in MainView
@@ -47,8 +37,6 @@ public class AddChannelDialog extends JDialog {
                             DefaultListModel<String> channelModel,
                             Client client) {
         super(owner, "Add Channel", true);
-
-        this.channelModel = channelModel;
 
         this.channelNameField = new JTextField(20);
         this.statusLabel = new JLabel(" ");
@@ -78,15 +66,8 @@ public class AddChannelDialog extends JDialog {
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
-        // === Build the Clean Architecture chain for Create Channel ===
-        CreateChannelOutputBoundary presenter =
-                new CreateChannelPresenter(channelModel, statusLabel, this);
-        CreateChannelInputBoundary interactor =
-                new CreateChannelInteractor(client, presenter);
-        this.createChannelController =
-                new CreateChannelController(interactor);
 
-        // When "Add" is clicked, validate then call the use case.
+        // When "Add" is clicked, try to create the channel.
         addButton.addActionListener(e -> {
             String name = channelNameField.getText().trim();
 
@@ -100,9 +81,17 @@ public class AddChannelDialog extends JDialog {
                 return;
             }
 
-            // Delegate to the use case
-            createChannelController.createChannel(name);
-            // On success, the presenter will update UI and close the dialog.
+            try {
+                String command = "/create-channel " + name;
+                client.sendMessage(command);
+
+                channelModel.addElement("# " + name);
+
+                statusLabel.setText("Channel \"" + name + "\" created.");
+                channelNameField.setText("");
+            } catch (IOException ex) {
+                statusLabel.setText("Failed to contact server.");
+            }
         });
 
         // Close button just closes the dialog.
@@ -111,7 +100,6 @@ public class AddChannelDialog extends JDialog {
         pack();
         setLocationRelativeTo(owner);
     }
-
 
     /**
      * Checks if the channel already exists in the list model.
