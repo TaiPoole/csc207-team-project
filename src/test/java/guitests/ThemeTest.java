@@ -1,4 +1,4 @@
-package gui_tests;
+package guitests;
 import gui.ThemeInteractor;
 import org.junit.Test;
 import static org.junit.Assert.*;
