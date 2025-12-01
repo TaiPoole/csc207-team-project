@@ -34,61 +34,57 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
     @Override
     public void execute(SendMessageInputData input) {
         String content = input.getMessageContent();
-        boolean hasText = content != null && !content.trim().isEmpty();
-        boolean hasAttachment = input.hasAttachment();
+        if (content == null) {
+            content = "";
+        }
+        String trimmedContent = content.trim();
 
-        // Don't allow completely empty messages (no text, no file)
-        if (!hasText && !hasAttachment) {
-            presenter.prepareFailureView("Message cannot be empty");
+        // Disallow completely empty messages
+        if (trimmedContent.isEmpty() && !input.hasAttachment()) {
+            presenter.prepareFailureView("Message cannot be empty.");
             return;
         }
 
+        String channelId = client.getCurrentChannel();
+        if (channelId == null || channelId.isEmpty()) {
+            channelId = "general";
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = now.format(TIME_FORMATTER);
+
+        String wireContent;
+        if (trimmedContent.isEmpty()) {
+            wireContent = "[" + channelId + "]";
+        } else {
+            wireContent = "[" + channelId + "] " + trimmedContent;
+        }
+
         try {
-            // 1. Figure out which channel we're in
-            String channelId = client.getCurrentChannel();
-            if (channelId == null || channelId.isEmpty()) {
-                channelId = "general";
-            }
+            Message messageToSend;
 
-            // 2. Prepare safe text versions
-            String safeContent = (content == null) ? "" : content.trim();
-
-            // Wire content is what goes over the network, with [channel] prefix
-            // We want format "[channel] message" or just "[channel]" if no text
-            String wireContent;
-            if (safeContent.isEmpty()) {
-                wireContent = "[" + channelId + "]";
-            } else {
-                wireContent = "[" + channelId + "] " + safeContent;
-            }
-
-            // 3. Build the actual Message (with channel-tagged content)
-            LocalDateTime now = LocalDateTime.now();
-            Message message;
-
-            if (hasAttachment) {
-                message = new AttachmentMessage(
+            if (input.hasAttachment()) {
+                messageToSend = new AttachmentMessage(
                         client.getUsername(),
                         wireContent,
                         now,
                         input.getAttachment()
                 );
             } else {
-                message = new TextMessage(
+                messageToSend = new TextMessage(
                         client.getUsername(),
                         wireContent,
                         now
                 );
             }
 
-            // 4. Send using existing API
-            client.sendMessage(message);
+            //Send using existing API
+            client.sendMessage(messageToSend);
 
-            // 5. For the local UI, we show only the "clean" text, without [channel]
-            String formattedTime = now.format(TIME_FORMATTER);
+            //For the local UI, we show only the "clean" text, without [channel]
             SendMessageOutputData outputData = new SendMessageOutputData(
                     client.getUsername(),
-                    safeContent,                 // <- no [channel] prefix in UI
+                    trimmedContent,                 // <- no [channel] prefix in UI
                     formattedTime,
                     input.getAttachment()
             );

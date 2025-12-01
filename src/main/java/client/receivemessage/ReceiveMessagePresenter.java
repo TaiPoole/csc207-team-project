@@ -24,26 +24,33 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
         SwingUtilities.invokeLater(() -> {
             String rawContent = outputData.getContent();
             String channelId = extractChannelId(rawContent);
+
+            if (channelId == null || channelId.isEmpty()) {
+                channelId = chatViewModel.getActiveChannel();
+                if (channelId == null || channelId.isEmpty()) {
+                    channelId = "general";
+                }
+            }
+
             String cleanContent = stripChannelPrefix(rawContent);
             Attachment attachment = outputData.getAttachment();
 
-            String formattedMessage;
-            if (attachment != null) {
-                formattedMessage = String.format("[%s] %s: %s | %s",
-                        outputData.getTimestamp(),
-                        outputData.getSender(),
-                        cleanContent,
-                        attachment.getName()
-                );
-            } else {
-                formattedMessage = String.format("[%s] %s: %s",
-                        outputData.getTimestamp(),
-                        outputData.getSender(),
-                        cleanContent
-                );
+            StringBuilder sb = new StringBuilder();
+            sb.append("[").append(outputData.getTimestamp()).append("] ")
+                    .append(outputData.getSender()).append(": ");
+
+            if (cleanContent != null && !cleanContent.isEmpty()) {
+                sb.append(cleanContent);
             }
 
-            chatViewModel.addMessage(channelId, formattedMessage);
+            if (attachment != null) {
+                if (cleanContent != null && !cleanContent.isEmpty()) {
+                    sb.append(" ");
+                }
+                sb.append("[file: ").append(attachment.getName()).append("]");
+            }
+
+            chatViewModel.addMessage(channelId, sb.toString(), attachment);
         });
     }
 
@@ -61,7 +68,7 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
             }
         }
         // No explicit tag -> assume current active channel
-        return chatViewModel.getActiveChannel();
+        return null;
     }
 
     /**

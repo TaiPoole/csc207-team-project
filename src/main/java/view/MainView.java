@@ -36,6 +36,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import permissions.ManagePermissionsInputBoundary;
 import permissions.PermissionsController;
+import common.Attachment;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * The main messaging UI.
@@ -145,6 +152,22 @@ public class MainView extends JPanel {
 
         // messageScroll
         JList<String> messageList = new JList<>(messageModel);
+
+        messageList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = messageList.locationToIndex(e.getPoint());
+                    if (index >= 0) {
+                        Attachment attachment = chatViewModel.getAttachmentForIndex(index);
+                        if (attachment != null) {
+                            promptToSaveAttachment(attachment, messageList);
+                        }
+                    }
+                }
+            }
+        });
+
         JScrollPane messageScroll = new JScrollPane(messageList);
         messageScroll.setPreferredSize(new Dimension(800, 520));
         messageScroll.setBorder(borderBox());
@@ -184,7 +207,7 @@ public class MainView extends JPanel {
             // Get the frame dynamically when button is clicked
             Window window = SwingUtilities.getWindowAncestor(this);
             JFrame owner = (window instanceof JFrame) ? (JFrame) window : null;
-            filePicker = new PickFileListener(owner, fileDisplayPanel);
+            filePicker.setParentFrame(owner);
             filePicker.actionPerformed(e);
         });
 
@@ -334,6 +357,32 @@ public class MainView extends JPanel {
     public ThemeButton getThemeButton() {
         return themeButton;
     }
+
+    /**
+     * Prompts the user to choose where to save the given attachment and writes
+     * the attachment bytes to disk.
+     */
+    private void promptToSaveAttachment(Attachment attachment, java.awt.Component parent) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setSelectedFile(new File(attachment.getName()));
+        int result = chooser.showSaveDialog(parent);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File dest = chooser.getSelectedFile();
+            try (FileOutputStream fos = new FileOutputStream(dest)) {
+                fos.write(attachment.getAttachment());
+                JOptionPane.showMessageDialog(parent,
+                        "File saved to " + dest.getAbsolutePath(),
+                        "Download complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(parent,
+                        "Failed to save file: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
 
     /**
      * Creates a standardized border for panels.
