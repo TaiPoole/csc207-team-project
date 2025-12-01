@@ -20,7 +20,7 @@ public class ManagePermissionsInteractor implements ManagePermissionsInputBounda
             User user = new User(inputData.getUsername());
 
             // Send request to server via gateway
-            boolean sent = gateway.requestPermissionChange(inputData.getCurrentUser(), user, perm);
+            boolean sent = gateway.requestPermissionChange(inputData.getCurrentUser(), user, perm, inputData.channel);
 
             if (sent) {
                 presenter.prepareSuccessView(new ManagePermissionsOutputData(

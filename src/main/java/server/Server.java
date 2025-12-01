@@ -1,6 +1,7 @@
 package server;
 
 import common.*;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -13,8 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Server class.
@@ -29,9 +28,9 @@ public class Server {
     private final Map<String, String> userCurrentChannel; // Track which channel each user is currently in
 
     private final int port;
-    private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
     private final PermissionManager permissionManager;
+    private ServerSocketChannel serverChannel;
 
     /**
      * Server constructor.
@@ -136,9 +135,6 @@ public class Server {
 
                             // If this is the first user, grant them admin permissions in all channels
                             if (channelToUser.isEmpty()) {
-                                Set<Permission> perms = new HashSet<>();
-                                perms.add(Permission.EDIT_PERMISSIONS);
-
                                 // Grant permissions in all channels (including general)
                                 for (common.Channel channel : channels) {
                                     permissionManager.addPermission(user, channel.getId(), Permission.EDIT_PERMISSIONS);
@@ -239,17 +235,17 @@ public class Server {
 
         try {
             Permission permToAdd = msg.getPermission();
-
+            String targetChannelId = msg.getChannelId();
             // Check for duplicates
-            if (!permissionManager.userHasPermission(targetUser, channelId, permToAdd)) {
-                permissionManager.addPermission(targetUser, channelId, permToAdd);
-                sendSystemMessage(senderChannel, "Success: Added " + permToAdd + " to " + targetUsername + " in #" + channelId);
+            if (!permissionManager.userHasPermission(targetUser, targetChannelId, permToAdd)) {
+                permissionManager.addPermission(targetUser, targetChannelId, permToAdd);
+                sendSystemMessage(senderChannel, "Success: Added " + permToAdd + " to " + targetUsername + " in #" + targetChannelId);
 
                 if (targetChannel != null) {
-                    sendSystemMessage(targetChannel, "You have been granted permission: " + permToAdd + " in #" + channelId);
+                    sendSystemMessage(targetChannel, "You have been granted permission: " + permToAdd + " in #" + targetChannelId);
                 }
             } else {
-                sendSystemMessage(senderChannel, "User already has permission: " + permToAdd + " in #" + channelId);
+                sendSystemMessage(senderChannel, "User already has permission: " + permToAdd + " in #" + targetChannelId);
             }
         } catch (IllegalArgumentException e) {
             sendSystemMessage(senderChannel, "Error: Invalid permission type.");
@@ -412,7 +408,8 @@ public class Server {
         clientChannel.write(buffer);
     }
 
-    /** Adds a channel to channel list.
+    /**
+     * Adds a channel to channel list.
      *
      * @param channel channel to be added
      */
