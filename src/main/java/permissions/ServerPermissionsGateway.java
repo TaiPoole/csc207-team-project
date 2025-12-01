@@ -3,20 +3,34 @@ package permissions;
 import common.ManagePermissionMessage;
 import common.Permission;
 import common.User;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+/** Gateway that connects a permission check to the server for permission level verification.
+ *
+ */
 public class ServerPermissionsGateway {
     private final SocketChannel serverConnection;
 
+    /** Basic constructor.
+     *
+     * @param serverConnection connection for authenticating
+     */
     public ServerPermissionsGateway(SocketChannel serverConnection) {
         this.serverConnection = serverConnection;
     }
 
+    /** Sends a permission change request to the server to check if that change is valid.
+     *
+     * @param currentUser changer
+     * @param targetUser changee
+     * @param permission perm to be changed
+     * @param channelId channel to change in
+     * @return boolean indicative of success
+     */
     public boolean requestPermissionChange(String currentUser, User targetUser, Permission permission, String channelId) {
         try {
             ManagePermissionMessage message = new ManagePermissionMessage(
@@ -36,9 +50,5 @@ public class ServerPermissionsGateway {
             System.err.println("Failed to send permission request: " + e.getMessage());
             return false;
         }
-    }
-
-    public boolean requestPermissionChange(String currentUser, User targetUser, Permission permission) {
-        return requestPermissionChange(currentUser, targetUser, permission, "general");
     }
 }

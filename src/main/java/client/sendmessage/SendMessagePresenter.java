@@ -25,7 +25,7 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
             String sender = outputData.getSender();
             String content = outputData.getMessageContent();
             String timestamp = outputData.getTimestamp();
-            Attachment attachment = outputData.getAttachment();
+            final Attachment attachment = outputData.getAttachment();
 
             if (content == null) {
                 content = "";
