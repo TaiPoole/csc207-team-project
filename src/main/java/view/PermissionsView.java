@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 public class PermissionsView extends JDialog {
     private final JComboBox<String> permissionComboBox;
     private final JTextField usernameField;
+    private final JTextField channelField;
     private final JButton grantButton;
     private final JButton cancelButton;
     private final JLabel statusLabel;
@@ -21,6 +22,7 @@ public class PermissionsView extends JDialog {
         // Initialize components
         this.permissionComboBox = new JComboBox<>(getPermissionNames());
         this.usernameField = new JTextField(20);
+        this.channelField = new JTextField(20);
         this.grantButton = new JButton("Grant Permission");
         this.cancelButton = new JButton("Cancel");
         this.statusLabel = new JLabel(" ");
@@ -55,6 +57,12 @@ public class PermissionsView extends JDialog {
         usernameLabel.setPreferredSize(new Dimension(130, 25));
         usernamePanel.add(usernameLabel);
         usernamePanel.add(usernameField);
+
+        JPanel channelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel channelLabel = new JLabel("Channel:");
+        usernameLabel.setPreferredSize(new Dimension(130, 25));
+        channelPanel.add(channelLabel);
+        channelPanel.add(channelField);
 
         JPanel permissionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel permissionLabel = new JLabel("Permission Type:");
@@ -94,6 +102,10 @@ public class PermissionsView extends JDialog {
 
     public String getUsername() {
         return usernameField.getText().trim();
+    }
+
+    public String getChannel() {
+        return channelField.getText().trim();
     }
 
     /** Clears the username input field. */

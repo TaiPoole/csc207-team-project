@@ -25,7 +25,7 @@ public class PermissionsController {
             return;
         }
 
-        ManagePermissionsInputData inputData = new ManagePermissionsInputData(currentUser, username, permission);
+        ManagePermissionsInputData inputData = new ManagePermissionsInputData(currentUser, username, permission, view.getChannel());
         interactor.execute(inputData);
     }
 

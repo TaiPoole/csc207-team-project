@@ -27,8 +27,9 @@ class ManagePermissionsInteractorTest {
         String currentUser = "admin";
         String username = "testUser";
         String permissionName = "JOIN";
+        String channel = "general";
         ManagePermissionsInputData inputData = new ManagePermissionsInputData(
-                currentUser, username, permissionName);
+                currentUser, username, permissionName, channel);
         gateway.setShouldSucceed(true);
 
         interactor.execute(inputData);
@@ -40,6 +41,7 @@ class ManagePermissionsInteractorTest {
         assertEquals(currentUser, gateway.getLastCurrentUser());
         assertEquals(username, gateway.getLastUser().getUsername());
         assertEquals(Permission.JOIN, gateway.getLastPermission());
+        assertEquals(channel, gateway.getLastChannel());
     }
 
     @Test
@@ -48,8 +50,9 @@ class ManagePermissionsInteractorTest {
         String currentUser = "admin";
         String username = "testUser";
         String permissionName = "WRITE";
+        String channel = "dev-team";
         ManagePermissionsInputData inputData = new ManagePermissionsInputData(
-                currentUser, username, permissionName);
+                currentUser, username, permissionName, channel);
         gateway.setShouldSucceed(false);
 
         interactor.execute(inputData);
@@ -65,8 +68,9 @@ class ManagePermissionsInteractorTest {
         String currentUser = "admin";
         String username = "testUser";
         String permissionName = "INVALID_PERMISSION";
+        String channel = "general";
         ManagePermissionsInputData inputData = new ManagePermissionsInputData(
-                currentUser, username, permissionName);
+                currentUser, username, permissionName, channel);
 
         interactor.execute(inputData);
 
@@ -78,28 +82,44 @@ class ManagePermissionsInteractorTest {
     @Test
     @DisplayName("Should handle various valid permission types")
     void testExecuteWithDifferentPermissions() {
-        // Test WRITE permission
         ManagePermissionsInputData writeInput = new ManagePermissionsInputData(
-                "admin", "user1", "WRITE");
+                "admin", "user1", "WRITE", "projects");
         gateway.setShouldSucceed(true);
 
         interactor.execute(writeInput);
 
         assertTrue(presenter.isSuccessCalled());
         assertEquals(Permission.WRITE, gateway.getLastPermission());
+        assertEquals("projects", gateway.getLastChannel());
     }
 
     @Test
-    @DisplayName("Should handle exception from gateway")
-    void testExecuteGatewayException() {
+    @DisplayName("Should pass channel parameter to gateway")
+    void testExecuteWithCustomChannel() {
+        String channel = "private-channel";
+        ManagePermissionsInputData inputData = new ManagePermissionsInputData(
+                "admin", "user1", "JOIN", channel);
+        gateway.setShouldSucceed(true);
+
+        interactor.execute(inputData);
+
+        assertTrue(presenter.isSuccessCalled());
+        assertEquals(channel, gateway.getLastChannel());
+    }
+
+    @Test
+    @DisplayName("Should handle IOException from gateway")
+    void testExecuteGatewayIOException() {
         TestGatewayWithException faultyGateway = new TestGatewayWithException();
         ManagePermissionsInteractor faultyInteractor = new ManagePermissionsInteractor(
                 faultyGateway, presenter);
         ManagePermissionsInputData inputData = new ManagePermissionsInputData(
-                "admin", "testUser", "READ");
+                "admin", "testUser", "JOIN", "general");
 
         faultyInteractor.execute(inputData);
+
         assertTrue(presenter.isFailCalled());
+        assertEquals("Failed to send permission request to server.", presenter.getFailMessage());
     }
 
     private static class TestPresenter implements ManagePermissionsOutputBoundary {
@@ -141,22 +161,23 @@ class ManagePermissionsInteractorTest {
         }
     }
 
-    // Test double for ServerPermissionsGateway
     private static class TestGateway extends ServerPermissionsGateway {
         private boolean shouldSucceed = true;
         private String lastCurrentUser;
         private User lastUser;
         private Permission lastPermission;
+        private String lastChannel;
 
         public TestGateway() {
             super(null);
         }
 
         @Override
-        public boolean requestPermissionChange(String currentUser, User user, Permission permission) {
+        public boolean requestPermissionChange(String currentUser, User user, Permission permission, String channelId) {
             this.lastCurrentUser = currentUser;
             this.lastUser = user;
             this.lastPermission = permission;
+            this.lastChannel = channelId;
             return shouldSucceed;
         }
 
@@ -175,17 +196,20 @@ class ManagePermissionsInteractorTest {
         public Permission getLastPermission() {
             return lastPermission;
         }
+
+        public String getLastChannel() {
+            return lastChannel;
+        }
     }
 
-    // double that just throws
     private static class TestGatewayWithException extends ServerPermissionsGateway {
         public TestGatewayWithException() {
             super(null);
         }
 
         @Override
-        public boolean requestPermissionChange(String currentUser, User user, Permission permission) {
-            throw new RuntimeException("Gateway error");
+        public boolean requestPermissionChange(String currentUser, User user, Permission permission, String channelId) {
+            return false;
         }
     }
 }

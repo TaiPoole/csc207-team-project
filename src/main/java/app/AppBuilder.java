@@ -100,6 +100,8 @@ public class AppBuilder {
         SendMessageOutputBoundary sendPresenter = new SendMessagePresenter(chatViewModel);
         this.sendMessageInteractor = new SendMessageInteractor(sendPresenter, client);
 
+        this.client.connect();
+
         this.permissionsView = new PermissionsView(this.frame);
         ManagePermissionsOutputBoundary managePresenter = new ManageMessagePresenter(permissionsView);
         ServerPermissionsGateway permissionGateway = new ServerPermissionsGateway(client.getConnection());
@@ -121,9 +123,6 @@ public class AppBuilder {
                 new SearchMessageInteractor(chatViewModel, searchPresenter);
         this.searchMessageController =
                 new SearchMessageController(searchMessageInteractor);
-
-        this.client.connect();
-
     }
 
     /**

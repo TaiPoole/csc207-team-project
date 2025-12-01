@@ -1,8 +1,9 @@
 package permissions;
 
+import common.ManagePermissionMessage;
 import common.Permission;
 import common.User;
-import common.ManagePermissionMessage;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -16,12 +17,13 @@ public class ServerPermissionsGateway {
         this.serverConnection = serverConnection;
     }
 
-    public boolean requestPermissionChange(String currentUser, User user, Permission permission) {
+    public boolean requestPermissionChange(String currentUser, User targetUser, Permission permission, String channelId) {
         try {
             ManagePermissionMessage message = new ManagePermissionMessage(
                     currentUser,
-                    user.getUsername(),
-                    permission.name(),
+                    targetUser.getUsername(),
+                    permission,
+                    channelId,
                     LocalDateTime.now()
             );
 
@@ -34,5 +36,9 @@ public class ServerPermissionsGateway {
             System.err.println("Failed to send permission request: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean requestPermissionChange(String currentUser, User targetUser, Permission permission) {
+        return requestPermissionChange(currentUser, targetUser, permission, "general");
     }
 }
