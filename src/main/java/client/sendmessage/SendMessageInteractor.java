@@ -78,10 +78,10 @@ public class SendMessageInteractor implements SendMessageInputBoundary {
                 );
             }
 
-            //Send using existing API
+            // Send using existing API
             client.sendMessage(messageToSend);
 
-            //For the local UI, we show only the "clean" text, without [channel]
+            // For the local UI, we show only the "clean" text, without [channel]
             SendMessageOutputData outputData = new SendMessageOutputData(
                     client.getUsername(),
                     trimmedContent,                 // <- no [channel] prefix in UI

@@ -1,10 +1,7 @@
 package interfaceadapter;
 
-import common.Attachment;
-
-import javax.swing.DefaultListModel;
 import client.Client;
-
+import common.Attachment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +72,13 @@ public class ChatViewModel {
         addMessage(channelId, formattedMessage, null);
     }
 
+    /**
+     * Adds a message and attachment to the channel.
+     *
+     * @param channelId channel to add into
+     * @param formattedMessage message text
+     * @param attachment optional attachment
+     */
     public void addMessage(String channelId, String formattedMessage, Attachment attachment) {
         if (channelId == null || channelId.isEmpty()) {
             channelId = "general";
@@ -86,7 +90,7 @@ public class ChatViewModel {
                 attachmentsByChannel.computeIfAbsent(channelId, c -> new ArrayList<>());
 
         msgs.add(formattedMessage);
-        atts.add(attachment); //null if no attachment
+        atts.add(attachment); // null if no attachment
 
 
         if (channelId.equals(activeChannel)) {
@@ -109,6 +113,9 @@ public class ChatViewModel {
             return null;
         }
         return atts.get(index);
+    }
+
+    /**
      * Returns a copy of the messages in the currently active channel.
      * Used by the search use case so it only searches the current channel.
      */

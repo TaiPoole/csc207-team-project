@@ -5,6 +5,7 @@ import client.generatename.GenerateRandomNameController;
 import client.searchmessage.SearchMessageController;
 import client.sendmessage.SendMessageController;
 import client.sendmessage.SendMessageInputBoundary;
+import common.Attachment;
 import gui.PickFileListener;
 import gui.SearchMessageFocusListener;
 import gui.SearchMessageResultsListener;
@@ -18,13 +19,20 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -36,13 +44,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import permissions.ManagePermissionsInputBoundary;
 import permissions.PermissionsController;
-import common.Attachment;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * The main messaging UI.
@@ -382,7 +383,6 @@ public class MainView extends JPanel {
             }
         }
     }
-
 
     /**
      * Creates a standardized border for panels.
