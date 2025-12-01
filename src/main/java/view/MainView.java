@@ -255,12 +255,7 @@ public class MainView extends JPanel {
         channelSearchPanel.add(joinButton, BorderLayout.EAST);
         joinButton.addActionListener(e -> {
             String rawText = channelIdField.getText();
-            String channelId = rawText.replace("Channel ID: ", "").trim();
-
-            if (channelModel.contains("# " + channelId)) {
-                chatViewModel.setActiveChannel(channelId);
-                client.setCurrentChannel(channelId);
-            }
+            chatViewModel.joinChannel(rawText, client, channelModel);
         });
 
 
