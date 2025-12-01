@@ -131,15 +131,13 @@ public class Server {
 
                     if (message != null) {
                         // Extract username from the message itself
-                        String username = message.getUsername();
+                        String msgUsername = message.getUsername();
 
-                        // Register user on first message
-                        if (user == null && username != null) {
-                            user = new User(username);
+                        if (user == null && msgUsername != null) {
+                            user = new User(msgUsername);
 
                             // If this is the first user, grant them admin permissions in all channels
                             if (channelToUser.isEmpty()) {
-                                // Grant permissions in all channels (including general)
                                 for (common.Channel channel : channels) {
                                     permissionManager.addPermission(user, channel.getId(), Permission.EDIT_PERMISSIONS);
                                     permissionManager.addPermission(user, channel.getId(), Permission.WRITE);
@@ -150,11 +148,54 @@ public class Server {
                             }
 
                             channelToUser.put(clientChannel, user);
-                            usernameToChannel.put(username, clientChannel);
-                            userCurrentChannel.put(username, "general"); // Default to general channel
+                            usernameToChannel.put(msgUsername, clientChannel);
+                            userCurrentChannel.put(msgUsername, "general"); // Default to general channel
 
-                            System.out.println("User registered: " + username);
+                            System.out.println("User registered: " + msgUsername);
                             sendSystemMessage(clientChannel, "Welcome! You are in channel: general");
+                        }
+
+                        else if (user != null && msgUsername != null && !msgUsername.equals(user.getUsername())) {
+                            String oldName = user.getUsername();
+                            String newName = msgUsername;
+
+                            // Check if the new name is already taken by someone else
+                            if (usernameToChannel.containsKey(newName)) {
+                                sendSystemMessage(clientChannel, "Error: Username '" + newName + "' is already taken.");
+                                // Skip processing this message to prevent identity confusion
+                                continue;
+                            }
+
+                            // Perform the updates
+                            System.out.println("Updating username: " + oldName + " -> " + newName);
+
+                            // Retrieve current state to preserve it
+                            String currentChannelId = userCurrentChannel.get(oldName);
+                            if (currentChannelId == null) currentChannelId = "general";
+
+                            // Remove old map entries
+                            usernameToChannel.remove(oldName);
+                            userCurrentChannel.remove(oldName);
+
+                            // Create new User object and update channelToUser
+                            User newUser = new User(newName);
+
+                            for (common.Channel channel : channels) {
+                                String channelId = channel.getId();
+
+                                for (Permission perm : Permission.values()) {
+                                    if (permissionManager.userHasPermission(user, channelId, perm)) {
+                                        permissionManager.addPermission(newUser, channelId, perm);
+                                    }
+                                }
+                            }
+                            user = newUser;
+                            channelToUser.put(clientChannel, user);
+                            // Add new map entries
+                            usernameToChannel.put(newName, clientChannel);
+                            userCurrentChannel.put(newName, currentChannelId);
+
+                            sendSystemMessage(clientChannel, "Username successfully changed to: " + newName);
                         }
 
                         if (user != null) {
@@ -185,7 +226,7 @@ public class Server {
                                 continue;
                             }
 
-                            broadcastMessageToChannel(message, usernameToChannel.get(username), currentChannel);
+                            broadcastMessageToChannel(message, usernameToChannel.get(user.getUsername()), currentChannel);
                         }
                     }
                 }
@@ -388,7 +429,7 @@ public class Server {
     }
 
     /** Sends a message from the system.
-     *  Used for system administrative purposes
+     * Used for system administrative purposes
      *
      * @param client client to send the message to
      * @param content message to send
