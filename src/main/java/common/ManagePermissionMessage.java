@@ -3,6 +3,9 @@ package common;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/** Manage perms message.
+ *  A type of message used to display changes in permissions
+ */
 public class ManagePermissionMessage implements Message {
     private final String username;
     private final String targetUsername;
@@ -10,6 +13,14 @@ public class ManagePermissionMessage implements Message {
     private final LocalDateTime timestamp;
     private final String channelId;
 
+    /** Basic constructor.
+     *
+     * @param username username that changed it
+     * @param targetUsername user that was changed
+     * @param permission permission changed
+     * @param channelId the channel which the perm change happened
+     * @param timestamp time
+     */
     public ManagePermissionMessage(String username, String targetUsername, Permission permission, String channelId, LocalDateTime timestamp) {
         this.username = username;
         this.targetUsername = targetUsername;
@@ -24,6 +35,11 @@ public class ManagePermissionMessage implements Message {
         return getUsername() + "|" + targetUsername + "|" + permission.name() + "|" + channelId + "|" + getTimestamp().format(formatter);
     }
 
+    /** Deserializes the message from our format specific above in our serialize method.
+     *
+     * @param data data to be des
+     * @return a ManagePermissionMessage parsed from data
+     */
     public static ManagePermissionMessage deserialize(String data) {
         String[] parts = data.split("\\|");
         if (parts.length != 5) {

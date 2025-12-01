@@ -2,9 +2,16 @@ package permissions;
 
 import view.PermissionsView;
 
+/** Presenter for the manage perms message dialogue.
+ *
+ */
 public class ManageMessagePresenter implements ManagePermissionsOutputBoundary {
     private final PermissionsView view;
 
+    /** Basic constructor.
+     *
+     * @param view the view for the presenter to call
+     */
     public ManageMessagePresenter(PermissionsView view) {
         this.view = view;
     }

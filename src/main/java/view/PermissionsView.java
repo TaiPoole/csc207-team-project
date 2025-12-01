@@ -1,12 +1,25 @@
 package view;
 
 import common.Permission;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-
+/** Permissions view for handling the permissions popup.
+ *
+ */
 public class PermissionsView extends JDialog {
     private final JComboBox<String> permissionComboBox;
     private final JTextField usernameField;
@@ -15,7 +28,11 @@ public class PermissionsView extends JDialog {
     private final JButton cancelButton;
     private final JLabel statusLabel;
 
-
+    /** Constructor. For the view.
+     *  Initializes it based on its JDialog parent, and then sets up the functions on the popup
+     *
+     * @param parent parent frame for easier initialization/latching
+     */
     public PermissionsView(Frame parent) {
         super(parent, "Manage Permissions", true);
 
@@ -131,24 +148,11 @@ public class PermissionsView extends JDialog {
         statusLabel.setText(error);
     }
 
-    /** Clears the status message. */
-    public void clearStatus() {
-        statusLabel.setText(" ");
-    }
-
     /** Adds an action listener to the grant button.
      *
      * @param listener the action listener
      */
     public void addGrantButtonListener(ActionListener listener) {
         grantButton.addActionListener(listener);
-    }
-
-    /** Adds an action listener to the cancel button.
-     *
-     * @param listener the action listener
-     */
-    public void addCancelButtonListener(ActionListener listener) {
-        cancelButton.addActionListener(listener);
     }
 }

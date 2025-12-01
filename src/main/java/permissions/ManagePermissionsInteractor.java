@@ -3,10 +3,19 @@ package permissions;
 import common.Permission;
 import common.User;
 
+/** Interactor for changing permissions.
+ *  implements input boundary conditions
+ */
 public class ManagePermissionsInteractor implements ManagePermissionsInputBoundary {
     private final ManagePermissionsOutputBoundary presenter;
     private final ServerPermissionsGateway gateway;
 
+    /** Basic Constructor.
+     *
+     * @param gateway server gateway to try changing the perms
+     * @param presenter view for updating after gateway attempt returns
+     *
+     */
     public ManagePermissionsInteractor(ServerPermissionsGateway gateway,
                                        ManagePermissionsOutputBoundary presenter) {
         this.gateway = gateway;

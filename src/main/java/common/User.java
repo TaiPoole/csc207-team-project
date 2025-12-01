@@ -7,7 +7,7 @@ public class User {
     private final String username;
 
     /**
-     * Create User
+     * Create User.
      */
     public User(String username) {
         this.username = username;

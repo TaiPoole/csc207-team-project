@@ -1,7 +1,11 @@
 package server;
 
-import common.*;
-
+import common.AttachmentMessage;
+import common.ManagePermissionMessage;
+import common.Message;
+import common.Permission;
+import common.TextMessage;
+import common.User;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -383,6 +387,13 @@ public class Server {
         }
     }
 
+    /** Sends a message from the system.
+     *  Used for system administrative purposes
+     *
+     * @param client client to send the message to
+     * @param content message to send
+     * @throws IOException potentially if something fails with the sockets
+     */
     public void sendSystemMessage(SocketChannel client, String content) throws IOException {
         Message message = new TextMessage("SYSTEM", content);
         sendToClient(client, message);
@@ -426,7 +437,7 @@ public class Server {
 
         // Notify all connected clients that a new channel was created
         TextMessage systemMessage = new TextMessage(
-                "System",
+                "SYSTEM",
                 "New channel created: #" + channel.getId(),
                 LocalDateTime.now()
         );

@@ -2,7 +2,6 @@ package server;
 
 import common.Permission;
 import common.User;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
