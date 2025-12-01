@@ -341,7 +341,7 @@ public class Server {
             User user = entry.getValue();
 
             // Don't send message back to sender
-            if (channel.equals(senderChannel)) {
+            if (channel.equals(senderChannel) || user.getUsername().equals(message.getUsername())) {
                 continue;
             }
 

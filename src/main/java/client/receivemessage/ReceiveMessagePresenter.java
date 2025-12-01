@@ -25,7 +25,6 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
      * @param currentUsername current client's username
      */
     public void displayMessage(ReceiveMessageOutputData outputData, String currentUsername) {
-        if (outputData.getSender().equals("SYSTEM") || !outputData.getSender().equals(currentUsername)) {
             SwingUtilities.invokeLater(() -> {
                 String rawContent = outputData.getContent();
                 String channelId = extractChannelId(rawContent);
@@ -57,7 +56,6 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
 
                 chatViewModel.addMessage(channelId, sb.toString(), attachment);
             });
-        }
 
     }
 
