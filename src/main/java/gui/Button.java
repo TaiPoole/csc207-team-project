@@ -3,7 +3,6 @@ package gui;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-// TODO: why does this exist? its field text isnt even used since our constructors use the text field from superclass?
 /** Button class.
  *  a type of JButton (from JSwing)
  *  wraps text and action within it for easier calls
@@ -12,7 +11,6 @@ import javax.swing.JButton;
 public class Button extends JButton {
     String text;
 
-    // TODO: Cut if this isn't used
     /** Default constructor.
      *  inherited from JButton.
      */
@@ -28,7 +26,6 @@ public class Button extends JButton {
         super(text);
     }
 
-    // TODO: Cut if this isn't used
     /** Constructor holding an action.
      *
      * @param action action to be performed on button click

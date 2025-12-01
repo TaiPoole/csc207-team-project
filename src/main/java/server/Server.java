@@ -1,7 +1,6 @@
 package server;
 
 import common.*;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -10,9 +9,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,16 +20,16 @@ import java.util.concurrent.Executors;
  * Centrally manages the messages between clients.
  * Holds channels, maps channels to users in channels, as well as server info like port, serverChannel,
  * and a handler pool for connected clients to the service.
- */
+**/
 public class Server {
     private final ArrayList<common.Channel> channels; // server channels, not used for communication
     private final Map<SocketChannel, User> channelToUser; // Map channel to user (primary mapping)
     private final Map<String, SocketChannel> usernameToChannel; // Reverse lookup for convenience
 
     private final int port;
+    private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
     private final PermissionManager permissionManager;
-    private ServerSocketChannel serverChannel;
 
     /**
      * Server constructor.
@@ -134,12 +131,11 @@ public class Server {
                             if (channelToUser.isEmpty()) {
                                 Set<Permission> perms = new HashSet<>();
                                 perms.add(Permission.EDIT_PERMISSIONS);
-                                
+
                             }
 
                             channelToUser.put(clientChannel, user);
                             usernameToChannel.put(username, clientChannel);
-
 
                             System.out.println("User registered: " + username);
                         }
@@ -311,8 +307,7 @@ public class Server {
         clientChannel.write(buffer);
     }
 
-    /**
-     * Handling the addChannel method
+    /** Handling the addChannel method.
      *
      * @param channelName channel to be added
      */
@@ -324,8 +319,7 @@ public class Server {
         addChannel(newChannel);
     }
 
-    /**
-     * Adds a channel to channel list.
+    /** Adds a channel to channel list.
      *
      * @param channel channel to be added
      */
@@ -346,7 +340,7 @@ public class Server {
                 "New channel created: " + channel.getId(),
                 LocalDateTime.now()
         );
-
+        // senderChannel = null → goes to everyone (no one is excluded)
         broadcastMessage(systemMessage, null);
 
     }

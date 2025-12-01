@@ -24,7 +24,6 @@ public class Client {
     private final Consumer<Message> messageCallback;
     private String currentChannel = "general";
 
-
     /**
      * Create a client for serverAddress.
      *

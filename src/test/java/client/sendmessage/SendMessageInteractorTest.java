@@ -3,6 +3,7 @@ package client.sendmessage;
 import client.Client;
 import common.Attachment;
 import common.Message;
+import interfaceadapter.ChatViewModel;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +16,8 @@ public class SendMessageInteractorTest {
     public void testSendMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         TestClient client = new TestClient("testUser");
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -26,14 +28,15 @@ public class SendMessageInteractorTest {
 
         assertEquals(1, messageModel.getSize());
         assertNotNull(client.lastMessageSent);
-        assertEquals("test-message", client.lastMessageSent.getContent());
+        assertEquals("[general] test-message", client.lastMessageSent.getContent());
     }
 
     @Test
     public void testSendMessageWithAttachment() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         TestClient client = new TestClient("testUser");
 
         byte[] testFileBytes = "test file content".getBytes();
@@ -46,13 +49,14 @@ public class SendMessageInteractorTest {
 
         assertEquals(1, messageModel.getSize());
         assertNotNull(client.lastMessageSent);
-        assertEquals("test-message", client.lastMessageSent.getContent());
+        assertEquals("[general] test-message", client.lastMessageSent.getContent());
     }
 
     @Test
     public void testSendNullMessageWithAttachment() throws InterruptedException{
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         TestClient client = new TestClient("testUser");
 
         byte[] testFileBytes = "test file content".getBytes();
@@ -65,14 +69,16 @@ public class SendMessageInteractorTest {
 
         assertEquals(1, messageModel.getSize());
         assertNotNull(client.lastMessageSent);
-        assertEquals("", client.lastMessageSent.getContent());
+        assertEquals("[general]", client.lastMessageSent.getContent());
     }
+
 
     @Test
     public void testSendEmptyMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -89,7 +95,8 @@ public class SendMessageInteractorTest {
     public void testSendNullMessage() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -106,7 +113,8 @@ public class SendMessageInteractorTest {
     public void testSendMessageNotConnected() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -123,7 +131,8 @@ public class SendMessageInteractorTest {
     public void testSendMessageWithAttachmentNotConnected() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         Client client = new Client("testUser", "localhost", null);
 
         SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
@@ -143,6 +152,42 @@ public class SendMessageInteractorTest {
 
         Client client = new Client("myTestUser", "localhost", null);
         assertEquals("myTestUser", client.getUsername());
+    }
+
+    @Test
+    public void testNullChannelDefaultsToGeneral() throws InterruptedException {
+        DefaultListModel<String> messageModel = new DefaultListModel<>();
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
+        TestClient client = new TestClient("testUser");
+        client.currentChannel = null;
+
+        SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
+        SendMessageInputData inputData = new SendMessageInputData("test-message");
+
+        interactor.execute(inputData);
+        Thread.sleep(100);
+
+        assertNotNull(client.lastMessageSent);
+        assertEquals("[general] test-message", client.lastMessageSent.getContent());
+    }
+
+    @Test
+    public void testEmptyChannelDefaultsToGeneral() throws InterruptedException {
+        DefaultListModel<String> messageModel = new DefaultListModel<>();
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
+        TestClient client = new TestClient("testUser");
+        client.currentChannel = "";
+
+        SendMessageInteractor interactor = new SendMessageInteractor(presenter, client);
+        SendMessageInputData inputData = new SendMessageInputData("test-message");
+
+        interactor.execute(inputData);
+        Thread.sleep(100);
+
+        assertNotNull(client.lastMessageSent);
+        assertEquals("[general] test-message", client.lastMessageSent.getContent());
     }
 
     @Test
@@ -171,7 +216,8 @@ public class SendMessageInteractorTest {
     public void testIOException() throws InterruptedException {
 
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        SendMessagePresenter presenter = new SendMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        SendMessagePresenter presenter = new SendMessagePresenter(chatViewModel);
         TestClient client = new TestClient("testUser");
         client.shouldThrowIOException = true;
 
@@ -188,18 +234,24 @@ public class SendMessageInteractorTest {
     static class TestClient extends Client {
         Message lastMessageSent = null;
         boolean shouldThrowIOException = false;
+        String currentChannel = null;
 
         public TestClient(String username) {
             super(username, "localhost", null);
         }
 
         @Override
-        public void sendMessage(Message message) throws IOException{
+        public void sendMessage(Message message) throws IOException {
             if (shouldThrowIOException) {
                 throw new IOException("Network error");
             }
             lastMessageSent = message;
         }
 
+        @Override
+        public String getCurrentChannel() {
+            return currentChannel;
+
+        }
     }
 }
