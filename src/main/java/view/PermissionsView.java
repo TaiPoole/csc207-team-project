@@ -77,7 +77,7 @@ public class PermissionsView extends JDialog {
 
         JPanel channelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel channelLabel = new JLabel("Channel:");
-        usernameLabel.setPreferredSize(new Dimension(130, 25));
+        channelLabel.setPreferredSize(new Dimension(130, 25));
         channelPanel.add(channelLabel);
         channelPanel.add(channelField);
 
@@ -94,6 +94,8 @@ public class PermissionsView extends JDialog {
         // Add spacing and panels
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(usernamePanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainPanel.add(channelPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(permissionPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
