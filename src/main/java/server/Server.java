@@ -286,7 +286,6 @@ public class Server {
         // Check if channel already exists
         for (common.Channel existing : channels) {
             if (existing.getId().equals(channelName)) {
-                sendSystemMessage(clientChannel, "Error: Channel #" + channelName + " already exists.");
                 return;
             }
         }
@@ -298,8 +297,6 @@ public class Server {
         permissionManager.addPermission(creator, channelName, Permission.EDIT_PERMISSIONS);
         permissionManager.addPermission(creator, channelName, Permission.WRITE);
         permissionManager.addPermission(creator, channelName, Permission.JOIN);
-
-        sendSystemMessage(clientChannel, "Success: Created channel #" + channelName + " with full permissions.");
     }
 
     private Message deserializeMessage(String className, String serializedData) {
