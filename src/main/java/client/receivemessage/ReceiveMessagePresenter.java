@@ -1,10 +1,8 @@
 package client.receivemessage;
 
 import common.Attachment;
-import javax.swing.DefaultListModel;
-import javax.swing.SwingUtilities;
 import interfaceadapter.ChatViewModel;
-
+import javax.swing.SwingUtilities;
 
 /** Manager for incoming received messages.
  *  follows restrictions set by ReceiveMessageOutputBoundary
@@ -85,6 +83,4 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
         }
         return rawContent;
     }
-
-
 }

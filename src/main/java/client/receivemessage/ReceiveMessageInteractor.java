@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class ReceiveMessageInteractor implements ReceiveMessageInputBoundary {
 
-    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final ReceiveMessageOutputBoundary presenter;
 
     /** Basic Constructor.

@@ -1,11 +1,8 @@
 package client.sendmessage;
 
 import common.Attachment;
-import javax.swing.DefaultListModel;
-import javax.swing.SwingUtilities;
-
 import interfaceadapter.ChatViewModel;
-
+import javax.swing.SwingUtilities;
 
 /** Manager for send message outputs.
  *  follows the restrictions set by SendMessageOutputBoundary
@@ -14,7 +11,6 @@ import interfaceadapter.ChatViewModel;
 public class SendMessagePresenter implements SendMessageOutputBoundary {
     private final ChatViewModel chatViewModel;
 
-
     /** Basic constructor.
      *
      * @param chatViewModel message list to update when message is sent
@@ -22,6 +18,7 @@ public class SendMessagePresenter implements SendMessageOutputBoundary {
     public SendMessagePresenter(ChatViewModel chatViewModel) {
         this.chatViewModel = chatViewModel;
     }
+
     @Override
     public void prepareSuccessView(SendMessageOutputData outputData) {
         SwingUtilities.invokeLater(() -> {

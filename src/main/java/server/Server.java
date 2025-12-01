@@ -149,7 +149,7 @@ public class Server {
                                 // NOT broadcast the raw command message
                                 continue;
                             }
-                            broadcastMessage(message, usernameToChannel.get(username));
+                            broadcastMessage(message, clientChannel);
                         }
                     }
                 }

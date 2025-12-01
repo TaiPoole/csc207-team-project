@@ -4,6 +4,7 @@ import common.Attachment;
 import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
+import interfaceadapter.ChatViewModel;
 import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -14,7 +15,8 @@ public class ReceiveMessageInteractorTest {
     @Test
     public void testReceiveTextMessage() throws InterruptedException {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(chatViewModel);
         ReceiveMessageInteractor interactor = new ReceiveMessageInteractor(presenter);
 
         LocalDateTime timestamp = LocalDateTime.of(2025, 11, 29, 13, 59, 25);
@@ -35,7 +37,8 @@ public class ReceiveMessageInteractorTest {
     @Test
     public void testReceiveAttachmentMessage() throws InterruptedException {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(chatViewModel);
         ReceiveMessageInteractor interactor = new ReceiveMessageInteractor(presenter);
 
         byte[] fileData = "test-file".getBytes();
@@ -59,7 +62,8 @@ public class ReceiveMessageInteractorTest {
     @Test
     public void testReceiveNullMessage() throws InterruptedException {
         DefaultListModel<String> messageModel = new DefaultListModel<>();
-        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(messageModel);
+        ChatViewModel chatViewModel = new ChatViewModel(messageModel);
+        ReceiveMessagePresenter presenter = new ReceiveMessagePresenter(chatViewModel);
         ReceiveMessageInteractor interactor = new ReceiveMessageInteractor(presenter);
 
         ReceiveMessageInputData inputData = new ReceiveMessageInputData(null);
