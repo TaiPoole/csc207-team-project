@@ -1,9 +1,6 @@
 package server;
 
-import common.AttachmentMessage;
-import common.Message;
-import common.TextMessage;
-import common.User;
+import common.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,16 +10,19 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-/** Server class.
- *  Centrally manages the messages between clients.
- *  Holds channels, maps channels to users in channels, as well as server info like port, serverChannel,
- *  and a handler pool for connected clients to the service.
+/**
+ * Server class.
+ * Centrally manages the messages between clients.
+ * Holds channels, maps channels to users in channels, as well as server info like port, serverChannel,
+ * and a handler pool for connected clients to the service.
  */
 public class Server {
     private final ArrayList<common.Channel> channels; // server channels, not used for communication
@@ -30,8 +30,9 @@ public class Server {
     private final Map<String, SocketChannel> usernameToChannel; // Reverse lookup for convenience
 
     private final int port;
-    private ServerSocketChannel serverChannel;
     private final ExecutorService clientHandlerPool;
+    private final PermissionManager permissionManager;
+    private ServerSocketChannel serverChannel;
 
     /**
      * Server constructor.
@@ -45,6 +46,7 @@ public class Server {
         this.channelToUser = new ConcurrentHashMap<>();
         this.usernameToChannel = new ConcurrentHashMap<>();
         this.clientHandlerPool = Executors.newCachedThreadPool();
+        this.permissionManager = new PermissionManager();
     }
 
     /**
@@ -129,17 +131,27 @@ public class Server {
                         if (user == null && username != null) {
                             user = new User(username);
 
+                            if (channelToUser.isEmpty()) {
+                                Set<Permission> perms = new HashSet<>();
+                                perms.add(Permission.EDIT_PERMISSIONS);
+                                
+                            }
+
                             channelToUser.put(clientChannel, user);
                             usernameToChannel.put(username, clientChannel);
+
 
                             System.out.println("User registered: " + username);
                         }
 
                         if (user != null) {
+                            if (message instanceof ManagePermissionMessage) {
+                                handlePermissionRequest((ManagePermissionMessage) message, user, clientChannel);
+                                continue; // Don't broadcast
+                            }
+
                             String content = message.getContent();
 
-                            // --- Handle channel creation command ---
-                            //Channel creation message is TextMessage that starts with create-channel
                             if (content != null && content.startsWith("/create-channel ")) {
                                 String channelName = content.substring("/create-channel ".length()).trim();
 
@@ -184,6 +196,41 @@ public class Server {
         }
     }
 
+    private void handlePermissionRequest(ManagePermissionMessage msg, User requester, SocketChannel senderChannel) throws IOException {
+        if (!permissionManager.userHasPermission(requester, Permission.EDIT_PERMISSIONS)) {
+            sendSystemMessage(senderChannel, "Error: Unauthorized to manage permissions.");
+            return;
+        }
+
+        String targetUsername = msg.getTargetUsername();
+        SocketChannel targetChannel = usernameToChannel.get(targetUsername);
+        User targetUser;
+
+        if (targetChannel != null) {
+            targetUser = channelToUser.get(targetChannel);
+        } else {
+            targetUser = new User(targetUsername);
+        }
+
+        try {
+            Permission permToAdd = msg.getPermission();
+
+            // Check for duplicates
+            if (!permissionManager.userHasPermission(targetUser, permToAdd)) {
+                permissionManager.addPermission(targetUser, permToAdd);
+                sendSystemMessage(senderChannel, "Success: Added " + permToAdd + " to " + targetUsername);
+
+                if (targetChannel != null) {
+                    sendSystemMessage(targetChannel, "You have been granted permission: " + permToAdd);
+                }
+            } else {
+                sendSystemMessage(senderChannel, "User already has permission: " + permToAdd);
+            }
+        } catch (IllegalArgumentException e) {
+            sendSystemMessage(senderChannel, "Error: Invalid permission type.");
+        }
+    }
+
     private Message deserializeMessage(String className, String serializedData) {
         try {
             // Extract simple class name if it's a fully qualified name
@@ -200,6 +247,8 @@ public class Server {
                     return TextMessage.deserialize(serializedData);
                 case "AttachmentMessage":
                     return AttachmentMessage.deserialize(serializedData);
+                case "ManagePermissionMessage":
+                    return ManagePermissionMessage.deserialize(serializedData);
                 default:
                     System.err.println("Unknown message type: " + className);
                     return null;
@@ -237,6 +286,11 @@ public class Server {
         }
     }
 
+    public void sendSystemMessage(SocketChannel client, String content) throws IOException {
+        Message message = new TextMessage("SYSTEM", content);
+        sendToClient(client, message);
+    }
+
     /**
      * Sends a message to a specific client.
      * Uses the protocol format described below
@@ -257,7 +311,9 @@ public class Server {
         clientChannel.write(buffer);
     }
 
-    /** Handling the addChannel method
+    /**
+     * Handling the addChannel method
+     *
      * @param channelName channel to be added
      */
     private void handleCreateChannel(String channelName) {
@@ -268,7 +324,8 @@ public class Server {
         addChannel(newChannel);
     }
 
-    /** Adds a channel to channel list.
+    /**
+     * Adds a channel to channel list.
      *
      * @param channel channel to be added
      */
@@ -289,7 +346,7 @@ public class Server {
                 "New channel created: " + channel.getId(),
                 LocalDateTime.now()
         );
-        // senderChannel = null → goes to everyone (no one is excluded)
+
         broadcastMessage(systemMessage, null);
 
     }

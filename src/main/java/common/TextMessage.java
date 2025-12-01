@@ -23,6 +23,13 @@ public class TextMessage implements Message {
         this.timestamp = timestamp;
     }
 
+    public TextMessage(String username, String content) {
+        this.username = username;
+        this.content = content;
+        this.timestamp = LocalDateTime.now();
+    }
+
+
     /** Deserializes message.
      *  message format just holds our 3 TextMessage fields seperated by newlines
      *

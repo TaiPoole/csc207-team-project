@@ -6,20 +6,20 @@ import java.time.format.DateTimeFormatter;
 public class ManagePermissionMessage implements Message {
     private final String username;
     private final String targetUsername;
-    private final String permissionName;
+    private final Permission permission;
     private final LocalDateTime timestamp;
 
     public ManagePermissionMessage(String username, String targetUsername,
-                                   String permissionName, LocalDateTime timestamp) {
+                                   Permission permission, LocalDateTime timestamp) {
         this.username = username;
         this.targetUsername = targetUsername;
-        this.permissionName = permissionName;
+        this.permission = permission;
         this.timestamp = timestamp;
     }
 
     @Override
     public String serialize() {
-        return username + "|" + targetUsername + "|" + permissionName + "|"
+        return username + "|" + targetUsername + "|" + permission.name() + "|"
                 + timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
@@ -28,7 +28,7 @@ public class ManagePermissionMessage implements Message {
         return new ManagePermissionMessage(
                 parts[0],
                 parts[1],
-                parts[2],
+                Permission.valueOf(parts[2]),
                 LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );
     }
@@ -40,7 +40,7 @@ public class ManagePermissionMessage implements Message {
 
     @Override
     public String getContent() {
-        return "Permission change: " + permissionName + " for " + targetUsername;
+        return "Permission change: " + permission.name() + " for " + targetUsername;
     }
 
     @Override
@@ -51,5 +51,13 @@ public class ManagePermissionMessage implements Message {
     @Override
     public Attachment getAttachment() {
         return null;
+    }
+
+    public String getTargetUsername() {
+        return targetUsername;
+    }
+
+    public Permission getPermission() {
+        return permission;
     }
 }

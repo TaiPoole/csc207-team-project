@@ -21,7 +21,7 @@ public class ServerPermissionsGateway {
             ManagePermissionMessage message = new ManagePermissionMessage(
                     currentUser,
                     user.getUsername(),
-                    permission.name(),
+                    permission,
                     LocalDateTime.now()
             );
 
