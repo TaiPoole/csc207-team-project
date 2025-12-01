@@ -25,9 +25,6 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
      * @param currentUsername current client's username
      */
     public void displayMessage(ReceiveMessageOutputData outputData, String currentUsername) {
-        System.out.println(outputData.getSender());
-        System.out.println(currentUsername);
-
         if (outputData.getSender().equals("SYSTEM") || !outputData.getSender().equals(currentUsername)) {
             SwingUtilities.invokeLater(() -> {
                 String rawContent = outputData.getContent();
