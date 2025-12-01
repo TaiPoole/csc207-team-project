@@ -4,7 +4,6 @@ import common.AttachmentMessage;
 import common.Message;
 import common.TextMessage;
 import common.User;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 /** Server class.
  *  Centrally manages the messages between clients.
@@ -139,7 +137,7 @@ public class Server {
                             String content = message.getContent();
 
                             // --- Handle channel creation command ---
-                            //Channel creation message is TextMessage that starts with create-channel
+                            // Channel creation message is TextMessage that starts with create-channel
                             if (content != null && content.startsWith("/create-channel ")) {
                                 String channelName = content.substring("/create-channel ".length()).trim();
 
@@ -257,7 +255,8 @@ public class Server {
         clientChannel.write(buffer);
     }
 
-    /** Handling the addChannel method
+    /** Handling the addChannel method.
+     *
      * @param channelName channel to be added
      */
     private void handleCreateChannel(String channelName) {
