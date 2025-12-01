@@ -1,5 +1,7 @@
 package interfaceadapter;
 
+import client.Client;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,5 +87,20 @@ public class ChatViewModel {
             return java.util.Collections.emptyList();
         }
         return new ArrayList<>(msgs);
+    }
+
+    /** Joins a channel and updates the chatViewModel.
+     *
+     * @param rawText input field
+     * @param client client
+     * @param channelModel the channel model
+     */
+    public void joinChannel(String rawText, Client client, DefaultListModel<String> channelModel) {
+        String channelId = rawText.replace("Channel ID: ", "").trim();
+
+        if (channelModel.contains("# " + channelId)) {
+            this.setActiveChannel(channelId);
+            client.setCurrentChannel(channelId);
+        }
     }
 }

@@ -57,7 +57,7 @@ public class MainView extends JPanel {
 
     // TextFields
     private final JTextField usernameField;
-    private final JTextField channelIdField = new JTextField("Channel ID:");
+    private final JTextField channelIdField = new JTextField("Channel ID: ");
     private final JTextField messageField = new JTextField("");
 
     // Themes
@@ -250,7 +250,15 @@ public class MainView extends JPanel {
         channelSearchPanel.setLayout(new BorderLayout(5, 5));
         channelSearchPanel.setBorder(borderBox());
         channelSearchPanel.add(channelIdField, BorderLayout.CENTER);
-        channelSearchPanel.add(new JButton("Join"), BorderLayout.EAST);
+
+        JButton joinButton = new JButton("Join");
+        channelSearchPanel.add(joinButton, BorderLayout.EAST);
+        joinButton.addActionListener(e -> {
+            String rawText = channelIdField.getText();
+            chatViewModel.joinChannel(rawText, client, channelModel);
+        });
+
+
         rightBox.add(channelSearchPanel);
         rightBox.add(Box.createVerticalStrut(8));
 
@@ -279,6 +287,8 @@ public class MainView extends JPanel {
                 }
             }
         });
+
+
 
         // channelManagePanel
         JPanel channelManagePanel = new JPanel();
