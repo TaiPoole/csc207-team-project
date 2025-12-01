@@ -239,7 +239,7 @@ public class ClientTest {
         connectThread.join(1000);
         assertNotNull(serverChannel, "Server should accept connection");
 
-        String className = "Common.textMessage";
+        String className = "Common.TextMessage";
         TextMessage testMsg = new TextMessage("server", "Test message from server", LocalDateTime.now());
         String serialized = testMsg.serialize();
         String fullMessage = className + "\n" + serialized;
