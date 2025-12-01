@@ -123,9 +123,6 @@ public class AppBuilder {
                 new SearchMessageInteractor(chatViewModel, searchPresenter);
         this.searchMessageController =
                 new SearchMessageController(searchMessageInteractor);
-
-        this.client.connect();
-
     }
 
     /**
