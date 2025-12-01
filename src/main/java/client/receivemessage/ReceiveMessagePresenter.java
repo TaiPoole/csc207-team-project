@@ -2,16 +2,19 @@ package client.receivemessage;
 
 import common.Attachment;
 import interfaceadapter.ChatViewModel;
-import javax.swing.SwingUtilities;
 
-/** Manager for incoming received messages.
- *  follows restrictions set by ReceiveMessageOutputBoundary
- *  in charge of updating the UI when a message is received
+import javax.swing.*;
+
+/**
+ * Manager for incoming received messages.
+ * follows restrictions set by ReceiveMessageOutputBoundary
+ * in charge of updating the UI when a message is received
  */
 public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
     private final ChatViewModel chatViewModel;
 
-    /** Basic constructor.
+    /**
+     * Basic constructor.
      *
      * @param chatViewModel message list to update when message is received
      */
@@ -19,45 +22,44 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
         this.chatViewModel = chatViewModel;
     }
 
-    /** Display the message.
+    /**
+     * Display the message.
      *
-     * @param outputData message to be displayed
+     * @param outputData      message to be displayed
      * @param currentUsername current client's username
      */
     public void displayMessage(ReceiveMessageOutputData outputData, String currentUsername) {
-        if (outputData.getSender().equals("SYSTEM") || !outputData.getSender().equals(currentUsername)) {
-            SwingUtilities.invokeLater(() -> {
-                String rawContent = outputData.getContent();
-                String channelId = extractChannelId(rawContent);
+        SwingUtilities.invokeLater(() -> {
+            String rawContent = outputData.getContent();
+            String channelId = extractChannelId(rawContent);
 
+            if (channelId == null || channelId.isEmpty()) {
+                channelId = chatViewModel.getActiveChannel();
                 if (channelId == null || channelId.isEmpty()) {
-                    channelId = chatViewModel.getActiveChannel();
-                    if (channelId == null || channelId.isEmpty()) {
-                        channelId = "general";
-                    }
+                    channelId = "general";
                 }
+            }
 
-                String cleanContent = stripChannelPrefix(rawContent);
-                Attachment attachment = outputData.getAttachment();
+            String cleanContent = stripChannelPrefix(rawContent);
+            Attachment attachment = outputData.getAttachment();
 
-                StringBuilder sb = new StringBuilder();
-                sb.append("[").append(outputData.getTimestamp()).append("] ")
-                        .append(outputData.getSender()).append(": ");
+            StringBuilder sb = new StringBuilder();
+            sb.append("[").append(outputData.getTimestamp()).append("] ")
+                    .append(outputData.getSender()).append(": ");
 
+            if (cleanContent != null && !cleanContent.isEmpty()) {
+                sb.append(cleanContent);
+            }
+
+            if (attachment != null) {
                 if (cleanContent != null && !cleanContent.isEmpty()) {
-                    sb.append(cleanContent);
+                    sb.append(" ");
                 }
+                sb.append("[file: ").append(attachment.getName()).append("]");
+            }
 
-                if (attachment != null) {
-                    if (cleanContent != null && !cleanContent.isEmpty()) {
-                        sb.append(" ");
-                    }
-                    sb.append("[file: ").append(attachment.getName()).append("]");
-                }
-
-                chatViewModel.addMessage(channelId, sb.toString(), attachment);
-            });
-        }
+            chatViewModel.addMessage(channelId, sb.toString(), attachment);
+        });
 
     }
 

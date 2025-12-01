@@ -77,7 +77,7 @@ public class AppBuilder {
         this.messageModel = new DefaultListModel<>();
         this.randomNameViewModel = new RandomNameViewModel();
 
-        final String defaultName = "User";
+        final String defaultName = randomNameGenerator.generate();
 
         this.chatViewModel = new ChatViewModel(messageModel);
         this.chatViewModel.setActiveChannel("general");
