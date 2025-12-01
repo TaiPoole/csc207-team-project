@@ -8,5 +8,5 @@ public interface ReceiveMessageOutputBoundary {
      *
      * @param outputData message to be displayed
      */
-    void  displayMessage(ReceiveMessageOutputData outputData);
+    void  displayMessage(ReceiveMessageOutputData outputData, String username);
 }

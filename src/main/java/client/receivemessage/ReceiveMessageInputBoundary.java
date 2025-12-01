@@ -10,5 +10,5 @@ public interface ReceiveMessageInputBoundary {
      *
      * @param inputData raw input to be turned into receivable message format
      */
-    void execute(ReceiveMessageInputData inputData);
+    void execute(ReceiveMessageInputData inputData, String username);
 }

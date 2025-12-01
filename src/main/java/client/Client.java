@@ -137,7 +137,6 @@ public class Client {
         if (!connected || channel == null) {
             throw new IllegalStateException("Not connected to server");
         }
-
         String serializedMessage = message.getClass().getName() + "\n" + message.serialize();
         ByteBuffer buffer = ByteBuffer.wrap(serializedMessage.getBytes(StandardCharsets.UTF_8));
         channel.write(buffer);

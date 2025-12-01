@@ -87,12 +87,15 @@ public class AppBuilder {
         this.receiveInteractor = new ReceiveMessageInteractor(receivePresenter);
 
         // Create client with message handler
+
         this.client = new Client(defaultName, "localhost", message -> {
             if (message != null) {
                 ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
-                receiveInteractor.execute(inputData);
+                String sender = message.getUsername();
+                receiveInteractor.execute(inputData, sender);
             }
         });
+
 
         client.setCurrentChannel("general");
 

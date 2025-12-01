@@ -19,39 +19,46 @@ public class ReceiveMessagePresenter implements ReceiveMessageOutputBoundary {
         this.chatViewModel = chatViewModel;
     }
 
-    @Override
-    public void displayMessage(ReceiveMessageOutputData outputData) {
-        SwingUtilities.invokeLater(() -> {
-            String rawContent = outputData.getContent();
-            String channelId = extractChannelId(rawContent);
+    /** Display the message.
+     *
+     * @param outputData message to be displayed
+     * @param currentUsername current client's username
+     */
+    public void displayMessage(ReceiveMessageOutputData outputData, String currentUsername) {
+        if (outputData.getSender().equals("SYSTEM") || !outputData.getSender().equals(currentUsername)) {
+            SwingUtilities.invokeLater(() -> {
+                String rawContent = outputData.getContent();
+                String channelId = extractChannelId(rawContent);
 
-            if (channelId == null || channelId.isEmpty()) {
-                channelId = chatViewModel.getActiveChannel();
                 if (channelId == null || channelId.isEmpty()) {
-                    channelId = "general";
+                    channelId = chatViewModel.getActiveChannel();
+                    if (channelId == null || channelId.isEmpty()) {
+                        channelId = "general";
+                    }
                 }
-            }
 
-            String cleanContent = stripChannelPrefix(rawContent);
-            Attachment attachment = outputData.getAttachment();
+                String cleanContent = stripChannelPrefix(rawContent);
+                Attachment attachment = outputData.getAttachment();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("[").append(outputData.getTimestamp()).append("] ")
-                    .append(outputData.getSender()).append(": ");
+                StringBuilder sb = new StringBuilder();
+                sb.append("[").append(outputData.getTimestamp()).append("] ")
+                        .append(outputData.getSender()).append(": ");
 
-            if (cleanContent != null && !cleanContent.isEmpty()) {
-                sb.append(cleanContent);
-            }
-
-            if (attachment != null) {
                 if (cleanContent != null && !cleanContent.isEmpty()) {
-                    sb.append(" ");
+                    sb.append(cleanContent);
                 }
-                sb.append("[file: ").append(attachment.getName()).append("]");
-            }
 
-            chatViewModel.addMessage(channelId, sb.toString(), attachment);
-        });
+                if (attachment != null) {
+                    if (cleanContent != null && !cleanContent.isEmpty()) {
+                        sb.append(" ");
+                    }
+                    sb.append("[file: ").append(attachment.getName()).append("]");
+                }
+
+                chatViewModel.addMessage(channelId, sb.toString(), attachment);
+            });
+        }
+
     }
 
     // Helper methods inside ReceiveMessagePresenter:

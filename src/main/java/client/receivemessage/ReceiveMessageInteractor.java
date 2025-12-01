@@ -12,6 +12,7 @@ public class ReceiveMessageInteractor implements ReceiveMessageInputBoundary {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final ReceiveMessageOutputBoundary presenter;
 
+
     /** Basic Constructor.
      *
      * @param presenter presenter for ui displaying once the input is formatted
@@ -21,7 +22,7 @@ public class ReceiveMessageInteractor implements ReceiveMessageInputBoundary {
     }
 
     @Override
-    public void execute(ReceiveMessageInputData inputData) {
+    public void execute(ReceiveMessageInputData inputData, String currentUsername) {
         Message message = inputData.getMessage();
 
         if (message == null) {
@@ -36,7 +37,9 @@ public class ReceiveMessageInteractor implements ReceiveMessageInputBoundary {
                 formattedTime,
                 message.getAttachment()
         );
+        String sender = message.getUsername();
 
-        presenter.displayMessage(outputData);
+        presenter.displayMessage(outputData, currentUsername);
+
     }
 }
