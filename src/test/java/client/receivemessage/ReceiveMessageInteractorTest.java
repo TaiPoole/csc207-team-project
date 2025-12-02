@@ -24,7 +24,7 @@ public class ReceiveMessageInteractorTest {
         Message message = new TextMessage("test-user", "test-message", timestamp);
         ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
 
-        interactor.execute(inputData);
+        interactor.execute(inputData, "User");
         Thread.sleep(100);
 
         assertEquals(1, messageModel.getSize());
@@ -48,7 +48,7 @@ public class ReceiveMessageInteractorTest {
 
         ReceiveMessageInputData inputData = new ReceiveMessageInputData(message);
 
-        interactor.execute(inputData);
+        interactor.execute(inputData, "User");
         Thread.sleep(100);
 
         assertEquals(1, messageModel.getSize());
@@ -68,7 +68,7 @@ public class ReceiveMessageInteractorTest {
 
         ReceiveMessageInputData inputData = new ReceiveMessageInputData(null);
 
-        interactor.execute(inputData);
+        interactor.execute(inputData, "User");
         Thread.sleep(100);
 
         assertEquals(0, messageModel.getSize());
